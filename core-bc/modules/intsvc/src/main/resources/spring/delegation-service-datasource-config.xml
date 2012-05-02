@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+  <!-- Loads configuration in the specified order. Duplicated properties is overridden which means that it is possible 
+    to change configuration at runtime. Configuration 
+    Load order:
+    1. Classpath
+    2. In an .delegation-service folder in the users home catalog
+    3. On a path defined in an environment variable named IFEED_CONFIG -->
+  <context:property-placeholder
+    location="classpath:datasource.properties, file:${user.home}/.delegation-service/config.properties, ${IFEED_CONFIG}"
+    ignore-resource-not-found="true" ignore-unresolvable="true" />
+
+  <import resource="classpath:spring/jpa-connector.xml" />
+  
+  <!-- Imports a connector type configuration to the jpa connector - defaults to jndi. -->
+  <import resource="classpath:spring/jpa-connector-${datasource.connector:jndi}.xml" />
+
+</beans>
