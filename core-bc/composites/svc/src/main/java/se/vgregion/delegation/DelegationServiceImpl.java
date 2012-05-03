@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.collections.BeanMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ import se.vgregion.delegation.persistence.DelegationRepository;
  * @author Claes Lundahl
  * 
  */
+@Component
 public class DelegationServiceImpl implements DelegationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DelegationServiceImpl.class);
 
@@ -63,6 +64,7 @@ public class DelegationServiceImpl implements DelegationService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public DelegationBlock save(DelegationBlock delegationBlock) {
+
         delegationBlock.setId(null);
 
         if (validateSigning(delegationBlock)) {
@@ -72,11 +74,13 @@ public class DelegationServiceImpl implements DelegationService {
 
                 delegation.setStatus(DelegationStatus.ACTIVE);
 
-                if (delegation.getDelegationKey() == null || delegation.getDelegationKey() == null) {
+                System.out.println("delegation.getDelegationKey() = " + delegation.getDelegationKey());
+
+                if (delegation.getDelegationKey() == null || delegation.getDelegationKey() == 0) {
                     delegation.setDelegationKey(delegationKeySequenceRepository.nextSequenceNumber());
                 } else {
-                    Delegation fresh = new Delegation();
-                    new BeanMap(fresh).putAllWriteable(new BeanMap(delegation));
+                    Delegation fresh = Delegation.toDelegation(delegation);
+
                     fresh.setId(null);
 
                     old.add(delegation);
@@ -86,16 +90,15 @@ public class DelegationServiceImpl implements DelegationService {
             }
 
             for (Delegation delegation : old) {
-                Delegation stored = delegationRepository.find(delegation.getId());
+                Delegation stored = delegationRepository.findByDelegationKey(delegation.getDelegationKey());
                 if (stored != null) {
                     stored.setStatus(DelegationStatus.DELETED);
-                    delegationRepository.store(stored);
+                    delegationRepository.merge(stored);
+                    System.out.println("changing status on delegation " + stored.getDelegationKey());
                 }
             }
 
             DelegationBlock result = delegationBlockRepository.store(delegationBlock);
-
-            // delegationBlockRepository.flush();
 
             return result;
         } else {

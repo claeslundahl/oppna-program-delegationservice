@@ -124,4 +124,25 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
         q.setParameter("currentDate", getCurrentDate());
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long)
+     */
+    @Override
+    public Delegation findByDelegationKey(Long delegationKey) {
+
+        String query =
+                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                        + "WHERE d.delegationKey = :delegationKey" + " and d.status =:delegatedStatus ";
+
+        Query q = entityManager.createQuery(query);
+
+        q.setParameter("delegationKey", delegationKey);
+        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+
+        return (Delegation) q.getSingleResult();
+
+    }
 }
