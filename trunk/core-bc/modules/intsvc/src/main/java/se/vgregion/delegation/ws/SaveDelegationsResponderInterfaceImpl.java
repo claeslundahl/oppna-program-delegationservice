@@ -5,12 +5,9 @@
 
 package se.vgregion.delegation.ws;
 
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.jws.WebService;
-
-import org.apache.commons.collections.BeanMap;
 
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.Delegations;
@@ -23,7 +20,7 @@ import se.vgregion.delegation.domain.DelegationBlock;
  * 
  */
 
-@WebService(serviceName = "SaveDelegationsResponderService", endpointInterface = "se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface", portName = "SaveDelegationsResponderPort", targetNamespace = "urn:riv:authorization:delegation:SaveDelegations:1:rivtabp21", wsdlLocation = "file:/C:/Projects/Portal/oppna-program-icc/service-descriptions/authorization-delegation-schemas/trunk/src/main/resources/schemas/interactions/SaveDelegationsInteraction/SaveDelegationsInteraction_1.0_RIVTABP21.wsdl")
+@WebService(serviceName = "SaveDelegationsResponderService", endpointInterface = "se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface", portName = "SaveDelegationsResponderPort", targetNamespace = "urn:riv:authorization:delegation:SaveDelegations:1:rivtabp21", wsdlLocation = "schemas/interactions/SaveDelegationsInteraction/SaveDelegationsInteraction_1.0_RIVTABP21.wsdl")
 public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsResponderInterface {
 
     DelegationService delegationService;
@@ -39,19 +36,16 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
 
     private static final Logger LOG = Logger.getLogger(SaveDelegationsResponderInterfaceImpl.class.getName());
 
-    /* public SaveDelegationsResponseType saveDelegations(String logicalAddress, DelegationBlock parameters) { //
-     * TODO Auto-generated method stub return null; } */
+    /*
+     * public SaveDelegationsResponseType saveDelegations(String logicalAddress, DelegationBlock parameters) { //
+     * TODO Auto-generated method stub return null; }
+     */
 
     @Override
     public Delegations saveDelegations(String logicalAddress,
             se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock delegationBlock) {
 
-        System.out.println("logicalAddress: \n" + logicalAddress + "\n\n");
-
         DelegationBlock myDelegationBlock = DelegationBlock.toDelegationBlock(delegationBlock);
-
-        BeanMap bm = new BeanMap(myDelegationBlock);
-        System.out.println(new HashMap(bm));
 
         // Save, convert the result and return it.
         Delegations result = new Delegations();

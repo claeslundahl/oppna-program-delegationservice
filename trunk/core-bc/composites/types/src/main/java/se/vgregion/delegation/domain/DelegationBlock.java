@@ -21,6 +21,7 @@ import javax.persistence.TemporalType;
 import org.apache.commons.collections.BeanMap;
 
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
+import se.vgregion.delegation.domain.Delegation.MyBeanMap;
 
 /**
  * 
@@ -74,7 +75,8 @@ public class DelegationBlock extends AbstractEntity<Long> implements
      */
     public void removeDelegation(Delegation delegation) {
         DelegationBlock oldDelegation = delegation.getDelegationBlock();
-        if (oldDelegation != null && oldDelegation != this && oldDelegation.getDelegations().contains(delegation)) {
+        if (oldDelegation != null && oldDelegation != this
+                && oldDelegation.getDelegations().contains(delegation)) {
             oldDelegation.removeDelegation(delegation);
         }
         delegation.setDelegationBlock(null);
@@ -164,7 +166,11 @@ public class DelegationBlock extends AbstractEntity<Long> implements
     }
 
     public static DelegationBlock toDelegationBlock(Object obj) {
-        BeanMap bm = new BeanMap(obj);
+
+        se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock db =
+                (se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock) obj;
+
+        MyBeanMap bm = new MyBeanMap(obj);
         DelegationBlock result = Delegation.convert(obj, DelegationBlock.class);
 
         String d = "delegations";

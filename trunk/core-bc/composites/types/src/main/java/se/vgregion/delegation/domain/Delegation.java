@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.collections.BeanMap;
 
@@ -48,10 +49,9 @@ public class Delegation extends AbstractEntity<Long> implements
     @Column(nullable = false)
     private String delegateTo;
 
-    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date validFrom;
-    @Column(name = "validTo")
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date validTo;
 
@@ -215,7 +215,7 @@ public class Delegation extends AbstractEntity<Long> implements
         T result;
         try {
             result = clazz.newInstance();
-            putAllWriteable(new BeanMap(obj), new BeanMap(result));
+            putAllWriteable(new MyBeanMap(obj), new MyBeanMap(result));
             return result;
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
@@ -224,7 +224,7 @@ public class Delegation extends AbstractEntity<Long> implements
         }
     }
 
-    public static void putAllWriteable(BeanMap source, BeanMap target) {
+    public static void putAllWriteable(MyBeanMap source, MyBeanMap target) {
         HashMap<String, Object> sourceMap = new HashMap<String, Object>(source);
         sourceMap.remove("class");
         for (String key : sourceMap.keySet()) {
@@ -235,6 +235,33 @@ public class Delegation extends AbstractEntity<Long> implements
             } catch (Exception e) {
                 System.out.println("Key '" + key + "' failed value '" + value + "'.");
             }
+        }
+    }
+
+    public static class MyBeanMap extends BeanMap {
+
+        /**
+         * 
+         */
+        public MyBeanMap(Object bean) {
+            super(bean);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.apache.commons.collections.BeanMap#put(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public Object put(Object name, Object value) throws IllegalArgumentException, ClassCastException {
+
+            if (value instanceof XMLGregorianCalendar) {
+                XMLGregorianCalendar xgc = (XMLGregorianCalendar) value;
+                Date date = new Date(xgc.getMillisecond());
+                value = date;
+            }
+
+            return super.put(name, value);
         }
     }
 
