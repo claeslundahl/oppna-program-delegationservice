@@ -5,9 +5,14 @@
 
 package se.vgregion.delegation.ws;
 
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jws.WebService;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.Delegations;
@@ -56,4 +61,80 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
         return result;
     }
 
+    @Override
+    public Delegations getDelegations(String logicalAddress, String delegatedFor) {
+        System.out.println("getDelegations - delegatedFor = " + delegatedFor);
+        List<Delegation> delegations = delegationService.getDelegations(delegatedFor);
+
+        System.out.println("getDelegations - delegations.size() = " + delegations.size());
+
+        Delegations delegationsReturn = new Delegations();
+        List<se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation> delegationsList =
+                delegationsReturn.getContent();
+
+        for (Delegation delegation : delegations) {
+            delegationsList.add(convertDelegation(delegation));
+        }
+
+        return delegationsReturn;
+    }
+
+    @Override
+    public Delegations getActiveDelegations(String logicalAddress, String parameters) {
+        System.out.println("getActiveDelegations - parameters= " + parameters);
+        return null;
+    }
+
+    @Override
+    public Delegations getDelegation(String logicalAddress, String parameters) {
+        System.out.println("getDelegation - parameters= " + parameters);
+        return null;
+    }
+
+    @Override
+    public Delegations getDelegationsByUnitAndRole(String logicalAddress, String parameters) {
+        System.out.println("getDelegationsByUnitAndRole - parameters= " + parameters);
+        return null;
+    }
+
+    @Override
+    public Delegations getInactiveDelegations(String logicalAddress, String parameters) {
+        System.out.println("getInactiveDelegations - parameters= " + parameters);
+        return null;
+    }
+
+    @Override
+    public Delegations hasDelegation(String logicalAddress, String parameters) {
+        System.out.println("hasDelegation - parameters= " + parameters);
+        return null;
+    }
+
+    private se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation convertDelegation(
+            Delegation delegation) {
+
+        se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation delegationReturn =
+                new se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation();
+
+        delegationReturn.setDelegatedFor(delegation.getDelegatedFor());
+        delegationReturn.setDelegateTo(delegation.getDelegateTo());
+        delegationReturn.setDelegationKey(delegation.getDelegationKey());
+        delegationReturn.setRole(delegation.getRole());
+
+        try {
+            GregorianCalendar validFromCal = new GregorianCalendar();
+            validFromCal.setTime(delegation.getValidFrom());
+            XMLGregorianCalendar validFromDate;
+            validFromDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(validFromCal);
+            GregorianCalendar validToCal = new GregorianCalendar();
+            validToCal.setTime(delegation.getValidFrom());
+            XMLGregorianCalendar validToDate =
+                    DatatypeFactory.newInstance().newXMLGregorianCalendar(validToCal);
+            delegationReturn.setValidFrom(validFromDate);
+            delegationReturn.setValidTo(validToDate);
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        return delegationReturn;
+    }
 }
