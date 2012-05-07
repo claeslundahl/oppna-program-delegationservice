@@ -65,47 +65,45 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
     public Delegations getDelegations(String logicalAddress, String delegatedFor) {
         System.out.println("getDelegations - delegatedFor = " + delegatedFor);
         List<Delegation> delegations = delegationService.getDelegations(delegatedFor);
-
-        System.out.println("getDelegations - delegations.size() = " + delegations.size());
-
-        Delegations delegationsReturn = new Delegations();
-        List<se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation> delegationsList =
-                delegationsReturn.getContent();
-
-        for (Delegation delegation : delegations) {
-            delegationsList.add(convertDelegation(delegation));
-        }
-
-        return delegationsReturn;
+        return parseDelegations(delegations);
     }
 
     @Override
-    public Delegations getActiveDelegations(String logicalAddress, String parameters) {
-        System.out.println("getActiveDelegations - parameters= " + parameters);
-        return null;
+    public Delegations getActiveDelegations(String logicalAddress, String delegatedFor) {
+        System.out.println("getActiveDelegations - parameters= " + delegatedFor);
+        List<Delegation> delegations = delegationService.getActiveDelegations(delegatedFor);
+        return parseDelegations(delegations);
     }
 
     @Override
-    public Delegations getDelegation(String logicalAddress, String parameters) {
-        System.out.println("getDelegation - parameters= " + parameters);
+    public Delegations getDelegation(String logicalAddress, String delegationKey) {
+        System.out.println("getActiveDelegations - delegationKey = " + delegationKey);
+        Delegation delegations = delegationService.getDelegation(Long.getLong(delegationKey));
+        // return parseDelegations(delegations);
         return null;
     }
 
     @Override
     public Delegations getDelegationsByUnitAndRole(String logicalAddress, String parameters) {
         System.out.println("getDelegationsByUnitAndRole - parameters= " + parameters);
+
+        // TODO
         return null;
     }
 
     @Override
-    public Delegations getInactiveDelegations(String logicalAddress, String parameters) {
-        System.out.println("getInactiveDelegations - parameters= " + parameters);
-        return null;
+    public Delegations getInactiveDelegations(String logicalAddress, String delegatedFor) {
+        System.out.println("getInactiveDelegations - parameters= " + delegatedFor);
+        List<Delegation> delegations = delegationService.getInActiveDelegations(delegatedFor);
+        return parseDelegations(delegations);
     }
 
     @Override
-    public Delegations hasDelegation(String logicalAddress, String parameters) {
-        System.out.println("hasDelegation - parameters= " + parameters);
+    public Delegations hasDelegation(String logicalAddress, String delegatedFor) {
+        System.out.println("getActiveDelegations - parameters= " + delegatedFor);
+        boolean hasDelegation = delegationService.hasDelegations(delegatedFor, "", "");
+
+        // TODO
         return null;
     }
 
@@ -136,5 +134,18 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
         }
 
         return delegationReturn;
+    }
+
+    private Delegations parseDelegations(List<Delegation> delegations) {
+        System.out.println("getDelegations - delegations.size() = " + delegations.size());
+
+        Delegations delegationsReturn = new Delegations();
+        List<se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation> delegationsList =
+                delegationsReturn.getContent();
+
+        for (Delegation delegation : delegations) {
+            delegationsList.add(convertDelegation(delegation));
+        }
+        return delegationsReturn;
     }
 }
