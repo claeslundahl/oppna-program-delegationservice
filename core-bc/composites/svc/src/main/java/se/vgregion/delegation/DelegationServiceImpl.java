@@ -53,8 +53,8 @@ public class DelegationServiceImpl implements DelegationService {
     }
 
     @Override
-    public List<Delegation> getDelegationsByRole(String delegatedTo, String role) {
-        return delegationRepository.getDelegationsByRole(delegatedTo, role);
+    public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
+        return delegationRepository.getDelegationsForToRole(delegatedFor, delegatedTo, role);
     }
 
     @Override

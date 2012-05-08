@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 
 import javax.jws.WebService;
 
-import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
-import se.riv.authorization.delegation.savedelegationsresponder.v1.Delegations;
-import se.riv.authorization.delegation.savedelegationsresponder.v1.ForToRoleType;
+import riv.authorization.delegation.delegationservice._1.rivtabp21.DelegationServiceResponderInterface;
+import se.riv.authorization.delegation.delegationserviceresponder.v1.Delegations;
+import se.riv.authorization.delegation.delegationserviceresponder.v1.ForToRoleType;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
@@ -24,28 +24,28 @@ import se.vgregion.delegation.util.DelegationUtil;
  * 
  */
 
-@WebService(serviceName = "SaveDelegationsResponderService", endpointInterface = "se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface", portName = "SaveDelegationsResponderPort", targetNamespace = "urn:riv:authorization:delegation:SaveDelegations:1:rivtabp21", wsdlLocation = "schemas/interactions/SaveDelegationsInteraction/SaveDelegationsInteraction_1.0_RIVTABP21.wsdl")
-public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsResponderInterface {
+@WebService(serviceName = "DelegationServiceResponderService", endpointInterface = "riv.authorization.delegation.delegationservice._1.rivtabp21.DelegationServiceResponderInterface", portName = "DelegationServiceResponderPort", targetNamespace = "urn:riv:authorization:delegation:DelegationService:1:rivtabp21", wsdlLocation = "schemas/interactions/DelegationService/DelegationService_1.0_RIVTABP21.wsdl")
+public class DelegationServiceResponderInterfaceImpl implements DelegationServiceResponderInterface {
 
     DelegationService delegationService;
 
-    public SaveDelegationsResponderInterfaceImpl() {
+    public DelegationServiceResponderInterfaceImpl() {
         super();
     }
 
-    public SaveDelegationsResponderInterfaceImpl(DelegationService delegationService) {
+    public DelegationServiceResponderInterfaceImpl(DelegationService delegationService) {
         super();
         this.delegationService = delegationService;
     }
 
-    private static final Logger LOG = Logger.getLogger(SaveDelegationsResponderInterfaceImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(DelegationServiceResponderInterfaceImpl.class.getName());
 
     /* public SaveDelegationsResponseType saveDelegations(String logicalAddress, DelegationBlock parameters) { //
      * TODO Auto-generated method stub return null; } */
 
     @Override
     public Delegations saveDelegations(String logicalAddress,
-            se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock delegationBlock) {
+            se.riv.authorization.delegation.delegationserviceresponder.v1.DelegationBlock delegationBlock) {
 
         DelegationBlock myDelegationBlock = DelegationBlock.toDelegationBlock(delegationBlock);
 
@@ -53,7 +53,7 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
         Delegations result = new Delegations();
         result.getContent().addAll(
                 DelegationUtil.convert(delegationService.save(myDelegationBlock).getDelegations(),
-                        se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation.class));
+                        se.riv.authorization.delegation.delegationserviceresponder.v1.Delegation.class));
 
         return result;
     }
@@ -89,27 +89,14 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
         return parseDelegations(delegations);
     }
 
-    private se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation convertDelegation(
+    private se.riv.authorization.delegation.delegationserviceresponder.v1.Delegation convertDelegation(
             Delegation delegation) {
         return DelegationUtil.convert(delegation,
-                se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation.class);
-    }
-
-    private Delegations parseDelegations(List<Delegation> delegations) {
-        System.out.println("getDelegations - delegations.size() = " + delegations.size());
-
-        Delegations delegationsReturn = new Delegations();
-        List<se.riv.authorization.delegation.savedelegationsresponder.v1.Delegation> delegationsList = delegationsReturn
-                .getContent();
-
-        for (Delegation delegation : delegations) {
-            delegationsList.add(convertDelegation(delegation));
-        }
-        return delegationsReturn;
+                se.riv.authorization.delegation.delegationserviceresponder.v1.Delegation.class);
     }
 
     @Override
-    public boolean hasDelegation(String arg0, ForToRoleType ftrt) {
+    public boolean hasDelegation(String logicalAddress, ForToRoleType ftrt) {
         System.out.println("getActiveDelegations - parameters= " + ftrt);
         boolean hasDelegation = delegationService.hasDelegations(ftrt.getDelegatedFor(), ftrt.getDelegatedTo(),
                 ftrt.getRole());
@@ -117,10 +104,22 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
     }
 
     @Override
-    public Delegations getDelegationsByUnitAndRole(String arg0, ForToRoleType ftrt) {
-        List<Delegation> delegations = delegationService.getDelegationsByRole(ftrt.getDelegatedTo(),
-                ftrt.getRole());
+    public Delegations getDelegationsByRole(String logicalAddress, ForToRoleType ftrt) {
+        List<Delegation> delegations = delegationService.getDelegationsForToRole(ftrt.getDelegatedFor(),
+                ftrt.getDelegatedTo(), ftrt.getRole());
         return parseDelegations(delegations);
     }
 
+    private Delegations parseDelegations(List<Delegation> delegations) {
+        System.out.println("getDelegations - delegations.size() = " + delegations.size());
+
+        Delegations delegationsReturn = new Delegations();
+        List<se.riv.authorization.delegation.delegationserviceresponder.v1.Delegation> delegationsList = delegationsReturn
+                .getContent();
+
+        for (Delegation delegation : delegations) {
+            delegationsList.add(convertDelegation(delegation));
+        }
+        return delegationsReturn;
+    }
 }

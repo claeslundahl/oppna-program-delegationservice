@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import se.vgregion.delegation.DelegationService;
-import se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl;
+import se.vgregion.delegation.ws.DelegationServiceResponderInterfaceImpl;
 
 public class Server {
 
@@ -60,7 +60,7 @@ public class Server {
         logger.info("RIV TA Basic Profile v2.1 - Ref App, Apache CXF Producer running on Java version {}",
                 System.getProperty("java.version"));
         logger.info("Starting server...");
-        startService(new SaveDelegationsResponderInterfaceImpl(delegationService), address);
+        startService(new DelegationServiceResponderInterfaceImpl(delegationService), address);
         logger.info("Server ready!");
     }
 
