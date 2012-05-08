@@ -82,4 +82,6 @@ public interface DelegationService {
      * @return
      */
     boolean hasDelegations(String delegatedFor, String delegatedTo, String role);
+
+    Delegation findByDelegationKey(Long delegationKey);
 }

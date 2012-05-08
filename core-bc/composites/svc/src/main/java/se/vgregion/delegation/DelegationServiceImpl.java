@@ -17,6 +17,7 @@ import se.vgregion.delegation.domain.DelegationStatus;
 import se.vgregion.delegation.persistence.DelegationBlockRepository;
 import se.vgregion.delegation.persistence.DelegationKeySequenceRepository;
 import se.vgregion.delegation.persistence.DelegationRepository;
+import se.vgregion.delegation.util.DelegationUtil;
 
 /**
  * @author Simon Göransson
@@ -79,7 +80,7 @@ public class DelegationServiceImpl implements DelegationService {
                 if (delegation.getDelegationKey() == null || delegation.getDelegationKey() == 0) {
                     delegation.setDelegationKey(delegationKeySequenceRepository.nextSequenceNumber());
                 } else {
-                    Delegation fresh = Delegation.toDelegation(delegation);
+                    Delegation fresh = DelegationUtil.toDelegation(delegation);
 
                     fresh.setId(null);
 
@@ -123,6 +124,11 @@ public class DelegationServiceImpl implements DelegationService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Delegation findByDelegationKey(Long delegationKey) {
+        return delegationRepository.findByDelegationKey(delegationKey);
     }
 
 }

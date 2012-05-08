@@ -21,7 +21,8 @@ import javax.persistence.TemporalType;
 import org.apache.commons.collections.BeanMap;
 
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
-import se.vgregion.delegation.domain.Delegation.MyBeanMap;
+import se.vgregion.delegation.util.DelegationUtil;
+import se.vgregion.delegation.util.DelegationUtil.MyBeanMap;
 
 /**
  * 
@@ -170,8 +171,8 @@ public class DelegationBlock extends AbstractEntity<Long> implements
         se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock db =
                 (se.riv.authorization.delegation.savedelegationsresponder.v1.DelegationBlock) obj;
 
-        MyBeanMap bm = new MyBeanMap(obj);
-        DelegationBlock result = Delegation.convert(obj, DelegationBlock.class);
+        DelegationUtil.MyBeanMap bm = new DelegationUtil.MyBeanMap(obj);
+        DelegationBlock result = DelegationUtil.convert(obj, DelegationBlock.class);
 
         String d = "delegations";
         if (bm.containsKey(d)) {
@@ -179,7 +180,7 @@ public class DelegationBlock extends AbstractEntity<Long> implements
             if (values instanceof Collection<?>) {
                 Collection<?> collection = (Collection<?>) values;
                 for (Object o : collection) {
-                    result.addDelegation(Delegation.toDelegation(o));
+                    result.addDelegation(DelegationUtil.toDelegation(o));
                 }
             }
         }
