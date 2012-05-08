@@ -19,18 +19,16 @@ import se.vgregion.delegation.persistence.DelegationRepository;
 public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Long> implements
         DelegationRepository {
 
-    private static final String activeConstraint = "d.validTo >=:currentDate"
-            + " and d.validFrom <=:currentDate";
+    private static final String validDateInterval = "d.validTo >=:currentDate" + " and d.validFrom <=:currentDate";
 
-    private static final String statusIsActiveConstraint = "d.status =:delegatedStatus";
+    private static final String delegatedStatusIsActive = "d.status =:delegatedStatus";
 
     @SuppressWarnings("unchecked")
     @Override
     public List<Delegation> getActiveDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + statusIsActiveConstraint
-                        + " and " + activeConstraint;
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive + " and "
+                + validDateInterval;
 
         Query q = entityManager.createQuery(query);
 
@@ -43,10 +41,9 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
     @Override
     public List<Delegation> getInActiveDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + statusIsActiveConstraint
-                        + " and not (" + activeConstraint + ")";
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive + " and not ("
+                + validDateInterval + ")";
 
         Query q = entityManager.createQuery(query);
 
@@ -57,9 +54,8 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
     @Override
     public List<Delegation> getDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + statusIsActiveConstraint;
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive;
 
         Query q = entityManager.createQuery(query);
 
@@ -70,16 +66,16 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
     }
 
     @Override
-    public List<Delegation> getDelegationsByRole(String delegatedTo, String role) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegateTo = :delegateTo" + " and " + statusIsActiveConstraint
-                        + " and d.role =:role and " + activeConstraint;
+    public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegateTo = :delegateTo" + " and d.delegatedFor = :delegatedFor and "
+                + delegatedStatusIsActive + " and d.role =:role ";
 
         Query q = entityManager.createQuery(query);
 
         q.setParameter("delegateTo", delegatedTo);
-        addCurrentDateConstrintAndStatusIsActive(q);
+        q.setParameter("delegatedFor", delegatedFor);
+        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
         q.setParameter("role", role);
 
         return q.getResultList();
@@ -87,8 +83,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
     @Override
     public Delegation getDelegation(Long delegationId) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.id = :delegationId";
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.id = :delegationId";
 
         Query q = entityManager.createQuery(query);
 
@@ -100,11 +95,10 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
     @Override
     public boolean hasDelegations(String delegatedFor, String delegatedTo, String role) {
 
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegateTo = :delegateTo and d.delegatedFor=:delegatedFor"
-                        + " and d.status =:delegatedStatus " + " and d.role =:role and " + activeConstraint
-                        + " and " + statusIsActiveConstraint;
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegateTo = :delegateTo and d.delegatedFor=:delegatedFor"
+                + " and d.status =:delegatedStatus " + " and d.role =:role and " + validDateInterval + " and "
+                + delegatedStatusIsActive;
 
         Query q = entityManager.createQuery(query);
         q.setParameter("delegateTo", delegatedTo);
@@ -125,17 +119,14 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         q.setParameter("currentDate", getCurrentDate());
     }
 
-    /*
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * 
-     * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long)
-     */
+     * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long) */
     @Override
     public Delegation findByDelegationKey(Long delegationKey) {
 
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegationKey = :delegationKey" + " and d.status =:delegatedStatus ";
+        String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                + "WHERE d.delegationKey = :delegationKey" + " and d.status =:delegatedStatus ";
 
         Query q = entityManager.createQuery(query);
 

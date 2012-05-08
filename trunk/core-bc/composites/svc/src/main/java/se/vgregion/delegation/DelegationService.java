@@ -39,16 +39,14 @@ public interface DelegationService {
     List<Delegation> getDelegations(String delegatedFor);
 
     /**
-     * Fetch delegations for delegatedTo and
+     * Finds active delegations that matches the criteria in provided parameters.
      * 
+     * @param delegatedFor
      * @param delegatedTo
-     *            - Id
      * @param role
-     *            - role
-     * 
-     * @return - the inactive delegation
+     * @return
      */
-    List<Delegation> getDelegationsByRole(String delegatedTo, String role);
+    List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role);
 
     /**
      * Fetches a delegation by it's id.

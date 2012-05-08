@@ -18,7 +18,7 @@ public interface DelegationRepository extends Repository<Delegation, Long> {
 
     List<Delegation> getDelegations(String delegatedFor);
 
-    List<Delegation> getDelegationsByRole(String delegatedTo, String role);
+    List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role);
 
     Delegation getDelegation(Long delegationId);
 
