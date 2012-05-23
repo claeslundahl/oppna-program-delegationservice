@@ -60,13 +60,17 @@ Generation time : 2011-10-07 13:31:17 CEST
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxws</artifactId>
-      <version>${apache.cxf.version}</version>
+      <version>${cxf.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>${apache.cxf.version}</version>
+      <version>${cxf.version}</version>
     </dependency>
   </dependencies>
+  
+    <properties>
+    <cxf.version>2.4.1</cxf.version>
+  </properties>
   
 </project>

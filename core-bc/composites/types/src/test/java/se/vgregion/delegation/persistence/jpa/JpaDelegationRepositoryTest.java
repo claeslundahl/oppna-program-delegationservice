@@ -56,7 +56,7 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
     @Test
     public void getDelegationsForToRole() {
         List<Delegation> delegation = delegationRepository.getDelegationsForToRole("df", "dt", "role");
-        assertEquals(1, delegation.size());
+        assertEquals(2, delegation.size());
     }
 
     @Test

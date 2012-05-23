@@ -18,8 +18,8 @@ import se.vgregion.delegation.domain.DelegationStatus;
 import se.vgregion.delegation.persistence.DelegationKeySequenceRepository;
 import se.vgregion.delegation.persistence.DelegationRepository;
 
-@ContextConfiguration({ "classpath:jpa-delegation-service-configuration.xml",
-        "classpath:JpaRepositoryTest-context.xml", "classpath:test-delegation-service-configuration.xml" })
+@ContextConfiguration({"classpath:jpa-delegation-service-configuration.xml",
+        "classpath:JpaRepositoryTest-context.xml", "classpath:test-delegation-service-configuration.xml"})
 public class DelegationServiceImplIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired(required = false)
@@ -37,7 +37,7 @@ public class DelegationServiceImplIntegrationTest extends AbstractTransactionalJ
     }
 
     @Test
-    // @Ignore
+    @Ignore
     public void save() {
         DelegationBlock db = new DelegationBlock();
         db.setApprovedOn(new Date());

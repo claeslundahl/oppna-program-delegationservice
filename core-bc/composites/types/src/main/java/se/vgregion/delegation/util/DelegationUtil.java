@@ -15,11 +15,16 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.collections.BeanMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.vgregion.delegation.domain.Delegation;
+import se.vgregion.delegation.domain.DelegationBlock;
 import se.vgregion.delegation.domain.DelegationStatus;
 
 public class DelegationUtil {
+
+    static private final Logger logger = LoggerFactory.getLogger(DelegationUtil.class);
 
     public static class MyBeanMap extends BeanMap {
 
@@ -30,9 +35,11 @@ public class DelegationUtil {
             super(bean);
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
          * 
-         * @see org.apache.commons.collections.BeanMap#put(java.lang.Object, java.lang.Object) */
+         * @see org.apache.commons.collections.BeanMap#put(java.lang.Object, java.lang.Object)
+         */
         @Override
         public Object put(Object name, Object value) throws IllegalArgumentException, ClassCastException {
             Class<?> targetType = getType(name.toString());
@@ -45,8 +52,8 @@ public class DelegationUtil {
                 GregorianCalendar dateValue = new GregorianCalendar();
                 dateValue.setTime((Date) value);
                 try {
-                    XMLGregorianCalendar xmlValue = DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                            dateValue);
+                    XMLGregorianCalendar xmlValue =
+                            DatatypeFactory.newInstance().newXMLGregorianCalendar(dateValue);
                     value = xmlValue;
                 } catch (DatatypeConfigurationException e) {
                     throw new RuntimeException(e);
@@ -92,12 +99,13 @@ public class DelegationUtil {
                 value = sourceMap.get(key);
                 target.put(key, value);
             } catch (Exception e) {
-                System.out.println("Key '" + key + "' failed value '" + value + "'.");
+                logger.warn("Key '" + key + "' failed value '" + value + "'.");
             }
         }
     }
 
     public static Delegation toDelegation(Object obj) {
+
         return convert(obj, Delegation.class);
     }
 
@@ -138,17 +146,34 @@ public class DelegationUtil {
         def.delete(def.length() - 2, def.length());
         val.delete(val.length() - 2, val.length());
 
-        System.out.println(def + ") " + val + ");");
+        // System.out.println(def + ") " + val + ");");
     }
 
     private static String format(Object o) {
         if (o instanceof Date) {
             Date d = (Date) o;
-            // 2011-09-01 10:00:00.0
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
             return sdf.format(d);
         }
         return o + "";
+    }
+
+    public static DelegationBlock toDelegationBlock(Object obj) {
+        DelegationUtil.MyBeanMap bm = new DelegationUtil.MyBeanMap(obj);
+        DelegationBlock result = DelegationUtil.convert(obj, DelegationBlock.class);
+
+        String d = "delegations";
+        if (bm.containsKey(d)) {
+            Object values = bm.get(d);
+            if (values instanceof Collection<?>) {
+                Collection<?> collection = (Collection<?>) values;
+                for (Object o : collection) {
+                    result.addDelegation(DelegationUtil.toDelegation(o));
+                }
+            }
+        }
+
+        return result;
     }
 
 }
