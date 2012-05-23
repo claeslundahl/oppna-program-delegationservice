@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import se.vgregion.delegation.util.DelegationUtil;
+
 public class DelegationBlockTest {
 
     @Before
@@ -17,7 +19,7 @@ public class DelegationBlockTest {
     public void toDelegationBlock() {
         DelegationBlock obj = new DelegationBlock();
         obj.setId(100L);
-        DelegationBlock result = DelegationBlock.toDelegationBlock(obj);
+        DelegationBlock result = DelegationUtil.toDelegationBlock(obj);
 
         Assert.assertEquals(obj, result);
     }

@@ -1,7 +1,6 @@
 package se.vgregion.delegation.domain;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +20,6 @@ import javax.persistence.TemporalType;
 import org.apache.commons.collections.BeanMap;
 
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
-import se.vgregion.delegation.util.DelegationUtil;
 
 /**
  * 
@@ -75,7 +73,8 @@ public class DelegationBlock extends AbstractEntity<Long> implements
      */
     public void removeDelegation(Delegation delegation) {
         DelegationBlock oldDelegation = delegation.getDelegationBlock();
-        if (oldDelegation != null && oldDelegation != this && oldDelegation.getDelegations().contains(delegation)) {
+        if (oldDelegation != null && oldDelegation != this
+                && oldDelegation.getDelegations().contains(delegation)) {
             oldDelegation.removeDelegation(delegation);
         }
         delegation.setDelegationBlock(null);
@@ -162,27 +161,6 @@ public class DelegationBlock extends AbstractEntity<Long> implements
             return sdf.format(d);
         }
         return o + "";
-    }
-
-    public static DelegationBlock toDelegationBlock(Object obj) {
-
-        se.riv.authorization.delegation.delegationserviceresponder.v1.DelegationBlock db = (se.riv.authorization.delegation.delegationserviceresponder.v1.DelegationBlock) obj;
-
-        DelegationUtil.MyBeanMap bm = new DelegationUtil.MyBeanMap(obj);
-        DelegationBlock result = DelegationUtil.convert(obj, DelegationBlock.class);
-
-        String d = "delegations";
-        if (bm.containsKey(d)) {
-            Object values = bm.get(d);
-            if (values instanceof Collection<?>) {
-                Collection<?> collection = (Collection<?>) values;
-                for (Object o : collection) {
-                    result.addDelegation(DelegationUtil.toDelegation(o));
-                }
-            }
-        }
-
-        return result;
     }
 
 }

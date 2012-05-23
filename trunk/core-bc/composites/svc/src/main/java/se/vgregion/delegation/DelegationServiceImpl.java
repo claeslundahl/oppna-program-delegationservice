@@ -75,8 +75,6 @@ public class DelegationServiceImpl implements DelegationService {
 
                 delegation.setStatus(DelegationStatus.ACTIVE);
 
-                System.out.println("delegation.getDelegationKey() = " + delegation.getDelegationKey());
-
                 if (delegation.getDelegationKey() == null || delegation.getDelegationKey() == 0) {
                     delegation.setDelegationKey(delegationKeySequenceRepository.nextSequenceNumber());
                 } else {
@@ -95,7 +93,6 @@ public class DelegationServiceImpl implements DelegationService {
                 if (stored != null) {
                     stored.setStatus(DelegationStatus.DELETED);
                     delegationRepository.merge(stored);
-                    System.out.println("changing status on delegation " + stored.getDelegationKey());
                 }
             }
 

@@ -51,6 +51,10 @@ public class Delegation extends AbstractEntity<Long> implements
     @Enumerated(EnumType.STRING)
     private DelegationStatus status;
 
+    private String information;
+
+    private String delegatedForEmail;
+
     public String getRole() {
         return role;
     }
@@ -137,6 +141,22 @@ public class Delegation extends AbstractEntity<Long> implements
 
     public void setStatus(DelegationStatus status) {
         this.status = status;
+    }
+
+    public String getInformation() {
+        return information;
+    }
+
+    public void setInformation(String information) {
+        this.information = information;
+    }
+
+    public String getDelegatedForEmail() {
+        return delegatedForEmail;
+    }
+
+    public void setDelegatedForEmail(String delegatedForEmail) {
+        this.delegatedForEmail = delegatedForEmail;
     }
 
 }

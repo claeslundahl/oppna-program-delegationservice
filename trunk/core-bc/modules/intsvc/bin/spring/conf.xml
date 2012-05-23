@@ -8,11 +8,11 @@
                 http://www.springframework.org/schema/tx
                 http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-  <context:annotation-config />
+   <context:annotation-config />
   <tx:annotation-driven />
-
+  
   <context:component-scan base-package="se.vgregion.delegation.persistence.jpa" />
-
+  
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName" value="${datasource.connector.direct.driverClassName}" />
@@ -45,12 +45,16 @@
     <property name="showSql" value="${hibernate.database.showsql}" />
   </bean>
 
+
+
+<!--   <import resource="classpath:jpa-delegation-service-configuration.xml" /> -->
+  
   <import resource="classpath:spring/JpaRepository-context.xml" />
 
   <bean id="hibernateJpaVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-    <property name="generateDdl" value="${hibernate.vendor.generateDdl}" />
-    <property name="databasePlatform" value="${hibernate.vendor.databasePlatform}" />
-    <property name="database" value="${hibernate.vendor.database}" />
+    <property name="generateDdl" value="${hibernate.vendor.generateDdl}"/>
+    <property name="databasePlatform" value="${hibernate.vendor.databasePlatform}"/>
+    <property name="database" value="${hibernate.vendor.database}"/>
   </bean>
 
   <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
@@ -60,22 +64,15 @@
       </list>
     </property>
     <property name="persistenceUnitPostProcessors">
-      <bean class="se.vgregion.dao.infrastructure.persistence.jpa.MergingPersistenceUnitPostProcessor" />
+      <bean class="se.vgregion.dao.infrastructure.persistence.jpa.MergingPersistenceUnitPostProcessor"/>
     </property>
-    <property name="defaultDataSource" ref="dataSource" />
+    <property name="defaultDataSource" ref="dataSource"/>
   </bean>
 
   <bean id="delegationBlockRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationBlockRepository" />
   <bean id="delegationRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationRepository" />
   <bean id="delegationKeySequenceRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationKeySequenceRepository" />
-
+  
   <bean id="delegationService" class="se.vgregion.delegation.DelegationServiceImpl" />
-
-  <bean id="ticketManager" class="se.vgregion.ticket.TicketManager" factory-method="getInstance" />
-
-  <bean id="serviceIdService" class="se.vgregion.web.security.services.ServiceIdServiceImpl">
-    <constructor-arg index="0" value="${user.home}/.delegation-service/service-ids.properties" />
-    <constructor-arg index="1" value="60000" />
-  </bean>
 
 </beans>
