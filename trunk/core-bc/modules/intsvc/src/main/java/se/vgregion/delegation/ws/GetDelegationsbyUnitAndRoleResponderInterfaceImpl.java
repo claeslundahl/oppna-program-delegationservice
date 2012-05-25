@@ -12,6 +12,7 @@ import javax.jws.WebService;
 import se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleResponseType;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleType;
+import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
@@ -53,6 +54,16 @@ public class GetDelegationsbyUnitAndRoleResponderInterfaceImpl implements
         getDelegationsbyUnitAndRoleResponseType.setDelegations(DelegationServiceUtil
                 .parseDelegations(delegationService.getDelegationsForToRole(parameters.getDelegatedFor(),
                         parameters.getDelegatedTo(), parameters.getRole())));
+
+        if (getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() > 0) {
+            getDelegationsbyUnitAndRoleResponseType.setResultCode(ResultCodeEnum.OK);
+        } else {
+            getDelegationsbyUnitAndRoleResponseType.setResultCode(ResultCodeEnum.INFO);
+            getDelegationsbyUnitAndRoleResponseType
+                    .setComment("No delegations found for parameters, delegationFor: "
+                            + parameters.getDelegatedFor() + " delegationTo: " + parameters.getDelegatedTo()
+                            + " role: " + parameters.getRole());
+        }
 
         return getDelegationsbyUnitAndRoleResponseType;
     }

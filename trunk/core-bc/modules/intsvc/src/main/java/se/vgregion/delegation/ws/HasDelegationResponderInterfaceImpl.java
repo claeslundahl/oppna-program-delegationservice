@@ -5,13 +5,15 @@
 
 package se.vgregion.delegation.ws;
 
-import java.util.logging.Logger;
-
 import javax.jws.WebService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationResponseType;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationType;
+import se.riv.authorization.delegation.hasdelegationresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 
 /**
@@ -38,17 +40,25 @@ public class HasDelegationResponderInterfaceImpl implements HasDelegationRespond
         this.delegationService = delegationService;
     }
 
-    private static final Logger LOG = Logger.getLogger(HasDelegationResponderInterfaceImpl.class.getName());
+    static private final Logger logger = LoggerFactory.getLogger(HasDelegationResponderInterfaceImpl.class);
 
     @Override
     public HasDelegationResponseType hasDelegation(String logicalAddress, HasDelegationType parameters) {
 
-        boolean result =
-                delegationService.hasDelegations(parameters.getDelegatedFor(), parameters.getDelegatedTo(),
-                        parameters.getRole());
-
         HasDelegationResponseType hasDelegationResponseType = new HasDelegationResponseType();
-        hasDelegationResponseType.setResult(result);
+
+        try {
+            boolean result =
+                    delegationService.hasDelegations(parameters.getDelegatedFor(),
+                            parameters.getDelegatedTo(), parameters.getRole());
+
+            hasDelegationResponseType.setResult(result);
+            hasDelegationResponseType.setResultCode(ResultCodeEnum.OK);
+        } catch (Exception e) {
+            hasDelegationResponseType.setResultCode(ResultCodeEnum.ERROR);
+            hasDelegationResponseType.setComment(e.getMessage());
+            logger.error("Error: " + e.getStackTrace());
+        }
 
         return hasDelegationResponseType;
     }

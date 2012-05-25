@@ -12,6 +12,7 @@ import javax.jws.WebService;
 import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsResponseType;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsType;
+import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
@@ -50,6 +51,13 @@ public class GetInactiveDelegationsResponderInterfaceImpl implements GetInactive
 
         result.setDelegations(DelegationServiceUtil.parseDelegations(delegationService
                 .getInActiveDelegations(parameters.getDelegationFor())));
+
+        if (result.getDelegations().getContent().size() > 0) {
+            result.setResultCode(ResultCodeEnum.OK);
+        } else {
+            result.setResultCode(ResultCodeEnum.INFO);
+            result.setComment("No delegations found for this delegationFor: " + parameters.getDelegationFor());
+        }
 
         return result;
     }

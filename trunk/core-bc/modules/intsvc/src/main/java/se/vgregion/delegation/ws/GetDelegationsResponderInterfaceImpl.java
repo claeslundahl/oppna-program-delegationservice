@@ -12,6 +12,7 @@ import javax.jws.WebService;
 import se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface;
 import se.riv.authorization.delegation.getdelegationsresponder.v1.GetDelegationsResponseType;
 import se.riv.authorization.delegation.getdelegationsresponder.v1.GetDelegationsType;
+import se.riv.authorization.delegation.getdelegationsresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
@@ -47,6 +48,13 @@ public class GetDelegationsResponderInterfaceImpl implements GetDelegationsRespo
 
         gdrt.setDelegations(DelegationServiceUtil.parseDelegations(delegationService
                 .getDelegations(parameters.getDelegationFor())));
+
+        if (gdrt.getDelegations().getContent().size() > 0) {
+            gdrt.setResultCode(ResultCodeEnum.OK);
+        } else {
+            gdrt.setResultCode(ResultCodeEnum.INFO);
+            gdrt.setComment("No delegations found for this delegationFor: " + parameters.getDelegationFor());
+        }
 
         return gdrt;
     }
