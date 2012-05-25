@@ -26,4 +26,6 @@ public interface DelegationRepository extends Repository<Delegation, Long> {
 
     Delegation findByDelegationKey(Long id);
 
+    boolean removeDelegation(Long delegationKey);
+
 }

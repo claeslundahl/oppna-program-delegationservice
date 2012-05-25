@@ -82,4 +82,12 @@ public interface DelegationService {
     boolean hasDelegations(String delegatedFor, String delegatedTo, String role);
 
     Delegation findByDelegationKey(Long delegationKey);
+
+    /**
+     * Removes a delegation by it´s key.
+     * 
+     * @param delegationKey
+     * @return
+     */
+    boolean removeDelegation(Long delegationKey);
 }
