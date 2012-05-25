@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
+import se.riv.authorization.delegation.savedelegationsresponder.v1.ResultCodeEnum;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsResponseType;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
 import se.vgregion.delegation.DelegationService;
@@ -53,6 +54,7 @@ public class SaveDelegationsResponderInterfaceImpl implements SaveDelegationsRes
         DelegationBlock block = DelegationUtil.toDelegationBlock(parameters.getDelegationBlockType());
         DelegationBlock savedBlock = delegationService.save(block);
         result.setDelegations(DelegationServiceUtil.parseDelegations(savedBlock.getDelegations()));
+        result.setResultCode(ResultCodeEnum.OK);
 
         return result;
 

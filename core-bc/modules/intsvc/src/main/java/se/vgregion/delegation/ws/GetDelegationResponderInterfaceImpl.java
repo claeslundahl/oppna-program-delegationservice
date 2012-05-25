@@ -48,6 +48,7 @@ public class GetDelegationResponderInterfaceImpl implements GetDelegationRespond
         try {
             delegationResponseType.setDelegation(DelegationServiceUtil.convertDelegation(delegationService
                     .findByDelegationKey(Long.parseLong(parameters.getDelegationKey()))));
+            delegationResponseType.setResultCode(ResultCodeEnum.OK);
         } catch (NoResultException e) {
             delegationResponseType.setResultCode(ResultCodeEnum.ERROR);
             delegationResponseType.setComment("No delegation found for delegationKey = "

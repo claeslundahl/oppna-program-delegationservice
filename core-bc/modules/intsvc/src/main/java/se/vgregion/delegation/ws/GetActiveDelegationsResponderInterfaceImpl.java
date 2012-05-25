@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsResponseType;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsType;
+import se.riv.authorization.delegation.getactivedelegationsresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
@@ -52,6 +53,14 @@ public class GetActiveDelegationsResponderInterfaceImpl implements GetActiveDele
 
         activeDelegationsResponseType.setDelegations(DelegationServiceUtil.parseDelegations(delegationService
                 .getActiveDelegations(parameters.getDelegationFor())));
+
+        if (activeDelegationsResponseType.getDelegations().getContent().size() > 0) {
+            activeDelegationsResponseType.setResultCode(ResultCodeEnum.OK);
+        } else {
+            activeDelegationsResponseType.setResultCode(ResultCodeEnum.INFO);
+            activeDelegationsResponseType.setComment("No delegations found for this delegationFor: "
+                    + parameters.getDelegationFor());
+        }
 
         return activeDelegationsResponseType;
 
