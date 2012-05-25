@@ -71,11 +71,4 @@
 
   <bean id="delegationService" class="se.vgregion.delegation.DelegationServiceImpl" />
 
-  <bean id="ticketManager" class="se.vgregion.ticket.TicketManager" factory-method="getInstance" />
-
-  <bean id="serviceIdService" class="se.vgregion.web.security.services.ServiceIdServiceImpl">
-    <constructor-arg index="0" value="${user.home}/.delegation-service/service-ids.properties" />
-    <constructor-arg index="1" value="60000" />
-  </bean>
-
 </beans>
