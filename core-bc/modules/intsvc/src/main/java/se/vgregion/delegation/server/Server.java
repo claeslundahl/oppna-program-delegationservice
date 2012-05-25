@@ -47,7 +47,6 @@ import se.vgregion.delegation.ws.GetInactiveDelegationsResponderInterfaceImpl;
 import se.vgregion.delegation.ws.HasDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.RemoveDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl;
-import se.vgregion.ticket.TicketManager;
 
 public class Server {
 
@@ -86,7 +85,6 @@ public class Server {
 
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
         DelegationService delegationService = (DelegationService) ctx.getBean("delegationService");
-        TicketManager ticketManager = (TicketManager) ctx.getBean("ticketManager");
 
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j
         System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
@@ -119,8 +117,7 @@ public class Server {
                 System.getProperty("java.version"));
         logger.info("Starting server...");
 
-        startService(new GetActiveDelegationsResponderInterfaceImpl(delegationService, ticketManager),
-                address2);
+        startService(new GetActiveDelegationsResponderInterfaceImpl(delegationService), address2);
         startService(new GetDelegationResponderInterfaceImpl(delegationService), address3);
         startService(new GetInactiveDelegationsResponderInterfaceImpl(delegationService), address4);
         startService(new GetDelegationsbyUnitAndRoleResponderInterfaceImpl(delegationService), address5);

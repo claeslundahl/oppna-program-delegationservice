@@ -30,7 +30,7 @@
   <context:annotation-config/>
   <context:component-scan base-package="se.vgregion.delegation.persistence.jpa" />
 
-  <context:property-placeholder location="file:${user.home}/.delegation-service/config.properties ,classpath:config.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
+  <context:property-placeholder location="classpath:config.properties, file:${user.home}/.delegation-service/config.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
 
   <bean id="delegationBlockRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationBlockRepository"/>
   <bean id="delegationRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationRepository"/>
