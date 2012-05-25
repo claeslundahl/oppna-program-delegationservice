@@ -71,7 +71,7 @@ public class Server {
             logger.error("Host namne = " + e.getStackTrace());
         }
 
-        server.startServer(path, hostname, "24003", true);
+        server.startServer(path, hostname, "24003", false);
     }
 
     public void startServer(String path, String hostname, String port, boolean https) {
