@@ -6,6 +6,7 @@
 package se.vgregion.delegation.ws;
 
 import javax.jws.WebService;
+import javax.persistence.NoResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationResponseType;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationType;
+import se.riv.authorization.delegation.getdelegationresponder.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
@@ -43,8 +45,14 @@ public class GetDelegationResponderInterfaceImpl implements GetDelegationRespond
 
         GetDelegationResponseType delegationResponseType = new GetDelegationResponseType();
 
-        delegationResponseType.setDelegation(DelegationServiceUtil.convertDelegation(delegationService
-                .findByDelegationKey(Long.parseLong(parameters.getDelegationKey()))));
+        try {
+            delegationResponseType.setDelegation(DelegationServiceUtil.convertDelegation(delegationService
+                    .findByDelegationKey(Long.parseLong(parameters.getDelegationKey()))));
+        } catch (NoResultException e) {
+            delegationResponseType.setResultCode(ResultCodeEnum.ERROR);
+            delegationResponseType.setComment("No delegation found for delegationKey = "
+                    + parameters.getDelegationKey());
+        }
 
         return delegationResponseType;
 

@@ -44,8 +44,8 @@ import se.vgregion.delegation.ws.GetDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.GetDelegationsResponderInterfaceImpl;
 import se.vgregion.delegation.ws.GetDelegationsbyUnitAndRoleResponderInterfaceImpl;
 import se.vgregion.delegation.ws.GetInactiveDelegationsResponderInterfaceImpl;
-import se.vgregion.delegation.ws.GetTicketResponderInterfaceImpl;
 import se.vgregion.delegation.ws.HasDelegationResponderInterfaceImpl;
+import se.vgregion.delegation.ws.RemoveDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl;
 import se.vgregion.ticket.TicketManager;
 
@@ -61,10 +61,20 @@ public class Server {
 
         Server server = new Server();
         String path = "classpath:/spring/conf.xml";
-        server.startServer(path);
+
+        String hostname = "localhost";
+
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+            logger.info("Host namne = " + hostname);
+        } catch (UnknownHostException e) {
+            logger.error("Host namne = " + e.getStackTrace());
+        }
+
+        server.startServer(path, hostname, "24003", true);
     }
 
-    public void startServer(String path) {
+    public void startServer(String path, String hostname, String port, boolean https) {
 
         endpoints = new ArrayList<Endpoint>();
 
@@ -81,39 +91,34 @@ public class Server {
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j
         System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
 
-        try {
-            setupServerEngineFactory();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
+        String http = "http";
+
+        // Setups SSL and Certificates.
+        if (https) {
+            try {
+                http = "https";
+                setupServerEngineFactory(Integer.parseInt(port));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
         }
 
-        String hostname = "localhost";
-        String port = "24003";
-
-        try {
-            hostname = InetAddress.getLocalHost().getHostName();
-            logger.info("Host namne = " + hostname);
-        } catch (UnknownHostException e) {
-            logger.error("Host namne = " + e.getStackTrace());
-        }
-
-        String address1 = "https://" + hostname + ":" + port + "/getticket";
-        String address2 = "https://" + hostname + ":" + port + "/getactivedelegations";
-        String address3 = "https://" + hostname + ":" + port + "/getdelegation";
-        String address4 = "https://" + hostname + ":" + port + "/getinactivedelegations";
-        String address5 = "https://" + hostname + ":" + port + "/getdelegationsbyunitandrole";
-        String address6 = "https://" + hostname + ":" + port + "/getdelegations";
-        String address7 = "https://" + hostname + ":" + port + "/hasdelegation";
-        String address8 = "https://" + hostname + ":" + port + "/savedelegations";
+        String address2 = http + "://" + hostname + ":" + port + "/getactivedelegations";
+        String address3 = http + "://" + hostname + ":" + port + "/getdelegation";
+        String address4 = http + "://" + hostname + ":" + port + "/getinactivedelegations";
+        String address5 = http + "://" + hostname + ":" + port + "/getdelegationsbyunitandrole";
+        String address6 = http + "://" + hostname + ":" + port + "/getdelegations";
+        String address7 = http + "://" + hostname + ":" + port + "/hasdelegation";
+        String address8 = http + "://" + hostname + ":" + port + "/savedelegations";
+        String address9 = http + "://" + hostname + ":" + port + "/removedelegation";
 
         logger.info(
                 "RIV TA Basic Profile v2.1 - Delegation Service , Apache CXF Producer running on Java version {}",
                 System.getProperty("java.version"));
         logger.info("Starting server...");
 
-        startService(new GetTicketResponderInterfaceImpl(ticketManager), address1);
         startService(new GetActiveDelegationsResponderInterfaceImpl(delegationService, ticketManager),
                 address2);
         startService(new GetDelegationResponderInterfaceImpl(delegationService), address3);
@@ -121,27 +126,10 @@ public class Server {
         startService(new GetDelegationsbyUnitAndRoleResponderInterfaceImpl(delegationService), address5);
         startService(new GetDelegationsResponderInterfaceImpl(delegationService), address6);
         startService(new HasDelegationResponderInterfaceImpl(delegationService), address7);
-        startService(new SaveDelegationsResponderInterfaceImpl(delegationService, ticketManager), address8);
+        startService(new SaveDelegationsResponderInterfaceImpl(delegationService), address8);
+        startService(new RemoveDelegationResponderInterfaceImpl(delegationService), address9);
 
         logger.info("Server ready!");
-    }
-
-    private void setupServerEngineFactory() throws IOException, GeneralSecurityException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        InputStream resourceAsStream = getClass().getResourceAsStream("/server/serverkeystore.jks");
-        keyStore.load(resourceAsStream, "changeit".toCharArray());
-        keyManagerFactory.init(keyStore, "changeit".toCharArray());
-
-        JettyHTTPServerEngineFactory engineFactory = new JettyHTTPServerEngineFactory();
-        TLSServerParameters tlsParams = new TLSServerParameters();
-
-        ClientAuthentication clientAuth = new ClientAuthentication();
-        clientAuth.setRequired(false);
-        clientAuth.setWant(false);
-        tlsParams.setClientAuthentication(clientAuth);
-        tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
-        engineFactory.setTLSServerParametersForPort(24003, tlsParams);
     }
 
     static private void startService(Object serviceImpl, String address) {
@@ -159,26 +147,22 @@ public class Server {
         logger.info("Server shutdown!");
     }
 
-    // Https
+    private void setupServerEngineFactory(int port) throws IOException, GeneralSecurityException {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        InputStream resourceAsStream = getClass().getResourceAsStream("/server/star_vgregion_cert.pfx");
+        keyStore.load(resourceAsStream, "*.vgregion.se*7541".toCharArray());
+        keyManagerFactory.init(keyStore, "*.vgregion.se*7541".toCharArray());
 
-    // public void startService(Object someWebService, String address) {
-    //
-    // ServerFactoryBean serverFactoryBean = new ServerFactoryBean();
-    // serverFactoryBean.setServiceClass(someWebService.getClass());
-    // serverFactoryBean.setAddress(address);
-    // serverFactoryBean.setServiceBean(someWebService);
-    //
-    // ReflectionServiceFactory serviceFactory = new ReflectionServiceFactory();
-    // serviceFactory.setServiceClass(someWebService.getClass());
-    //
-    // server = serverFactoryBean.create();
-    // }
+        JettyHTTPServerEngineFactory engineFactory = new JettyHTTPServerEngineFactory();
+        TLSServerParameters tlsParams = new TLSServerParameters();
 
-    //
-    // public void stopServer() {
-    // if (server != null) {
-    // server.stop();
-    // }
-    // }
+        ClientAuthentication clientAuth = new ClientAuthentication();
+        clientAuth.setRequired(false);
+        clientAuth.setWant(false);
+        tlsParams.setClientAuthentication(clientAuth);
+        tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
+        engineFactory.setTLSServerParametersForPort(port, tlsParams);
+    }
 
 }
