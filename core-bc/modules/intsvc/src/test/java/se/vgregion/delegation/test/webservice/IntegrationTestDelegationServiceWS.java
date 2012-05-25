@@ -3,32 +3,16 @@ package se.vgregion.delegation.test.webservice;
 /**
  * 
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.net.ssl.TrustManagerFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientFactoryBean;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.frontend.ClientProxyFactoryBean;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
-import org.apache.cxf.transport.http.HTTPConduit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,14 +37,13 @@ import se.riv.authorization.delegation.getdelegationsresponder.v1.GetDelegations
 import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsResponseType;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsType;
-import se.riv.authorization.delegation.getticket.v1.rivtabp21.GetTicketResponderInterface;
-import se.riv.authorization.delegation.getticketresponder.v1.GetTicketResponseType;
-import se.riv.authorization.delegation.getticketresponder.v1.GetTicketType;
 import se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationResponseType;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationType;
+import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
+import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationResponseType;
+import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationType;
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
-import se.riv.authorization.delegation.savedelegationsresponder.v1.ResultCodeEnum;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsResponseType;
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
 import se.riv.authorization.delegation.v1.DelegationBlockType;
@@ -74,7 +57,6 @@ import se.vgregion.delegation.server.Server;
 public class IntegrationTestDelegationServiceWS {
     static private final Logger logger = LoggerFactory.getLogger(IntegrationTestDelegationServiceWS.class);
 
-    GetTicketResponderInterface getTicketResponderInterface;
     GetActiveDelegationsResponderInterface activeDelegationsResponderInterface;
     GetDelegationResponderInterface getDelegationResponderInterface;
     GetInactiveDelegationsResponderInterface inactiveDelegationsResponderInterface;
@@ -82,6 +64,8 @@ public class IntegrationTestDelegationServiceWS {
     GetDelegationsResponderInterface getDelegationsResponderInterface;
     HasDelegationResponderInterface hasDelegationResponderInterface;
     SaveDelegationsResponderInterface saveDelegationsResponderInterface;
+    RemoveDelegationResponderInterface removeDelegationResponderInterface;
+
     Server server;
 
     @Before
@@ -90,7 +74,7 @@ public class IntegrationTestDelegationServiceWS {
         // Server
         server = new Server();
         String serverPath = "classpath:/spring/serverConf.xml";
-        server.startServer(serverPath);
+        server.startServer(serverPath, "localhost", "24004", true);
 
         logger.info("Server Ready !!!! ");
 
@@ -98,8 +82,6 @@ public class IntegrationTestDelegationServiceWS {
         String clientPath = "classpath:/spring/clientConf.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(clientPath);
 
-        getTicketResponderInterface =
-                (GetTicketResponderInterface) context.getBean("getTicketResponderInterface");
         activeDelegationsResponderInterface =
                 (GetActiveDelegationsResponderInterface) context
                         .getBean("activeDelegationsResponderInterface");
@@ -117,6 +99,8 @@ public class IntegrationTestDelegationServiceWS {
                 (HasDelegationResponderInterface) context.getBean("hasDelegationResponderInterface");
         saveDelegationsResponderInterface =
                 (SaveDelegationsResponderInterface) context.getBean("saveDelegationsResponderInterface");
+        removeDelegationResponderInterface =
+                (RemoveDelegationResponderInterface) context.getBean("removeDelegationResponderInterface");
 
         logger.info("Client Ready !!!! ");
     }
@@ -127,39 +111,11 @@ public class IntegrationTestDelegationServiceWS {
     }
 
     @Test
-    public void testGetTicketResponderInterface() {
-
-        Assert.assertTrue(getTicket() != null);
-
-    }
-
-    @Test
     public void testSaveDelegationResponderInterface() {
 
         long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
         Assert.assertTrue(responsedelegationKey == 1);
-
-    }
-
-    @Test
-    public void testInvalidTicket() {
-
-        SaveDelegationsType parameters = new SaveDelegationsType();
-
-        parameters
-                .setTicket("2012-05-23T11:51:42+0200_ACwCFEFwPR86LQM1sCAoLdfZ+RuTb3G7AhRe5BgE0Zd9xsOkXfC3G9RspOrYXg==");
-
-        DelegationBlockType block = new DelegationBlockType();
-        List<DelegationType> list = block.getDelegations();
-        DelegationType delegationType = new DelegationType();
-        list.add(delegationType);
-        parameters.setDelegationBlockType(block);
-
-        SaveDelegationsResponseType delegationsResponseType =
-                saveDelegationsResponderInterface.saveDelegations("", parameters);
-
-        Assert.assertTrue(delegationsResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
 
     }
 
@@ -264,10 +220,46 @@ public class IntegrationTestDelegationServiceWS {
         Assert.assertTrue(hasDelegationResponseType.isResult());
     }
 
+    @Test
+    public void testRemoveDelegationResponderInterface() {
+
+        long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("" + delegationKey);
+
+        RemoveDelegationResponseType removeDelegationResponseType =
+                removeDelegationResponderInterface.removeDelegation("", parameters);
+
+        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(
+                se.riv.authorization.delegation.removedelegationresponder.v1.ResultCodeEnum.OK));
+    }
+
+    @Test
+    public void testRemoveDelegationResponderInterface2() {
+
+        long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("" + delegationKey);
+
+        removeDelegationResponderInterface.removeDelegation("", parameters);
+
+        GetDelegationType parameters2 = new GetDelegationType();
+
+        parameters2.setDelegationKey("" + delegationKey);
+
+        GetDelegationResponseType getDelegationResponseType =
+                getDelegationResponderInterface.getDelegation("", parameters2);
+
+        DelegationType delegationType = getDelegationResponseType.getDelegation();
+
+        Assert.assertTrue(getDelegationResponseType.getResultCode().equals(
+                se.riv.authorization.delegation.getdelegationresponder.v1.ResultCodeEnum.ERROR));
+    }
+
     private long saveADelegation(String aO, String vF, String vT) {
         SaveDelegationsType parameters = new SaveDelegationsType();
-
-        parameters.setTicket(getTicket());
 
         DelegationBlockType block = new DelegationBlockType();
 
@@ -289,18 +281,12 @@ public class IntegrationTestDelegationServiceWS {
 
         parameters.setDelegationBlockType(block);
 
+        System.out.println("test - save - " + saveDelegationsResponderInterface.hashCode());
+
         SaveDelegationsResponseType delegationsResponseType =
                 saveDelegationsResponderInterface.saveDelegations("", parameters);
 
         return delegationsResponseType.getDelegations().getContent().get(0).getDelegationKey();
-    }
-
-    private String getTicket() {
-        GetTicketType parameters = new GetTicketType();
-        parameters.setServiceId("someServiceId");
-
-        GetTicketResponseType getTicketResponseType = getTicketResponderInterface.getTicket("", parameters);
-        return getTicketResponseType.getTicket();
     }
 
     private Date parseDate(String dateStr) {
@@ -325,68 +311,4 @@ public class IntegrationTestDelegationServiceWS {
         }
     }
 
-    public Object createSomeWebService(Class someWebServiceClass, String address) throws IOException,
-            NoSuchAlgorithmException, KeyStoreException, CertificateException {
-
-        ClientProxyFactoryBean clientProxyFactoryBean = new ClientProxyFactoryBean();
-        ClientFactoryBean clientFactoryBean = clientProxyFactoryBean.getClientFactoryBean();
-        clientFactoryBean.setAddress(address);
-        clientFactoryBean.setServiceClass(someWebServiceClass);
-
-        PrintWriter printWriter = new PrintWriter(System.out, true);
-
-        LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor(printWriter);
-        loggingOutInterceptor.setPrettyLogging(true);
-
-        LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor(printWriter);
-        loggingInInterceptor.setPrettyLogging(true);
-
-        clientFactoryBean.getOutInterceptors().add(loggingOutInterceptor);
-
-        clientFactoryBean.getInInterceptors().add(loggingInInterceptor);
-
-        // // WSS4JOutInterceptor
-        // HashMap<String, Object> outProps = new HashMap<String, Object>();
-        // outProps.put(WSHandlerConstants.ACTION, "Encrypt");
-        // outProps.put(WSHandlerConstants.USER, "mykey");
-        // outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, ClientCallbackHandler.class.getName());
-        // // outProps.put(WSHandlerConstants.SIG_PROP_FILE, "client_key.properties");
-        // outProps.put(WSHandlerConstants.ENC_PROP_FILE, "server_key.properties");
-        // // outProps.put(WSHandlerConstants.ENC_PROP_FILE, "client_trust.properties");
-        // WSS4JOutInterceptor wss4JOutInterceptor = new WSS4JOutInterceptor(outProps);
-        // clientFactoryBean.getOutInterceptors().add(wss4JOutInterceptor);
-        //
-        // // WSS4JInInterceptor
-        // HashMap<String, Object> inProps = new HashMap<String, Object>();
-        // inProps.put(WSHandlerConstants.ACTION, "Encrypt");
-        // inProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, ClientCallbackHandler.class.getName());
-        // inProps.put(WSHandlerConstants.DEC_PROP_FILE, "client_key.properties");
-        // WSS4JInInterceptor wss4JInInterceptor = new WSS4JInInterceptor(inProps);
-        // clientFactoryBean.getInInterceptors().add(wss4JInInterceptor);
-
-        Object someWebService = clientProxyFactoryBean.create(someWebServiceClass);
-        Client clientProxy = ClientProxy.getClient(someWebService);
-        HTTPConduit httpConduit = (HTTPConduit) clientProxy.getConduit();
-        httpConduit.setTlsClientParameters(setupTlsClientParameters());
-
-        return someWebService;
-    }
-
-    private TLSClientParameters setupTlsClientParameters() throws KeyStoreException,
-            NoSuchAlgorithmException, IOException, CertificateException {
-        // InputStream resourceAsStream = getClass().getResourceAsStream("/client/clientkeystore.jks");
-        InputStream resourceAsStream = getClass().getResourceAsStream("/server/serverkeystore.jks");
-
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(resourceAsStream, "changeit".toCharArray());
-
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStore);
-
-        TLSClientParameters tlsClientParameters = new TLSClientParameters();
-        tlsClientParameters.setTrustManagers(trustManagerFactory.getTrustManagers());
-        tlsClientParameters.setDisableCNCheck(true);
-
-        return tlsClientParameters;
-    }
 }
