@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,4 +71,16 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
         boolean b = delegationRepository.hasDelegations("df", "dt", "role");
         assertEquals(true, b);
     }
+    
+    
+    @Test
+    public void testFindSoonToExpireWithUnsentWarning() {
+        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(100l);
+        System.out.println("Result Count = " + result.size());
+        System.out.println(result.get(0).getValidFrom());
+        Assert.assertNotNull(result);
+    }
+    
+    
+    
 }

@@ -54,6 +54,8 @@ public class Delegation extends AbstractEntity<Long> implements
     private String information;
 
     private String delegatedForEmail;
+    
+    private Boolean expiryAlertSent;
 
     public String getRole() {
         return role;
@@ -158,5 +160,13 @@ public class Delegation extends AbstractEntity<Long> implements
     public void setDelegatedForEmail(String delegatedForEmail) {
         this.delegatedForEmail = delegatedForEmail;
     }
+
+	public Boolean getExpiryAlertSent() {
+		return expiryAlertSent;
+	}
+
+	public void setExpiryAlertSent(Boolean expiryAlertSent) {
+		this.expiryAlertSent = expiryAlertSent;
+	}
 
 }
