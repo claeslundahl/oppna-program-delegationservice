@@ -19,6 +19,7 @@
 
 package se.vgregion.delegation.server;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -47,10 +48,13 @@ import se.vgregion.delegation.ws.GetInactiveDelegationsResponderInterfaceImpl;
 import se.vgregion.delegation.ws.HasDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.RemoveDelegationResponderInterfaceImpl;
 import se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl;
+import se.vgregion.delegation.ws.util.PropertiesBean;
 
 public class Server {
 
     private org.apache.cxf.endpoint.Server server;
+
+    private PropertiesBean propertiesBean;
 
     static private final Logger logger = LoggerFactory.getLogger(Server.class);
 
@@ -70,10 +74,10 @@ public class Server {
             logger.error("Host namne = " + e.getStackTrace());
         }
 
-        server.startServer(path, hostname, "24003", false);
+        server.startServer(path, hostname, "24003");
     }
 
-    public void startServer(String path, String hostname, String port, boolean https) {
+    public void startServer(String path, String hostname, String port) {
 
         endpoints = new ArrayList<Endpoint>();
 
@@ -88,6 +92,13 @@ public class Server {
 
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j
         System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
+
+        propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
+
+        boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
+
+        System.out.println("propertiesBean.getCertPass() = " + propertiesBean.getCertPass());
+        System.out.println("https = " + https);
 
         String http = "http";
 
@@ -154,9 +165,13 @@ public class Server {
     private void setupServerEngineFactory(int port) throws IOException, GeneralSecurityException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        InputStream resourceAsStream = getClass().getResourceAsStream("/server/star_vgregion_cert.pfx");
-        keyStore.load(resourceAsStream, "*.vgregion.se*7541".toCharArray());
-        keyManagerFactory.init(keyStore, "*.vgregion.se*7541".toCharArray());
+
+        String userhome = System.getProperty("user.home");
+        String certFilePath = userhome + "/.delegation-service/" + propertiesBean.getCertFileName();
+
+        InputStream resourceAsStream = new FileInputStream(certFilePath);
+        keyStore.load(resourceAsStream, propertiesBean.getCertPass().toCharArray());
+        keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
 
         JettyHTTPServerEngineFactory engineFactory = new JettyHTTPServerEngineFactory();
         TLSServerParameters tlsParams = new TLSServerParameters();
@@ -168,5 +183,4 @@ public class Server {
         tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
         engineFactory.setTLSServerParametersForPort(port, tlsParams);
     }
-
 }

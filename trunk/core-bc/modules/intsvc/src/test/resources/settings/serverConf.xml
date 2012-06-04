@@ -44,7 +44,7 @@
     <property name="showSql" value="${hibernate.database.showsql}" />
   </bean>
 
-  <import resource="classpath:spring/JpaRepository-context.xml" />
+  <import resource="classpath:settings/JpaRepository-context-test.xml" />
 
   <bean id="hibernateJpaVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
     <property name="generateDdl" value="${hibernate.vendor.generateDdl}" />
@@ -53,7 +53,7 @@
   </bean>
 
   <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
-  <property name="persistenceXmlLocations">
+    <property name="persistenceXmlLocations">
       <list>
         <value>classpath*:META-INF/*-persistence.xml</value>
       </list>
@@ -69,5 +69,10 @@
   <bean id="delegationKeySequenceRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationKeySequenceRepository" />
 
   <bean id="delegationService" class="se.vgregion.delegation.DelegationServiceImpl" />
+
+  <bean name="propertiesBean" class="se.vgregion.delegation.ws.util.PropertiesBean">
+    <property name="certPass" value="${ssl.cert.pass}" />
+    <property name="certFileName" value="${cert.filename}" />
+  </bean>
 
 </beans>

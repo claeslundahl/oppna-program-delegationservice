@@ -74,7 +74,8 @@ public class IntegrationTestDelegationServiceWS {
         // Server
         server = new Server();
         String serverPath = "classpath:/settings/serverConf.xml";
-        server.startServer(serverPath, "localhost", "24004", true);
+
+        server.startServer(serverPath, "localhost", "24004");
 
         logger.info("Server Ready !!!! ");
 
