@@ -34,4 +34,7 @@
 
   <bean id="delegationService" class="se.vgregion.delegation.DelegationServiceImpl" />
 
+  <bean id="delegationExpieryAlertJob" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" />
+
+
 </beans>

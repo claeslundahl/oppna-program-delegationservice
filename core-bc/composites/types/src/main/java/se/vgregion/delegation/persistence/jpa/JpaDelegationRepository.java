@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,8 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
             + " and d.validFrom <=:currentDate";
 
     private static final String delegatedStatusIsActive = "d.status =:delegatedStatus";
+    
+    //private long timeBeforeExpiryAlert = 30 * 24 * 60 * 60 * 1000;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -149,6 +152,35 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         return (Delegation) q.getSingleResult();
 
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long)
+     */
+    @Override
+    public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert) {
+    	Date today = new Date();
+    	
+    	System.out.println("today-zero: "+today + " + " + timeBeforeExpiryAlert);
+    	
+    	today = (new Date(today.getTime() + timeBeforeExpiryAlert));
+    	
+    	System.out.println("\n\ntoday " + today + "\n");
+    	
+        String query =
+                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+                        + "WHERE d.validTo < :today and (d.expiryAlertSent is null or d.expiryAlertSent = false) and "                		
+                        + delegatedStatusIsActive;
+
+        Query q = entityManager.createQuery(query);
+
+        q.setParameter("today", today, TemporalType.DATE);
+        
+        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);        
+
+        return q.getResultList();
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -166,4 +198,5 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         return true;
 
     }
+
 }
