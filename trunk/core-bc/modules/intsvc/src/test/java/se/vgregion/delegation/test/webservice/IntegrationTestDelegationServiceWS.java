@@ -73,13 +73,13 @@ public class IntegrationTestDelegationServiceWS {
 
         // Server
         server = new Server();
-        String serverPath = "classpath:/spring/serverConf.xml";
+        String serverPath = "classpath:/settings/serverConf.xml";
         server.startServer(serverPath, "localhost", "24004", true);
 
         logger.info("Server Ready !!!! ");
 
         // Client
-        String clientPath = "classpath:/spring/clientConf.xml";
+        String clientPath = "classpath:/settings/clientConf.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(clientPath);
 
         activeDelegationsResponderInterface =
