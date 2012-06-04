@@ -144,6 +144,13 @@ public class Server {
         logger.info("Server shutdown!");
     }
 
+    /**
+     * This method sets up the security.
+     * 
+     * @param port
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     private void setupServerEngineFactory(int port) throws IOException, GeneralSecurityException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
