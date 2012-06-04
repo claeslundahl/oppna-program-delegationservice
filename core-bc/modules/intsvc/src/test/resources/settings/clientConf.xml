@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd 
+  http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+  
+  <jaxws:client id="activeDelegationsResponderInterface"
+    serviceClass="se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface"
+    address="https://localhost:24004/getactivedelegations" />
+  <jaxws:client id="getDelegationResponderInterface"
+    serviceClass="se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface"
+    address="https://localhost:24004/getdelegation" />
+  <jaxws:client id="inactiveDelegationsResponderInterface"
+    serviceClass="se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface"
+    address="https://localhost:24004/getinactivedelegations" />
+  <jaxws:client id="getDelegationsbyUnitAndRoleResponderInterface"
+    serviceClass="se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface"
+    address="https://localhost:24004/getdelegationsbyunitandrole" />
+  <jaxws:client id="getDelegationsResponderInterface"
+    serviceClass="se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface"
+    address="https://localhost:24004/getdelegations" />
+  <jaxws:client id="hasDelegationResponderInterface"
+    serviceClass="se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface"
+    address="https://localhost:24004/hasdelegation" />
+  <jaxws:client id="saveDelegationsResponderInterface"
+    serviceClass="se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface"
+    address="https://localhost:24004/savedelegations" />
+  <jaxws:client id="removeDelegationResponderInterface"
+    serviceClass="se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface"
+    address="https://localhost:24004/removedelegation" />
+    
+  <http:conduit name="https://localhost:24004/.*">
+    <http:tlsClientParameters disableCNCheck="true">
+      <sec:trustManagers>
+        <sec:keyStore type="JKS" password="changeit" resource="client/clientkeystore.jks" />
+      </sec:trustManagers>
+    </http:tlsClientParameters>
+    <http:client AutoRedirect="true" Connection="Keep-Alive" />
+  </http:conduit>
+  
+</beans>
