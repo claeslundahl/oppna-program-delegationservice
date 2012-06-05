@@ -1,0 +1,33 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="delegationExpieryAlertJob" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" />
+
+<!-- org.springframework.scheduling.quartz.JobDetailBean -->
+
+  <bean name="delegationAlertJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="delegationExpieryAlertJob" />
+    <property name="targetMethod" value="printMe" />
+  </bean>
+
+  <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <property name="jobDetail" ref="delegationAlertJob" />
+    <property name="cronExpression" value="0/5 * * * * ?" />
+    <!-- "0 2 * * *" run every day at 03:00 -->
+  </bean>
+
+  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="jobDetails">
+      <list>
+        <ref bean="delegationAlertJob" />
+      </list>
+    </property>
+    <property name="triggers">
+      <list>
+        <ref bean="cronTrigger" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

@@ -76,7 +76,9 @@ public class Server {
             logger.error("Host namne = " + e.getStackTrace());
         }
 
-        server.startServer(ctx, hostname, propertiesBean.getServerPort());
+        // server.startServer(ctx, hostname, propertiesBean.getServerPort());
+
+        startScheduler();
     }
 
     public void startServer(ClassPathXmlApplicationContext ctx, String hostname, String port) {
@@ -89,7 +91,6 @@ public class Server {
             logger.error("ClassNotFoundException for: org.postgresql.Driver " + e.getMessage());
         }
 
-        // ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
         DelegationService delegationService = (DelegationService) ctx.getBean("delegationService");
         propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
 
@@ -182,4 +183,9 @@ public class Server {
         tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
         engineFactory.setTLSServerParametersForPort(port, tlsParams);
     }
+
+    private static void startScheduler() {
+        new ClassPathXmlApplicationContext("spring/Spring-Quartz.xml");
+    }
+
 }
