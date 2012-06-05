@@ -54,7 +54,7 @@ public class Server {
 
     private org.apache.cxf.endpoint.Server server;
 
-    private PropertiesBean propertiesBean;
+    private static PropertiesBean propertiesBean;
 
     static private final Logger logger = LoggerFactory.getLogger(Server.class);
 
@@ -62,8 +62,10 @@ public class Server {
 
     static public void main(String[] args) throws Exception {
 
-        Server server = new Server();
         String path = "classpath:/spring/conf.xml";
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
+        Server server = new Server();
+        propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
 
         String hostname = "localhost";
 
@@ -74,10 +76,10 @@ public class Server {
             logger.error("Host namne = " + e.getStackTrace());
         }
 
-        server.startServer(path, hostname, "24003");
+        server.startServer(ctx, hostname, propertiesBean.getServerPort());
     }
 
-    public void startServer(String path, String hostname, String port) {
+    public void startServer(ClassPathXmlApplicationContext ctx, String hostname, String port) {
 
         endpoints = new ArrayList<Endpoint>();
 
@@ -87,18 +89,14 @@ public class Server {
             logger.error("ClassNotFoundException for: org.postgresql.Driver " + e.getMessage());
         }
 
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
+        // ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
         DelegationService delegationService = (DelegationService) ctx.getBean("delegationService");
+        propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
 
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j
         System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
 
-        propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
-
         boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
-
-        System.out.println("propertiesBean.getCertPass() = " + propertiesBean.getCertPass());
-        System.out.println("https = " + https);
 
         String http = "http";
 
@@ -167,6 +165,7 @@ public class Server {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
         String userhome = System.getProperty("user.home");
+
         String certFilePath = userhome + "/.delegation-service/" + propertiesBean.getCertFileName();
 
         InputStream resourceAsStream = new FileInputStream(certFilePath);
