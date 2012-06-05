@@ -11,6 +11,7 @@ public class PropertiesBean {
 
     private String certPass;
     private String certFileName;
+    private String serverPort;
 
     public String getCertPass() {
         return certPass;
@@ -26,6 +27,14 @@ public class PropertiesBean {
 
     public void setCertFileName(String certPath) {
         this.certFileName = certPath;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(String serverPort) {
+        this.serverPort = serverPort;
     }
 
 }

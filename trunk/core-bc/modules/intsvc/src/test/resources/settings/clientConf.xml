@@ -34,7 +34,7 @@
   <http:conduit name="https://localhost:24004/.*">
     <http:tlsClientParameters disableCNCheck="true">
       <sec:trustManagers>
-        <sec:keyStore type="JKS" password="changeit" resource="client/clientkeystore.jks" />
+        <sec:keyStore type="JKS" password="changeit" resource="client/delegering-test.jks" />
       </sec:trustManagers>
     </http:tlsClientParameters>
     <http:client AutoRedirect="true" Connection="Keep-Alive" />
