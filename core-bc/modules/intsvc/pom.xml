@@ -103,6 +103,16 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+
+
+    <dependency>
       <groupId>se.vgregion.icc.sd.authorization</groupId>
       <artifactId>authorization-delegation-schemas</artifactId>
       <version>1.0.3-SNAPSHOT</version>
@@ -144,18 +154,27 @@
       <artifactId>cxf-rt-ws-security</artifactId>
       <version>${cxf.version}</version>
     </dependency>
-    
-	<dependency>
-	  <groupId>org.apache.ws.security</groupId>
-	  <artifactId>wss4j</artifactId>
-	  <version>1.6.6</version>
-	</dependency>
-	
+
+    <dependency>
+      <groupId>org.apache.ws.security</groupId>
+      <artifactId>wss4j</artifactId>
+      <version>1.6.6</version>
+    </dependency>
+
+    <!-- <dependency> <groupId>org.quartz-scheduler</groupId> <artifactId>quartz</artifactId> <version>2.1.5</version> 
+      </dependency> -->
+
+    <dependency>
+      <groupId>org.opensymphony.quartz</groupId>
+      <artifactId>quartz</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+
   </dependencies>
 
   <properties>
     <cxf.version>2.4.1</cxf.version>
-    <!--<cxf.version>2.4.2-fuse-00-06</cxf.version>-->
+    <!--<cxf.version>2.4.2-fuse-00-06</cxf.version> -->
   </properties>
 
 </project>
