@@ -2,13 +2,18 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="delegationExpieryAlertJob" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" />
+  <bean id="delegationRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationRepository" />
+
+  <bean id="delegationExpieryAlertJob" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >
+    <property name="days" value="1"/>
+    <property name="delegationRepository" ref="delegationRepository"/>
+  </bean>
 
 <!-- org.springframework.scheduling.quartz.JobDetailBean -->
 
   <bean name="delegationAlertJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
     <property name="targetObject" ref="delegationExpieryAlertJob" />
-    <property name="targetMethod" value="printMe" />
+    <property name="targetMethod" value="scanRepoAndSendMails" />
   </bean>
 
   <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
