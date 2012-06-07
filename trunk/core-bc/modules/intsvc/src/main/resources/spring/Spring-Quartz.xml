@@ -3,21 +3,39 @@
 http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="delegationRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationRepository" />
-
-  <bean id="delegationExpieryAlertJob" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >
-    <property name="days" value="1"/>
+  
+  <bean id="delegationExpieryAlertJob1" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >
+    <property name="daysBeforeStart" value="30"/>
+    <property name="daysBeforeEnd" value="15"/>
     <property name="delegationRepository" ref="delegationRepository"/>
+    <property name="emailToSendKey" value="1"/>
+  </bean>
+
+  <bean id="delegationExpieryAlertJob2" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >
+    <property name="daysBeforeStart" value="14"/>
+    <property name="daysBeforeEnd" value="0"/>
+    <property name="delegationRepository" ref="delegationRepository"/>
+    <property name="emailToSendKey" value="2"/>
   </bean>
 
 <!-- org.springframework.scheduling.quartz.JobDetailBean -->
 
-  <bean name="delegationAlertJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-    <property name="targetObject" ref="delegationExpieryAlertJob" />
+  <bean name="delegationAlertJob1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="delegationExpieryAlertJob1" />
+    <property name="targetMethod" value="scanRepoAndSendMails" />
+  </bean>
+  <bean name="delegationAlertJob2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="delegationExpieryAlertJob2" />
     <property name="targetMethod" value="scanRepoAndSendMails" />
   </bean>
 
-  <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-    <property name="jobDetail" ref="delegationAlertJob" />
+  <bean id="cronTrigger1" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <property name="jobDetail" ref="delegationAlertJob1" />
+    <property name="cronExpression" value="0/5 * * * * ?" />
+    <!-- "0 2 * * *" run every day at 03:00 -->
+  </bean>
+  <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <property name="jobDetail" ref="delegationAlertJob2" />
     <property name="cronExpression" value="0/5 * * * * ?" />
     <!-- "0 2 * * *" run every day at 03:00 -->
   </bean>
@@ -25,12 +43,14 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
   <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="jobDetails">
       <list>
-        <ref bean="delegationAlertJob" />
+        <ref bean="delegationAlertJob1" />
+        <ref bean="delegationAlertJob2" />
       </list>
     </property>
     <property name="triggers">
       <list>
-        <ref bean="cronTrigger" />
+        <ref bean="cronTrigger1" />
+        <ref bean="cronTrigger2" />
       </list>
     </property>
   </bean>

@@ -54,8 +54,8 @@ public class Delegation extends AbstractEntity<Long> implements
     private String information;
 
     private String delegatedForEmail;
-    
-    private Boolean expiryAlertSent;
+
+    private Integer expiryAlertSentCount = 1;
 
     public String getRole() {
         return role;
@@ -161,12 +161,19 @@ public class Delegation extends AbstractEntity<Long> implements
         this.delegatedForEmail = delegatedForEmail;
     }
 
-	public Boolean getExpiryAlertSent() {
-		return expiryAlertSent;
-	}
+    /**
+     * @param expiryAlertSentCount
+     *            the expiryAlertSentCount to set
+     */
+    public void setExpiryAlertSentCount(Integer expiryAlertSentCount) {
+        this.expiryAlertSentCount = expiryAlertSentCount;
+    }
 
-	public void setExpiryAlertSent(Boolean expiryAlertSent) {
-		this.expiryAlertSent = expiryAlertSent;
-	}
+    /**
+     * @return the expiryAlertSentCount
+     */
+    public Integer getExpiryAlertSentCount() {
+        return expiryAlertSentCount;
+    }
 
 }
