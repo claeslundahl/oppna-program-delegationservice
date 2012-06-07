@@ -28,6 +28,6 @@ public interface DelegationRepository extends Repository<Delegation, Long> {
 
     boolean removeDelegation(Long delegationKey);
 
-    List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert);
+    List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey);
 
 }

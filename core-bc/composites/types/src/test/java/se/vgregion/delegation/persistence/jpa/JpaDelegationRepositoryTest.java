@@ -71,16 +71,13 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
         boolean b = delegationRepository.hasDelegations("df", "dt", "role");
         assertEquals(true, b);
     }
-    
-    
+
     @Test
     public void testFindSoonToExpireWithUnsentWarning() {
-        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(100l);
+        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(100l, 1);
         System.out.println("Result Count = " + result.size());
         System.out.println(result.get(0).getValidFrom());
         Assert.assertNotNull(result);
     }
-    
-    
-    
+
 }

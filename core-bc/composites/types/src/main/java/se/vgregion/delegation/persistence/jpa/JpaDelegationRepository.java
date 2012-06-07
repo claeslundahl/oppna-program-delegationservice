@@ -159,27 +159,26 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
      * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long)
      */
     @Override
-    public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert) {
-        Date today = new Date();
+    public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey) {
+        // System.out.println("today-zero: " + today + " + " + timeBeforeExpiryAlert);
 
-        System.out.println("today-zero: " + today + " + " + timeBeforeExpiryAlert);
+        Date start = (new Date(System.currentTimeMillis() + timeBeforeExpiryAlert));
 
-        today = (new Date(today.getTime() + timeBeforeExpiryAlert));
-
-        System.out.println("\n\ntoday " + today + "\n");
+        // System.out.println("\n\ntoday " + today + "\n");
 
         String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.validTo < :today and (d.expiryAlertSent is null) and "
-                        + delegatedStatusIsActive;
+                "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.validTo < :start and "
+                        + "d.expiryAlertSentCount = :expiryAlertSentCount and " + delegatedStatusIsActive;
 
-        System.out.println("entityManager " + entityManager.toString());
+        // System.out.println("entityManager " + entityManager.toString());
 
         Query q = entityManager.createQuery(query);
 
-        q.setParameter("today", today, TemporalType.DATE);
+        q.setParameter("start", start, TemporalType.DATE);
 
         q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+
+        q.setParameter("expiryAlertSentCount", emailToSendKey);
 
         return q.getResultList();
     }
