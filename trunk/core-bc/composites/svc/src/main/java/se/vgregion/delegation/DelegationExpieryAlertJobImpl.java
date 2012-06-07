@@ -1,58 +1,55 @@
 package se.vgregion.delegation;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.delegation.domain.Delegation;
+import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.persistence.DelegationRepository;
 
 @Component
 public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob {
 
-    private final Timer timer = new Timer();
-
-    private long warnBeforeExpieryTime = 30l * 24l * 60l * 60l * 1000l;
+    private long warnBeforeExpieryTime;
+    private long days;
+    private final static long oneDayMilis = 24l * 60l * 60l * 1000l;
 
     @Autowired(required = false)
     DelegationRepository delegationRepository;
 
     @Override
-    public List<Delegation> scanRepoAndSendMails() {
+    @Transactional
+    public void scanRepoAndSendMails() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("mail-spring.xml");
+        DelegationMailSenderService service =
+                (DelegationMailSenderService) context.getBean("userRegistrationService");
+
         System.out.println("Before calling " + warnBeforeExpieryTime);
         List<Delegation> soonToExpier =
                 delegationRepository.findSoonToExpireWithUnsentWarning(warnBeforeExpieryTime);
-        System.out.println("Soon: " + soonToExpier);
+
+        System.out.println("Size to email: " + soonToExpier.size());
 
         List<Delegation> result = new ArrayList<Delegation>();
         for (Delegation delegation : soonToExpier) {
             delegation.setExpiryAlertSent(true);
             result.add(delegationRepository.merge(delegation));
+
+            System.out.println("Will email " + delegation.getDelegatedForEmail() + " for delegation "
+                    + delegation.getDelegationKey());
+            service.sendMail("no-replay@vgregion.se", "simon.goransson@gmail.com",
+                    "hej " + delegation.getRole(), delegation.getInformation());
+
         }
         delegationRepository.flush();
 
-        return soonToExpier;
-    }
-
-    @Override
-    public void start() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                scanRepoAndSendMails();
-            }
-
-        }, 5 * 1000, 5000);
-    }
-
-    public static void main(String[] args) {
-        DelegationExpieryAlertJobImpl eggTimer = new DelegationExpieryAlertJobImpl();
-        eggTimer.start();
+        // return soonToExpier;
     }
 
     public long getWarnBeforeExpieryTime() {
@@ -63,8 +60,21 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
         this.warnBeforeExpieryTime = warnBeforeExpieryTime;
     }
 
-    public void printMe() {
-        System.out.println("         -          Hello World !!!               -  " + new Date());
+    public long getDays() {
+        return days;
+    }
+
+    public void setDays(long days) {
+        this.days = days;
+        warnBeforeExpieryTime = days * oneDayMilis;
+    }
+
+    public DelegationRepository getDelegationRepository() {
+        return delegationRepository;
+    }
+
+    public void setDelegationRepository(DelegationRepository delegationRepository) {
+        this.delegationRepository = delegationRepository;
     }
 
 }

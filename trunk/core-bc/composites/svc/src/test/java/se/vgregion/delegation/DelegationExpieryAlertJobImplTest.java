@@ -1,14 +1,7 @@
 package se.vgregion.delegation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Date;
-import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -27,33 +20,24 @@ public class DelegationExpieryAlertJobImplTest extends AbstractTransactionalJUni
     @Autowired(required = false)
     private DelegationRepository delegationRepository;
 
-    @Test
-    @Ignore
-    public void testStart() throws InterruptedException {
-        System.out.println("Start of test.");
-        delegationExpieryAlertJob.start();
-        wait(10000);
-        System.out.println("End of test.");
-    }
-
-    @Test
-    public void scanRepoAndSendMails() {
-        DelegationExpieryAlertJobImpl d = (DelegationExpieryAlertJobImpl) delegationExpieryAlertJob;
-        Delegation entity = mkDelegation();
-        d.delegationRepository.store(entity);
-        entity = mkDelegation();
-        entity.setExpiryAlertSent(true);
-        d.delegationRepository.store(entity);
-        entity = mkDelegation();
-        entity.setValidTo(new Date(System.currentTimeMillis() + 30l * 24l * 60l * 60l * 1000l * 2l));
-        d.delegationRepository.store(entity);
-        d.delegationRepository.flush();
-
-        List<Delegation> result = delegationExpieryAlertJob.scanRepoAndSendMails();
-        assertEquals(1, result.size());
-        assertNotNull(result.get(0).getExpiryAlertSent());
-        assertTrue(result.get(0).getExpiryAlertSent());
-    }
+    // @Test
+    // public void scanRepoAndSendMails() {
+    // DelegationExpieryAlertJobImpl d = (DelegationExpieryAlertJobImpl) delegationExpieryAlertJob;
+    // Delegation entity = mkDelegation();
+    // d.delegationRepository.store(entity);
+    // entity = mkDelegation();
+    // entity.setExpiryAlertSent(true);
+    // d.delegationRepository.store(entity);
+    // entity = mkDelegation();
+    // entity.setValidTo(new Date(System.currentTimeMillis() + 30l * 24l * 60l * 60l * 1000l * 2l));
+    // d.delegationRepository.store(entity);
+    // d.delegationRepository.flush();
+    //
+    // List<Delegation> result = delegationExpieryAlertJob.scanRepoAndSendMails();
+    // assertEquals(1, result.size());
+    // assertNotNull(result.get(0).getExpiryAlertSent());
+    // assertTrue(result.get(0).getExpiryAlertSent());
+    // }
 
     Delegation mkDelegation() {
         // 30l * 24l * 60l * 60l * 1000l

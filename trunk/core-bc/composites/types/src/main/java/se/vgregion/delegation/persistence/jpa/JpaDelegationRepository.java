@@ -27,8 +27,8 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
             + " and d.validFrom <=:currentDate";
 
     private static final String delegatedStatusIsActive = "d.status =:delegatedStatus";
-    
-    //private long timeBeforeExpiryAlert = 30 * 24 * 60 * 60 * 1000;
+
+    // private long timeBeforeExpiryAlert = 30 * 24 * 60 * 60 * 1000;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -152,7 +152,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         return (Delegation) q.getSingleResult();
 
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -160,24 +160,26 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
      */
     @Override
     public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert) {
-    	Date today = new Date();
-    	
-    	System.out.println("today-zero: "+today + " + " + timeBeforeExpiryAlert);
-    	
-    	today = (new Date(today.getTime() + timeBeforeExpiryAlert));
-    	
-    	System.out.println("\n\ntoday " + today + "\n");
-    	
+        Date today = new Date();
+
+        System.out.println("today-zero: " + today + " + " + timeBeforeExpiryAlert);
+
+        today = (new Date(today.getTime() + timeBeforeExpiryAlert));
+
+        System.out.println("\n\ntoday " + today + "\n");
+
         String query =
                 "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.validTo < :today and (d.expiryAlertSent is null or d.expiryAlertSent = false) and "                		
+                        + "WHERE d.validTo < :today and (d.expiryAlertSent is null) and "
                         + delegatedStatusIsActive;
+
+        System.out.println("entityManager " + entityManager.toString());
 
         Query q = entityManager.createQuery(query);
 
         q.setParameter("today", today, TemporalType.DATE);
-        
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);        
+
+        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
         return q.getResultList();
     }
