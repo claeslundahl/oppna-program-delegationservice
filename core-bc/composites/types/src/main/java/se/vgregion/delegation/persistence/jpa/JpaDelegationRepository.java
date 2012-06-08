@@ -165,6 +165,8 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         Date start = (new Date(System.currentTimeMillis() + timeBeforeExpiryAlert));
 
         // System.out.println("\n\ntoday " + today + "\n");
+        
+        System.out.println("Find things before " + start);
 
         String query =
                 "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.validTo < :start and "
