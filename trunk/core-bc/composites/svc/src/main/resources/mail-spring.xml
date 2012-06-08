@@ -19,20 +19,29 @@
     ignore-resource-not-found="true" ignore-unresolvable="true" />
 
 
-  <bean id="userRegistrationService" class="se.vgregion.delegation.mail.DelegationMailSenderService">
+  <bean id="delegationMailSenderService" class="se.vgregion.delegation.mail.DelegationMailSenderService">
     <property name="mailSender" ref="javaMailSender" />
   </bean>
 
   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="host" value="${mail.server}" />
     <property name="port" value="${mail.port}" />
-   <!--  <property name="username" value="${mail.user}" />
-    <property name="password" value="${mail.pass}" />-->
+    <!-- <property name="username" value="${mail.user}" /> <property name="password" value="${mail.pass}" /> -->
     <property name="javaMailProperties">
       <props>
         <prop key="mail.smtp.starttls.enable">true</prop>
       </props>
     </property>
   </bean>
+
+  <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <property name="velocityProperties">
+      <value>
+        resource.loader=class
+        class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+         </value>
+    </property>
+  </bean>
+
 
 </beans>

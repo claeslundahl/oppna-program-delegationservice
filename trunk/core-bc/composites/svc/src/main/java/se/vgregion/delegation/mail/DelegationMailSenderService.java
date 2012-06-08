@@ -37,10 +37,9 @@ public class DelegationMailSenderService {
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
                 mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-                mimeMessage.setSubject(subject);
-                mimeMessage.setText(text);
+                mimeMessage.setSubject(subject, "UTF-8");
+                mimeMessage.setContent(text, "text/html; charset=UTF-8");
                 mimeMessage.setFrom(new InternetAddress(from));
-                // mimeMessage.setSender(new InternetAddress("simon.goransson@gmail.com"));
                 Address[] addresses = new Address[]{new InternetAddress("no-replay@vgregion.se")};
                 mimeMessage.setReplyTo(addresses);
             }
@@ -49,7 +48,7 @@ public class DelegationMailSenderService {
             this.mailSender.send(preparator);
         } catch (MailException ex) {
             // simply log it and go on...
-        	ex.printStackTrace();
+            ex.printStackTrace();
             System.err.println(ex.getMessage());
         }
     }

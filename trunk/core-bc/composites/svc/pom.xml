@@ -35,6 +35,12 @@
       <artifactId>spring-context-support</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.5</version>
+    </dependency>
+
 
     <!-- Security and Ticket manger -->
     <dependency>
