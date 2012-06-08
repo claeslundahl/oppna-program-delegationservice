@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <div>
+           <p>Delegering av ${type} f&ouml;r ${delegatedFor} till ${delegationTo} kommer att upph&ouml;ra ${expDate}. </p>
+           
+           <p>Ansvarig verksamhentschef kan f&ouml;rl&auml;nga delegeringen med hj&auml;lp av delegeringstj&auml;nsten i den elektroniska blanketten Beh&ouml;righetsbest&auml;llning.</p>
+        
+           <p>Denna delegering &auml;r ursprungligen lagd av ${delegatedBy}.</p>
+        </div>
+    </body>
+</html>
+
+
+
+
+
