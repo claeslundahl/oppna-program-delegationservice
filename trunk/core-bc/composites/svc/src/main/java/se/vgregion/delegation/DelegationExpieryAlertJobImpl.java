@@ -1,6 +1,7 @@
 package se.vgregion.delegation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,16 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
 
         List<Delegation> result = new ArrayList<Delegation>();
         for (Delegation delegation : soonToExpier) {
+        	
+        	System.out.println(DelegationExpieryAlertJobImpl.class.getSimpleName() + " " + emailToSendKey + " " + new Date(warnBeforeExpieryTimeStart) + " - " + new Date(warnBeforeExpieryTimeEnd));
+        	
             delegation.setExpiryAlertSentCount(delegation.getExpiryAlertSentCount().intValue() + 1);
             result.add(delegationRepository.merge(delegation));
-
-            if (delegation.getValidTo().getTime() < System.currentTimeMillis() + warnBeforeExpieryTimeEnd) {
+            delegationRepository.flush();
+            
+            System.out.println("Compare: " + new Date(delegation.getValidTo().getTime()) +" < " + new Date(System.currentTimeMillis() + warnBeforeExpieryTimeEnd));
+            
+            if (delegation.getValidTo().getTime() < (System.currentTimeMillis() + warnBeforeExpieryTimeEnd)) {
                 System.out.println("Will email " + delegation.getDelegatedForEmail() + " for delegation "
                         + delegation.getDelegationKey());
                 service.sendMail("no-replay-temp@vgregion.se", "simon.goransson@gmail.com", "Hej "
@@ -54,7 +61,7 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
             }
 
         }
-        delegationRepository.flush();
+        
 
         // return soonToExpier;
     }
