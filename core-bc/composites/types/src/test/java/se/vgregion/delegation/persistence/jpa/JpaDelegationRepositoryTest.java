@@ -3,6 +3,7 @@ package se.vgregion.delegation.persistence.jpa;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -11,8 +12,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.delegation.domain.Delegation;
+import se.vgregion.delegation.domain.DelegationStatus;
 import se.vgregion.delegation.persistence.DelegationRepository;
 
 /**
@@ -73,11 +76,29 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
+    @Transactional
     public void testFindSoonToExpireWithUnsentWarning() {
-        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(100l, 1);
+    	delegationRepository.store(mkDelegation());
+    	delegationRepository.flush();
+        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(System.currentTimeMillis() + 2000000, 1);
         System.out.println("Result Count = " + result.size());
+        
         System.out.println(result.get(0).getValidFrom());
         Assert.assertNotNull(result);
     }
 
+    Delegation mkDelegation() {
+        // 30l * 24l * 60l * 60l * 1000l
+        Delegation entity = new Delegation();
+        entity.setDelegatedFor("df");
+        entity.setDelegatedForEmail("some@epost.com");
+        entity.setDelegateTo("dt");
+        entity.setDelegationKey(123l);
+        entity.setRole("role");
+        entity.setStatus(DelegationStatus.ACTIVE);
+        entity.setValidFrom(new Date());
+        entity.setValidTo(new Date(System.currentTimeMillis() + 1000000));
+        return entity;
+    }
+    
 }
