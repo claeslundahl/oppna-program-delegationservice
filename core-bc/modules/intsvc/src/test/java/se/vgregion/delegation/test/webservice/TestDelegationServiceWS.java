@@ -54,6 +54,7 @@ import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegatio
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
 import se.riv.authorization.delegation.v1.DelegationBlockType;
 import se.riv.authorization.delegation.v1.DelegationType;
+import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.server.Server;
 import se.vgregion.delegation.ws.util.PropertiesBean;
@@ -267,8 +268,7 @@ public class TestDelegationServiceWS {
         RemoveDelegationResponseType removeDelegationResponseType =
                 removeDelegationResponderInterface.removeDelegation("", parameters);
 
-        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(
-                se.riv.authorization.delegation.removedelegationresponder.v1.ResultCodeEnum.OK));
+        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.OK));
     }
 
     @Test
@@ -290,8 +290,7 @@ public class TestDelegationServiceWS {
 
         DelegationType delegationType = getDelegationResponseType.getDelegation();
 
-        Assert.assertTrue(getDelegationResponseType.getResultCode().equals(
-                se.riv.authorization.delegation.getdelegationresponder.v1.ResultCodeEnum.ERROR));
+        Assert.assertTrue(getDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
     }
 
     @Test

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationResponseType;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationType;
-import se.riv.authorization.delegation.removedelegationresponder.v1.ResultCodeEnum;
+import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 
 /**

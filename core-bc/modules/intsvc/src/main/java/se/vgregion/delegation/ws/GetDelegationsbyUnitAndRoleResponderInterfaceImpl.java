@@ -12,7 +12,7 @@ import javax.jws.WebService;
 import se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleResponseType;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleType;
-import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.ResultCodeEnum;
+import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
