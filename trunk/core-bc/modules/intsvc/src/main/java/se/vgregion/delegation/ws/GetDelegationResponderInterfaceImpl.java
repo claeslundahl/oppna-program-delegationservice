@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationResponseType;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationType;
-import se.riv.authorization.delegation.getdelegationresponder.v1.ResultCodeEnum;
+import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
