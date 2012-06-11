@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -22,6 +24,8 @@ import se.vgregion.delegation.persistence.DelegationRepository;
 @Component
 public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob {
 
+    static private final Logger logger = LoggerFactory.getLogger(DelegationExpieryAlertJobImpl.class);
+
     private long warnBeforeExpieryTimeStart;
     private long warnBeforeExpieryTimeEnd;
     private long daysBeforeStart;
@@ -29,13 +33,16 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     private final static long oneDayMilis = 24l * 60l * 60l * 1000l;
     private int emailToSendKey;
 
+    private String contextPath;
+
     @Autowired(required = false)
     DelegationRepository delegationRepository;
 
     @Override
     @Transactional
     public void scanRepoAndSendMails() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("mail-spring.xml");
+
+        ApplicationContext context = new ClassPathXmlApplicationContext(contextPath);
         DelegationMailSenderService service =
                 (DelegationMailSenderService) context.getBean("delegationMailSenderService");
 
@@ -44,6 +51,9 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
         List<Delegation> soonToExpier =
                 delegationRepository.findSoonToExpireWithUnsentWarning(warnBeforeExpieryTimeStart,
                         emailToSendKey);
+
+        logger.debug("size to email " + soonToExpier.size() + " for job with daysBeforeStart "
+                + daysBeforeStart);
 
         List<Delegation> result = new ArrayList<Delegation>();
         for (Delegation delegation : soonToExpier) {
@@ -55,10 +65,14 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
             String text = generateContent(velocityEngine, delegation);
             String subject = generateSubject(velocityEngine, delegation);
 
-            if (delegation.getValidTo().getTime() < (System.currentTimeMillis() + warnBeforeExpieryTimeEnd)) {
-                System.out.println("Will email " + delegation.getDelegatedForEmail() + " for delegation "
-                        + delegation.getDelegationKey());
-                service.sendMail("no-replay-temp@vgregion.se", "simon.goransson@gmail.com", subject, text);
+            if (delegation.getValidTo().getTime() > (System.currentTimeMillis() + warnBeforeExpieryTimeEnd)) {
+
+                if (delegation.getDelegatedForEmail() != null && !delegation.getDelegatedForEmail().isEmpty()) {
+                    service.sendMail("no-replay@vgregion.se", delegation.getDelegatedForEmail(), subject,
+                            text);
+                    logger.debug("Will email " + delegation.getDelegatedForEmail() + " for delegation "
+                            + delegation.getDelegationKey());
+                }
             }
         }
     }
@@ -149,6 +163,14 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
      */
     public int getEmailToSendKey() {
         return emailToSendKey;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
+
+    public String getContextPath() {
+        return contextPath;
     }
 
 }
