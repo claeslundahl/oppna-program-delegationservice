@@ -3,12 +3,17 @@ package se.vgregion.delegation.test.webservice;
 /**
  * 
  */
+import java.sql.Connection;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -17,10 +22,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.quartz.impl.StdScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsResponseType;
@@ -48,15 +54,21 @@ import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegatio
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
 import se.riv.authorization.delegation.v1.DelegationBlockType;
 import se.riv.authorization.delegation.v1.DelegationType;
+import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.server.Server;
+import se.vgregion.delegation.ws.util.PropertiesBean;
+
+import com.dumbster.smtp.SimpleSmtpServer;
+import com.dumbster.smtp.SmtpMessage;
 
 /**
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
  * 
  */
-public class IntegrationTestDelegationServiceWS {
-    static private final Logger logger = LoggerFactory.getLogger(IntegrationTestDelegationServiceWS.class);
+public class TestDelegationServiceWS {
+    static private final Logger logger = LoggerFactory.getLogger(TestDelegationServiceWS.class);
 
+    DelegationMailSenderService delegationMailSenderService;
     GetActiveDelegationsResponderInterface activeDelegationsResponderInterface;
     GetDelegationResponderInterface getDelegationResponderInterface;
     GetInactiveDelegationsResponderInterface inactiveDelegationsResponderInterface;
@@ -65,8 +77,10 @@ public class IntegrationTestDelegationServiceWS {
     HasDelegationResponderInterface hasDelegationResponderInterface;
     SaveDelegationsResponderInterface saveDelegationsResponderInterface;
     RemoveDelegationResponderInterface removeDelegationResponderInterface;
-
+    SimpleSmtpServer smtpServer;
     Server server;
+
+    ClassPathXmlApplicationContext context;
 
     @Before
     public void setUp() throws Exception {
@@ -75,15 +89,18 @@ public class IntegrationTestDelegationServiceWS {
         server = new Server();
 
         String path = "classpath:/settings/serverConf.xml";
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
+        context = new ClassPathXmlApplicationContext(path);
 
-        server.startServer(ctx, "localhost", "24004");
+        delegationMailSenderService =
+                (DelegationMailSenderService) context.getBean("delegationMailSenderService");
+
+        PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
+
+        smtpServer = SimpleSmtpServer.start(Integer.valueOf(propertiesBean.getMailServerPort()));
+
+        server.startServer(context, "localhost", "24004");
 
         logger.info("Server Ready !!!! ");
-
-        // Client
-        String clientPath = "classpath:/settings/clientConf.xml";
-        ApplicationContext context = new ClassPathXmlApplicationContext(clientPath);
 
         activeDelegationsResponderInterface =
                 (GetActiveDelegationsResponderInterface) context
@@ -111,12 +128,28 @@ public class IntegrationTestDelegationServiceWS {
     @After
     public void tearDown() throws Exception {
         server.stopServer();
+        smtpServer.stop();
+
+        StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
+
+        schedulerFactoryBean.shutdown();
+
+        DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
+
+        Connection conn = dataSource.getConnection();
+
+        Statement st = conn.createStatement();
+        st.execute("SHUTDOWN");
+        conn.close();
+
     }
 
     @Test
     public void testSaveDelegationResponderInterface() {
 
         long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+
+        System.out.println("responsedelegationKey  " + responsedelegationKey);
 
         Assert.assertTrue(responsedelegationKey == 1);
 
@@ -125,7 +158,7 @@ public class IntegrationTestDelegationServiceWS {
     @Test
     public void testGetActiveDelegationsResponderInterface() {
 
-        // saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
         GetActiveDelegationsType parameters = new GetActiveDelegationsType();
 
@@ -261,6 +294,66 @@ public class IntegrationTestDelegationServiceWS {
                 se.riv.authorization.delegation.getdelegationresponder.v1.ResultCodeEnum.ERROR));
     }
 
+    @Test
+    public void testDelegationMailService() throws AddressException, MessagingException {
+
+        delegationMailSenderService.sendMail("sender@here.com", "receiver@there.com", "cepa", "depa");
+
+        Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
+
+        Iterator emailIter = smtpServer.getReceivedEmail();
+        SmtpMessage email = (SmtpMessage) emailIter.next();
+        Assert.assertTrue(email.getHeaderValue("Subject").equals("cepa"));
+        Assert.assertTrue(email.getBody().equals("depa"));
+
+    }
+
+    @Test
+    public void testEmailNotificationJob1() throws InterruptedException {
+
+        // ClassPathXmlApplicationContext context =
+        // new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
+
+        long DayInMilis = 86400000;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+        Date today = new Date();
+        Date ao = new Date(today.getTime() - 95 * DayInMilis);
+        Date vt = new Date(today.getTime() + 20 * DayInMilis);
+        Date vf = new Date(today.getTime() - 100 * DayInMilis);
+
+        saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
+
+        Thread.sleep(7000);
+
+        Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
+
+    }
+
+    @Test
+    public void testEmailNotificationJob2() throws InterruptedException {
+
+        // ClassPathXmlApplicationContext context =
+        // new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
+
+        long DayInMilis = 86400000;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+        Date today = new Date();
+        Date ao = new Date(today.getTime() - 95 * DayInMilis);
+        Date vt = new Date(today.getTime() + 10 * DayInMilis);
+        Date vf = new Date(today.getTime() - 100 * DayInMilis);
+
+        saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
+
+        Thread.sleep(11000);
+
+        Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
+
+    }
+
     private long saveADelegation(String aO, String vF, String vT) {
         SaveDelegationsType parameters = new SaveDelegationsType();
 
@@ -274,6 +367,7 @@ public class IntegrationTestDelegationServiceWS {
         DelegationType delegationType = new DelegationType();
 
         delegationType.setDelegatedFor("df");
+        delegationType.setDelegatedForEmail("test@vgregion.se");
         delegationType.setDelegateTo("dt");
         delegationType.setRole("role");
 
@@ -283,8 +377,6 @@ public class IntegrationTestDelegationServiceWS {
         list.add(delegationType);
 
         parameters.setDelegationBlockType(block);
-
-        System.out.println("test - save - " + saveDelegationsResponderInterface.hashCode());
 
         SaveDelegationsResponseType delegationsResponseType =
                 saveDelegationsResponderInterface.saveDelegations("", parameters);

@@ -12,15 +12,24 @@
   <tx:annotation-driven />
 
   <context:component-scan base-package="se.vgregion.delegation.persistence.jpa" />
+  
+  <context:property-placeholder
+  location="classpath:config-test.properties, file:${user.home}/.delegation-service/testconfig.properties"
+  ignore-resource-not-found="true" ignore-unresolvable="true" />
+  
+ 
+  <import resource="classpath:settings/JpaRepository-context-test.xml" />
+  <import resource="classpath:settings/mail-spring-test.xml" />
+  <import resource="classpath:settings/clientConf.xml" />
+  <import resource="classpath:settings/Spring-Quartz-test.xml" />
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-    <property name="url" value="jdbc:hsqldb:mem:otp" />
+    <property name="url" value="jdbc:hsqldb:mem:opt" />
     <property name="username" value="sa" />
     <property name="password" value="" />
   </bean>
-
-  <!-- <import resource="classpath:spring/jpa-connector.xml" /> -->
+  
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
@@ -44,7 +53,6 @@
     <property name="showSql" value="${hibernate.database.showsql}" />
   </bean>
 
-  <import resource="classpath:settings/JpaRepository-context-test.xml" />
 
   <bean id="hibernateJpaVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
     <property name="generateDdl" value="${hibernate.vendor.generateDdl}" />
@@ -74,6 +82,8 @@
     <property name="certPass" value="${ssl.cert.pass}" />
     <property name="certFileName" value="${cert.filename}" />
     <property name="serverPort" value="${server.port}" />
+    <property name="mailServer" value="${mail.server}" />
+    <property name="mailServerPort" value="${mail.port}" />
   </bean>
 
 </beans>

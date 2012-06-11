@@ -1,14 +1,11 @@
 package se.vgregion.delegation.util;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -20,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
-import se.vgregion.delegation.domain.DelegationStatus;
 
 public class DelegationUtil {
 
@@ -99,7 +95,7 @@ public class DelegationUtil {
                 value = sourceMap.get(key);
                 target.put(key, value);
             } catch (Exception e) {
-                logger.warn("Key '" + key + "' failed value '" + value + "'.");
+                logger.debug("Key '" + key + "' failed value '" + value + "'.");
             }
         }
     }
@@ -117,45 +113,6 @@ public class DelegationUtil {
         }
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        Delegation d = new Delegation();
-        d.setDelegatedFor("df");
-        d.setDelegateTo("dt");
-        d.setValidTo(new Date());
-        d.setId(-1l);
-        d.setValidFrom(new Date());
-        d.setRole("role");
-        d.setStatus(DelegationStatus.ACTIVE);
-        d.setDelegationKey(-1L);
-
-        BeanMap bm = new BeanMap(d);
-        Set keys = new HashSet();
-        keys.addAll(bm.keySet());
-        keys.remove("class");
-        StringBuilder def = new StringBuilder("insert into vgr_" + Delegation.class.getSimpleName() + " ( ");
-        StringBuilder val = new StringBuilder(" values (");
-        for (Object o : keys) {
-            Object v = bm.get(o);
-            if (v != null) {
-                def.append(o + ", ");
-                val.append("'" + format(bm.get(o)) + "', ");
-            }
-        }
-        def.delete(def.length() - 2, def.length());
-        val.delete(val.length() - 2, val.length());
-
-        // System.out.println(def + ") " + val + ");");
-    }
-
-    private static String format(Object o) {
-        if (o instanceof Date) {
-            Date d = (Date) o;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
-            return sdf.format(d);
-        }
-        return o + "";
     }
 
     public static DelegationBlock toDelegationBlock(Object obj) {

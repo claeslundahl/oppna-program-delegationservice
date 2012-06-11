@@ -9,15 +9,15 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     <property name="daysBeforeEnd" value="15"/>
     <property name="delegationRepository" ref="delegationRepository"/>
     <property name="emailToSendKey" value="1"/>
-    <property name="contextPath" value="mail-spring.xml"/>
+    <property name="contextPath" value="mail-spring-test.xml"/>
   </bean>
 
-  <bean id="delegationExpieryAlertJob2" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >
+  <bean id="delegationExpieryAlertJob2" class="se.vgregion.delegation.DelegationExpieryAlertJobImpl" >    
     <property name="daysBeforeStart" value="14"/>
     <property name="daysBeforeEnd" value="0"/>
     <property name="delegationRepository" ref="delegationRepository"/>
     <property name="emailToSendKey" value="2"/>
-    <property name="contextPath" value="mail-spring.xml"/>
+    <property name="contextPath" value="mail-spring-test.xml"/>
   </bean>
 
 <!-- org.springframework.scheduling.quartz.JobDetailBean -->
@@ -42,7 +42,7 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     <!-- "0 2 * * *" run every day at 03:00 -->
   </bean>
 
-  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+  <bean name="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="jobDetails">
       <list>
         <ref bean="delegationAlertJob1" />

@@ -63,7 +63,7 @@ public class DelegationMailSenderService {
 
         DelegationMailSenderService service =
                 (DelegationMailSenderService) context.getBean("userRegistrationService");
-        service.sendMail("apa@gmail.com", "simon.goransson@gmail.com", "hej", "test test");
+        service.sendMail("apa@gmail.com", "test@gmail.com", "test", "test test");
 
     }
 }
