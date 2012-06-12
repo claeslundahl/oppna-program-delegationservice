@@ -3,7 +3,6 @@ package se.vgregion.delegation.domain;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import se.vgregion.delegation.util.DelegationUtil;
@@ -15,7 +14,6 @@ public class DelegationBlockTest {
     }
 
     @Test
-    @Ignore
     public void toDelegationBlock() {
         DelegationBlock obj = new DelegationBlock();
         obj.setId(100L);

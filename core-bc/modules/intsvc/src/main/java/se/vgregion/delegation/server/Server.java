@@ -60,6 +60,10 @@ public class Server {
 
     static private List<Endpoint> endpoints;
 
+    boolean https = false;
+
+    JettyHTTPServerEngineFactory engineFactory;
+
     static public void main(String[] args) throws Exception {
 
         String path = "classpath:/spring/conf.xml";
@@ -96,7 +100,7 @@ public class Server {
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j.
         System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
 
-        boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
+        https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
 
         String http = "http";
 
@@ -144,12 +148,16 @@ public class Server {
         logger.info("Service available at: " + address + "?wsdl");
     }
 
-    public void stopServer() {
+    public void stopServer(String port) {
+
         for (Endpoint endpoint : endpoints) {
             endpoint.stop();
         }
         endpoints = null;
 
+        if (https) {
+            engineFactory.destroyForPort(Integer.parseInt(port));
+        }
         logger.info("Server shutdown!");
     }
 
@@ -172,7 +180,7 @@ public class Server {
         keyStore.load(resourceAsStream, propertiesBean.getCertPass().toCharArray());
         keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
 
-        JettyHTTPServerEngineFactory engineFactory = new JettyHTTPServerEngineFactory();
+        engineFactory = new JettyHTTPServerEngineFactory();
         TLSServerParameters tlsParams = new TLSServerParameters();
 
         ClientAuthentication clientAuth = new ClientAuthentication();
@@ -181,6 +189,7 @@ public class Server {
         tlsParams.setClientAuthentication(clientAuth);
         tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
         engineFactory.setTLSServerParametersForPort(port, tlsParams);
+
     }
 
 }
