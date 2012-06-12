@@ -267,8 +267,16 @@ public class TestDelegationServiceWS {
 
         RemoveDelegationResponseType removeDelegationResponseType =
                 removeDelegationResponderInterface.removeDelegation("", parameters);
-
+        
         Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.OK));
+        
+        GetDelegationType getParameters = new GetDelegationType();
+        getParameters.setDelegationKey(delegationKey +"");
+        
+		GetDelegationResponseType failingResult = getDelegationResponderInterface.getDelegation("", getParameters );
+
+        Assert.assertTrue(failingResult.getResultCode().equals(ResultCodeEnum.ERROR));
+        Assert.assertNull(failingResult.getDelegation());
     }
 
     @Test
