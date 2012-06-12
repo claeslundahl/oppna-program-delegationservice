@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                http://www.springframework.org/schema/tx
+                http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+  <context:annotation-config />
+  <tx:annotation-driven />
+
+  <context:component-scan base-package="se.vgregion.delegation.persistence.jpa" />
+
+  <context:property-placeholder
+    location="classpath:config-test.properties, file:${user.home}/.delegation-service/testconfig.properties"
+    ignore-resource-not-found="true" ignore-unresolvable="true" />
+
+
+  <import resource="classpath:settings/JpaRepository-context-test.xml" />
+  <import resource="classpath:settings/mail-spring-test.xml" />
+  <import resource="classpath:settings/Spring-Quartz-test.xml" />
+
+
+
+
+
+  <bean name="activeDelegationsResponderInterface" class="se.vgregion.delegation.ws.GetActiveDelegationsResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="getDelegationResponderInterface" class="se.vgregion.delegation.ws.GetDelegationResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="inactiveDelegationsResponderInterface" class="se.vgregion.delegation.ws.GetInactiveDelegationsResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="getDelegationsbyUnitAndRoleResponderInterface" class="se.vgregion.delegation.ws.GetDelegationsbyUnitAndRoleResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="getDelegationsResponderInterface" class="se.vgregion.delegation.ws.GetDelegationsResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="hasDelegationResponderInterface" class="se.vgregion.delegation.ws.HasDelegationResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="saveDelegationsResponderInterface" class="se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+  <bean name="removeDelegationResponderInterface" class="se.vgregion.delegation.ws.RemoveDelegationResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
+
+
+
+
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+    <property name="url" value="jdbc:hsqldb:mem:opt" />
+    <property name="username" value="sa" />
+    <property name="password" value="" />
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="persistenceXmlLocation" value="classpath*:META-INF/delegation-service-persistence.xml" />
+    <property name="jpaVendorAdapter" ref="jpaVendor" />
+    <property name="jpaPropertyMap">
+      <map>
+        <entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}" />
+        <entry key="hibernate.format_sql" value="${hibernate.database.showsql}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="jpaVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+    <property name="database" value="${hibernate.vendor.database}" />
+    <property name="databasePlatform" value="${hibernate.vendor.databaseDialect}" />
+    <property name="generateDdl" value="${hibernate.vendor.generateDdl}" />
+    <property name="showSql" value="${hibernate.database.showsql}" />
+  </bean>
+
+
+  <bean id="hibernateJpaVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+    <property name="generateDdl" value="${hibernate.vendor.generateDdl}" />
+    <property name="databasePlatform" value="${hibernate.vendor.databasePlatform}" />
+    <property name="database" value="${hibernate.vendor.database}" />
+  </bean>
+
+  <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+    <property name="persistenceXmlLocations">
+      <list>
+        <value>classpath*:META-INF/*-persistence.xml</value>
+      </list>
+    </property>
+    <property name="persistenceUnitPostProcessors">
+      <bean class="se.vgregion.dao.infrastructure.persistence.jpa.MergingPersistenceUnitPostProcessor" />
+    </property>
+    <property name="defaultDataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="delegationBlockRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationBlockRepository" />
+  <bean id="delegationRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationRepository" />
+  <bean id="delegationKeySequenceRepository" class="se.vgregion.delegation.persistence.jpa.JpaDelegationKeySequenceRepository" />
+
+  <bean id="delegationService" class="se.vgregion.delegation.DelegationServiceImpl" />
+
+  <bean name="propertiesBean" class="se.vgregion.delegation.ws.util.PropertiesBean">
+    <property name="certPass" value="${ssl.cert.pass}" />
+    <property name="certFileName" value="${cert.filename}" />
+    <property name="serverPort" value="${server.port}" />
+    <property name="mailServer" value="${mail.server}" />
+    <property name="mailServerPort" value="${mail.port}" />
+  </bean>
+
+</beans>

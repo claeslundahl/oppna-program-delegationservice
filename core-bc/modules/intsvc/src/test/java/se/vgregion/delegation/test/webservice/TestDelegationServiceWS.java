@@ -89,8 +89,7 @@ public class TestDelegationServiceWS {
         // Server
         server = new Server();
 
-        String path = "classpath:/settings/serverConf.xml";
-        context = new ClassPathXmlApplicationContext(path);
+        setUpContext();
 
         delegationMailSenderService =
                 (DelegationMailSenderService) context.getBean("delegationMailSenderService");
@@ -124,6 +123,11 @@ public class TestDelegationServiceWS {
                 (RemoveDelegationResponderInterface) context.getBean("removeDelegationResponderInterface");
 
         logger.info("Client Ready !!!! ");
+    }
+
+    protected void setUpContext() {
+        String path = "classpath:/settings/serverConf.xml";
+        context = new ClassPathXmlApplicationContext(path);
     }
 
     @After
