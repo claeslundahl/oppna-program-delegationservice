@@ -8,28 +8,28 @@
   
   <jaxws:client id="activeDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface"
-    address="http://localhost:24004/getactivedelegations" />
+    address="https://localhost:24004/getactivedelegations" />
   <jaxws:client id="getDelegationResponderInterface"
     serviceClass="se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface"
-    address="http://localhost:24004/getdelegation" />
+    address="https://localhost:24004/getdelegation" />
   <jaxws:client id="inactiveDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface"
-    address="http://localhost:24004/getinactivedelegations" />
+    address="https://localhost:24004/getinactivedelegations" />
   <jaxws:client id="getDelegationsbyUnitAndRoleResponderInterface"
     serviceClass="se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface"
-    address="http://localhost:24004/getdelegationsbyunitandrole" />
+    address="https://localhost:24004/getdelegationsbyunitandrole" />
   <jaxws:client id="getDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface"
-    address="http://localhost:24004/getdelegations" />
+    address="https://localhost:24004/getdelegations" />
   <jaxws:client id="hasDelegationResponderInterface"
     serviceClass="se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface"
-    address="http://localhost:24004/hasdelegation" />
+    address="https://localhost:24004/hasdelegation" />
   <jaxws:client id="saveDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface"
-    address="http://localhost:24004/savedelegations" />
+    address="https://localhost:24004/savedelegations" />
   <jaxws:client id="removeDelegationResponderInterface"
     serviceClass="se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface"
-    address="http://localhost:24004/removedelegation" />
+    address="https://localhost:24004/removedelegation" />
     
   <http:conduit name="https://localhost:24004/.*">
     <http:tlsClientParameters disableCNCheck="true">

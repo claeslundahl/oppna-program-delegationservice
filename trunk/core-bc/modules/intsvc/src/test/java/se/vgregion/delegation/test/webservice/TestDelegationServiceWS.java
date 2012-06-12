@@ -21,6 +21,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.quartz.impl.StdScheduler;
 import org.slf4j.Logger;
@@ -83,6 +84,11 @@ public class TestDelegationServiceWS {
 
     ClassPathXmlApplicationContext context;
 
+    @BeforeClass
+    public static void startUpTestInfo() {
+        logger.info("Starting test for web services!");
+    }
+
     @Before
     public void setUp() throws Exception {
 
@@ -102,27 +108,40 @@ public class TestDelegationServiceWS {
 
         logger.info("Server Ready !!!! ");
 
+        boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
+
+        ClassPathXmlApplicationContext contextClient;
+
+        if (https) {
+            contextClient = new ClassPathXmlApplicationContext("classpath:settings/clientConfHttps.xml");
+        } else {
+            contextClient = new ClassPathXmlApplicationContext("classpath:settings/clientConf.xml");
+        }
+
         activeDelegationsResponderInterface =
-                (GetActiveDelegationsResponderInterface) context
+                (GetActiveDelegationsResponderInterface) contextClient
                         .getBean("activeDelegationsResponderInterface");
         getDelegationResponderInterface =
-                (GetDelegationResponderInterface) context.getBean("getDelegationResponderInterface");
+                (GetDelegationResponderInterface) contextClient.getBean("getDelegationResponderInterface");
         inactiveDelegationsResponderInterface =
-                (GetInactiveDelegationsResponderInterface) context
+                (GetInactiveDelegationsResponderInterface) contextClient
                         .getBean("inactiveDelegationsResponderInterface");
         getDelegationsbyUnitAndRoleResponderInterface =
-                (GetDelegationsbyUnitAndRoleResponderInterface) context
+                (GetDelegationsbyUnitAndRoleResponderInterface) contextClient
                         .getBean("getDelegationsbyUnitAndRoleResponderInterface");
         getDelegationsResponderInterface =
-                (GetDelegationsResponderInterface) context.getBean("getDelegationsResponderInterface");
+                (GetDelegationsResponderInterface) contextClient.getBean("getDelegationsResponderInterface");
         hasDelegationResponderInterface =
-                (HasDelegationResponderInterface) context.getBean("hasDelegationResponderInterface");
+                (HasDelegationResponderInterface) contextClient.getBean("hasDelegationResponderInterface");
         saveDelegationsResponderInterface =
-                (SaveDelegationsResponderInterface) context.getBean("saveDelegationsResponderInterface");
+                (SaveDelegationsResponderInterface) contextClient
+                        .getBean("saveDelegationsResponderInterface");
         removeDelegationResponderInterface =
-                (RemoveDelegationResponderInterface) context.getBean("removeDelegationResponderInterface");
+                (RemoveDelegationResponderInterface) contextClient
+                        .getBean("removeDelegationResponderInterface");
 
         logger.info("Client Ready !!!! ");
+
     }
 
     protected void setUpContext() {
@@ -132,7 +151,7 @@ public class TestDelegationServiceWS {
 
     @After
     public void tearDown() throws Exception {
-        server.stopServer();
+        server.stopServer("24004");
         smtpServer.stop();
 
         StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
@@ -153,8 +172,6 @@ public class TestDelegationServiceWS {
     public void testSaveDelegationResponderInterface() {
 
         long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
-
-        System.out.println("responsedelegationKey  " + responsedelegationKey);
 
         Assert.assertTrue(responsedelegationKey == 1);
 
@@ -271,13 +288,14 @@ public class TestDelegationServiceWS {
 
         RemoveDelegationResponseType removeDelegationResponseType =
                 removeDelegationResponderInterface.removeDelegation("", parameters);
-        
+
         Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.OK));
-        
+
         GetDelegationType getParameters = new GetDelegationType();
-        getParameters.setDelegationKey(delegationKey +"");
-        
-		GetDelegationResponseType failingResult = getDelegationResponderInterface.getDelegation("", getParameters );
+        getParameters.setDelegationKey(delegationKey + "");
+
+        GetDelegationResponseType failingResult =
+                getDelegationResponderInterface.getDelegation("", getParameters);
 
         Assert.assertTrue(failingResult.getResultCode().equals(ResultCodeEnum.ERROR));
         Assert.assertNull(failingResult.getDelegation());
