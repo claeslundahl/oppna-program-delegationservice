@@ -5,8 +5,6 @@ import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -53,17 +51,12 @@ public class DelegationMailSenderService {
         }
     }
 
-    /**
-     * for testing
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("mail-spring.xml");
-
-        DelegationMailSenderService service =
-                (DelegationMailSenderService) context.getBean("userRegistrationService");
-        service.sendMail("apa@gmail.com", "test@gmail.com", "test", "test test");
-
-    }
+    // public static void main(String[] args) {
+    // ApplicationContext context = new ClassPathXmlApplicationContext("mail-spring.xml");
+    //
+    // DelegationMailSenderService service =
+    // (DelegationMailSenderService) context.getBean("userRegistrationService");
+    // service.sendMail("apa@gmail.com", "test@gmail.com", "test", "test test");
+    //
+    // }
 }
