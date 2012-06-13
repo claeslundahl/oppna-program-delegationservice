@@ -18,8 +18,8 @@
   ignore-resource-not-found="true" ignore-unresolvable="true" local-override="true" />
   
  
-  <import resource="classpath:settings/JpaRepository-context-test.xml" />
-  <import resource="classpath:settings/mail-spring-test.xml" />
+
+  <import resource="classpath*:mail-spring-test.xml" />
   <import resource="classpath:settings/Spring-Quartz-test.xml" />
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

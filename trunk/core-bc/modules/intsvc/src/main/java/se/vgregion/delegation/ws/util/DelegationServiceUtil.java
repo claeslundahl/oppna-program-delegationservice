@@ -7,16 +7,17 @@ package se.vgregion.delegation.ws.util;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import se.riv.authorization.delegation.v1.DelegationType;
 import se.riv.authorization.delegation.v1.DelegationsType;
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.util.DelegationUtil;
 
-public class DelegationServiceUtil {
+public final class DelegationServiceUtil {
 
-    private static final Logger LOG = Logger.getLogger(DelegationServiceUtil.class.getName());
+    private DelegationServiceUtil() {
+
+    }
 
     public static DelegationType convertDelegation(Delegation delegation) {
         return DelegationUtil.convert(delegation, DelegationType.class);

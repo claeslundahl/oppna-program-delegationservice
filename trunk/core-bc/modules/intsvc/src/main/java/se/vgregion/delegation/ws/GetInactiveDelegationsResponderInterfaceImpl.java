@@ -5,8 +5,6 @@
 
 package se.vgregion.delegation.ws;
 
-import java.util.logging.Logger;
-
 import javax.jws.WebService;
 
 import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface;
@@ -39,9 +37,6 @@ public class GetInactiveDelegationsResponderInterfaceImpl implements GetInactive
         super();
         this.delegationService = delegationService;
     }
-
-    private static final Logger LOG = Logger.getLogger(GetInactiveDelegationsResponderInterfaceImpl.class
-            .getName());
 
     @Override
     public GetInactiveDelegationsResponseType getInactiveDelegations(String logicalAddress,

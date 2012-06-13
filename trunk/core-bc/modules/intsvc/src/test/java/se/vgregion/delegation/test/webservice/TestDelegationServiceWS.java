@@ -68,7 +68,7 @@ import com.dumbster.smtp.SmtpMessage;
  * 
  */
 public class TestDelegationServiceWS {
-    static private final Logger logger = LoggerFactory.getLogger(TestDelegationServiceWS.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceWS.class);
 
     DelegationMailSenderService delegationMailSenderService;
     GetActiveDelegationsResponderInterface activeDelegationsResponderInterface;
@@ -86,7 +86,7 @@ public class TestDelegationServiceWS {
 
     @BeforeClass
     public static void startUpTestInfo() {
-        logger.info("Starting test for web services!");
+        LOGGER.info("Starting test for web services!");
     }
 
     @Before
@@ -106,7 +106,7 @@ public class TestDelegationServiceWS {
 
         server.startServer(context, "localhost", "24004");
 
-        logger.info("Server Ready !!!! ");
+        LOGGER.info("Server Ready !!!! ");
 
         boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
 
@@ -140,7 +140,7 @@ public class TestDelegationServiceWS {
                 (RemoveDelegationResponderInterface) contextClient
                         .getBean("removeDelegationResponderInterface");
 
-        logger.info("Client Ready !!!! ");
+        LOGGER.info("Client Ready !!!! ");
 
     }
 
@@ -318,8 +318,6 @@ public class TestDelegationServiceWS {
         GetDelegationResponseType getDelegationResponseType =
                 getDelegationResponderInterface.getDelegation("", parameters2);
 
-        DelegationType delegationType = getDelegationResponseType.getDelegation();
-
         Assert.assertTrue(getDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
     }
 
@@ -330,7 +328,7 @@ public class TestDelegationServiceWS {
 
         Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
 
-        Iterator emailIter = smtpServer.getReceivedEmail();
+        Iterator<?> emailIter = smtpServer.getReceivedEmail();
         SmtpMessage email = (SmtpMessage) emailIter.next();
         Assert.assertTrue(email.getHeaderValue("Subject").equals("cepa"));
         Assert.assertTrue(email.getBody().equals("depa"));
@@ -343,14 +341,14 @@ public class TestDelegationServiceWS {
         // ClassPathXmlApplicationContext context =
         // new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
 
-        long DayInMilis = 86400000;
+        long dayInMilis = 86400000;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
         Date today = new Date();
-        Date ao = new Date(today.getTime() - 95 * DayInMilis);
-        Date vt = new Date(today.getTime() + 20 * DayInMilis);
-        Date vf = new Date(today.getTime() - 100 * DayInMilis);
+        Date ao = new Date(today.getTime() - 95 * dayInMilis);
+        Date vt = new Date(today.getTime() + 20 * dayInMilis);
+        Date vf = new Date(today.getTime() - 100 * dayInMilis);
 
         saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
 
@@ -366,14 +364,14 @@ public class TestDelegationServiceWS {
         // ClassPathXmlApplicationContext context =
         // new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
 
-        long DayInMilis = 86400000;
+        long dayInMilis = 86400000;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
         Date today = new Date();
-        Date ao = new Date(today.getTime() - 95 * DayInMilis);
-        Date vt = new Date(today.getTime() + 10 * DayInMilis);
-        Date vf = new Date(today.getTime() - 100 * DayInMilis);
+        Date ao = new Date(today.getTime() - 95 * dayInMilis);
+        Date vt = new Date(today.getTime() + 10 * dayInMilis);
+        Date vf = new Date(today.getTime() - 100 * dayInMilis);
 
         saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
 
@@ -389,7 +387,7 @@ public class TestDelegationServiceWS {
         DelegationBlockType block = new DelegationBlockType();
 
         block.setApprovedOn(getADate(parseDate(aO)));
-        block.setSignToken("st");
+        block.setSignToken("dfglkjgklgfjdkgjjlkfdjklgjdfklgjdfklgjkdlfjgkldfjgklfdjgkldjgklgjhdfgjkhdfgjkhdfjkgjdfhgjkdfhgjkdfhgjkdfhgjkdfhgjkdfhgjkfhdgjkdfjkghdfjkghdfkjghkdjfhgjkdhgjkdhgjkdhgjkdjgkldjgklgjdlkdkjklgjfdk");
 
         List<DelegationType> list = block.getDelegations();
 

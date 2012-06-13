@@ -7,9 +7,6 @@ package se.vgregion.delegation.ws;
 
 import javax.jws.WebService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsResponseType;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsType;
@@ -40,9 +37,6 @@ public class GetActiveDelegationsResponderInterfaceImpl implements GetActiveDele
         super();
         this.delegationService = delegationService;
     }
-
-    static private final Logger logger = LoggerFactory
-            .getLogger(GetActiveDelegationsResponderInterfaceImpl.class);
 
     @Override
     public GetActiveDelegationsResponseType getActiveDelegations(String logicalAddress,

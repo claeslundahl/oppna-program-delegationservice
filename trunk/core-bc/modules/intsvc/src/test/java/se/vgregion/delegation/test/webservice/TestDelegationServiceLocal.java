@@ -31,11 +31,11 @@ import com.dumbster.smtp.SimpleSmtpServer;
  * 
  */
 public class TestDelegationServiceLocal extends TestDelegationServiceWS {
-    static private final Logger logger = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
 
     @BeforeClass
     public static void startUpTestInfo() {
-        logger.info("Starting test for local services!");
+        LOGGER.info("Starting test for local services!");
     }
 
     @Override

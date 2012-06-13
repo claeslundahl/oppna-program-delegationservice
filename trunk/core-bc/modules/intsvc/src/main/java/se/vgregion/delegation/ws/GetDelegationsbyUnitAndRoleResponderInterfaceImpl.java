@@ -5,8 +5,6 @@
 
 package se.vgregion.delegation.ws;
 
-import java.util.logging.Logger;
-
 import javax.jws.WebService;
 
 import se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface;
@@ -40,9 +38,6 @@ public class GetDelegationsbyUnitAndRoleResponderInterfaceImpl implements
         super();
         this.delegationService = delegationService;
     }
-
-    private static final Logger LOG = Logger
-            .getLogger(GetDelegationsbyUnitAndRoleResponderInterfaceImpl.class.getName());
 
     @Override
     public GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRole(String logicalAddress,

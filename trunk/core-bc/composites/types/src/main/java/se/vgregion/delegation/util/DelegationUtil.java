@@ -87,6 +87,7 @@ public class DelegationUtil {
     }
 
     public static void putAllWriteable(DelegationUtil.MyBeanMap source, DelegationUtil.MyBeanMap target) {
+        @SuppressWarnings("unchecked")
         HashMap<String, Object> sourceMap = new HashMap<String, Object>(source);
         sourceMap.remove("class");
         for (String key : sourceMap.keySet()) {

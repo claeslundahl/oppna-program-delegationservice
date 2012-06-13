@@ -6,25 +6,24 @@ import org.hamcrest.Matcher;
 import org.junit.internal.matchers.TypeSafeMatcher;
 
 /**
- * Created by IntelliJ IDEA.
- * User: david
- * Date: 11/10-11
- * Time: 17:12
+ * Created by IntelliJ IDEA. User: david Date: 11/10-11 Time: 17:12
  */
+@SuppressWarnings("rawtypes")
 public class ComparableMatcher extends TypeSafeMatcher<Comparable> {
 
     private enum ComparisonType {
         GT, GT_EQ, LT, LT_EQ
     }
 
-    private Comparable that;
-    private ComparisonType type;
+    private final Comparable that;
+    private final ComparisonType type;
 
     public ComparableMatcher(Comparable that, ComparisonType type) {
         this.that = that;
         this.type = type;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean matchesSafely(Comparable item) {
         switch (type) {

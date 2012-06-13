@@ -52,17 +52,11 @@ import se.vgregion.delegation.ws.util.PropertiesBean;
 
 public class Server {
 
-    private org.apache.cxf.endpoint.Server server;
-
     private static PropertiesBean propertiesBean;
-
-    static private final Logger logger = LoggerFactory.getLogger(Server.class);
-
-    static private List<Endpoint> endpoints;
-
-    boolean https = false;
-
-    JettyHTTPServerEngineFactory engineFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+    private static List<Endpoint> endpoints;
+    private JettyHTTPServerEngineFactory engineFactory;
+    private boolean https = false;
 
     static public void main(String[] args) throws Exception {
 
@@ -75,9 +69,9 @@ public class Server {
 
         try {
             hostname = InetAddress.getLocalHost().getHostName();
-            logger.info("Host namne = " + hostname);
+            LOGGER.info("Host namne = " + hostname);
         } catch (UnknownHostException e) {
-            logger.error("Host namne = " + e.getStackTrace());
+            LOGGER.error("Host namne = " + e.getStackTrace());
         }
 
         server.startServer(ctx, hostname, propertiesBean.getServerPort());
@@ -91,7 +85,7 @@ public class Server {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            logger.error("ClassNotFoundException for: org.postgresql.Driver " + e.getMessage());
+            LOGGER.error("ClassNotFoundException for: org.postgresql.Driver " + e.getMessage());
         }
 
         DelegationService delegationService = (DelegationService) ctx.getBean("delegationService");
@@ -125,10 +119,10 @@ public class Server {
         String address8 = http + "://" + hostname + ":" + port + "/savedelegations";
         String address9 = http + "://" + hostname + ":" + port + "/removedelegation";
 
-        logger.info(
+        LOGGER.info(
                 "RIV TA Basic Profile v2.1 - Delegation Service , Apache CXF Producer running on Java version {}",
                 System.getProperty("java.version"));
-        logger.info("Starting server...");
+        LOGGER.info("Starting server...");
 
         startService(new GetActiveDelegationsResponderInterfaceImpl(delegationService), address2);
         startService(new GetDelegationResponderInterfaceImpl(delegationService), address3);
@@ -139,13 +133,13 @@ public class Server {
         startService(new SaveDelegationsResponderInterfaceImpl(delegationService), address8);
         startService(new RemoveDelegationResponderInterfaceImpl(delegationService), address9);
 
-        logger.info("Server ready!");
+        LOGGER.info("Server ready!");
     }
 
     static private void startService(Object serviceImpl, String address) {
         Endpoint endpoint = Endpoint.publish(address, serviceImpl);
         endpoints.add(endpoint);
-        logger.info("Service available at: " + address + "?wsdl");
+        LOGGER.info("Service available at: " + address + "?wsdl");
     }
 
     public void stopServer(String port) {
@@ -158,7 +152,7 @@ public class Server {
         if (https) {
             engineFactory.destroyForPort(Integer.parseInt(port));
         }
-        logger.info("Server shutdown!");
+        LOGGER.info("Server shutdown!");
     }
 
     /**

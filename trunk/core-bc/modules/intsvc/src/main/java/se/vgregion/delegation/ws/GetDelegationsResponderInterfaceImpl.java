@@ -5,8 +5,6 @@
 
 package se.vgregion.delegation.ws;
 
-import java.util.logging.Logger;
-
 import javax.jws.WebService;
 
 import se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface;
@@ -39,8 +37,6 @@ public class GetDelegationsResponderInterfaceImpl implements GetDelegationsRespo
         super();
         this.delegationService = delegationService;
     }
-
-    private static final Logger LOG = Logger.getLogger(GetDelegationsResponderInterfaceImpl.class.getName());
 
     @Override
     public GetDelegationsResponseType getDelegations(String logicalAddress, GetDelegationsType parameters) {
