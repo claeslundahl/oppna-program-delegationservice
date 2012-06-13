@@ -128,20 +128,8 @@ public class DelegationServiceImpl implements DelegationService {
         return delegationRepository.findByDelegationKey(delegationKey);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.vgregion.delegation.DelegationService#removeDelegation(java.lang.String)
-     */
     @Override
     public boolean removeDelegation(Long delegationKey) {
-
-        try {
-            return delegationRepository.removeDelegation(delegationKey);
-        } catch (NumberFormatException e) {
-            LOGGER.error(e.getMessage());
-            return false;
-        }
-
+        return delegationRepository.removeDelegation(delegationKey);
     }
 }

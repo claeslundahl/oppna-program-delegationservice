@@ -3,11 +3,14 @@
  */
 package se.vgregion;
 
+import static org.junit.Assert.fail;
+
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,6 +21,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import se.vgregion.delegation.DelegationService;
+import se.vgregion.delegation.NotValidChecksumException;
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
 import se.vgregion.delegation.domain.DelegationStatus;
@@ -48,6 +52,7 @@ public class TestDelegationService {
 
     }
 
+    @After
     public void tearDown() throws Exception {
         DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
 
@@ -59,7 +64,7 @@ public class TestDelegationService {
     }
 
     @Test
-    public void testSaveDelegationResponderInterface() {
+    public void testSaveDelegation() {
 
         long responsedelegationKey =
                 saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
@@ -69,26 +74,76 @@ public class TestDelegationService {
     }
 
     @Test
-    public void testGetActiveDelegationsResponderInterface() {
+    public void testUpdateDelegation() {
+
+        long responsedelegationKey =
+                saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
+
+        Delegation delegationResult1 = delegationService.getDelegation(responsedelegationKey);
+
+        DelegationBlock delegationBlock = new DelegationBlock();
+        delegationBlock.setApprovedOn(getADateWithOfset(-18));
+        delegationBlock.setSignToken("st");
+
+        Delegation delegation = new Delegation();
+
+        delegation.setDelegationKey(responsedelegationKey);
+        delegation.setDelegatedFor("newdf");
+        delegation.setDelegatedForEmail("test@vgregion.se");
+        delegation.setDelegateTo("dt");
+        delegation.setRole("role");
+        delegation.setValidFrom(getADateWithOfset(-28));
+        delegation.setValidTo(getADateWithOfset(20));
+
+        delegationBlock.addDelegation(delegation);
+
+        DelegationBlock delegationBlock2 = delegationService.save(delegationBlock);
+
+        Delegation delegationResult2 = delegationService.getDelegation(responsedelegationKey);
+
+        Assert.assertTrue(delegationResult1.getId() != delegationResult2.getId());
+        Assert.assertTrue(delegationResult1.getDelegationKey().equals(delegationResult2.getDelegationKey()));
+
+    }
+
+    @Test
+    public void testSaveDelegationFail() {
+
+        DelegationBlock delegationBlock = new DelegationBlock();
+        delegationBlock.setSignToken(null);
+
+        Delegation delegation = new Delegation();
+        delegationBlock.addDelegation(delegation);
+
+        try {
+            delegationService.save(delegationBlock);
+            fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof NotValidChecksumException);
+        }
+
+    }
+
+    @Test
+    public void testGetActiveDelegations() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         List<Delegation> delegations = delegationService.getActiveDelegations("df");
         Assert.assertTrue(delegations.size() > 0);
     }
 
     @Test
-    public void testGetDelegationResponderInterface() {
+    public void testGetDelegation() {
 
         // Creates a delegetion to get.
         long responsedelegationKey =
                 saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
 
         Delegation delegation = delegationService.getDelegation(responsedelegationKey);
-
         Assert.assertEquals(delegation.getDelegationKey().longValue(), responsedelegationKey);
     }
 
     @Test
-    public void testGetInactiveDelegationsResponderInterface() {
+    public void testGetInactiveDelegations() {
         saveADelegation(getADateWithOfset(-118), getADateWithOfset(-120), getADateWithOfset(-40));
         List<Delegation> delegations = delegationService.getInActiveDelegations("df");
         Assert.assertTrue(delegations.size() > 0);
@@ -96,7 +151,7 @@ public class TestDelegationService {
     }
 
     @Test
-    public void testGetDelegationsbyUnitAndRoleResponderInterface() {
+    public void testGetDelegationsbyUnitAndRole() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         List<Delegation> delegations = delegationService.getDelegationsForToRole("df", "dt", "role");
         Assert.assertTrue(delegations.size() > 0);
@@ -104,7 +159,7 @@ public class TestDelegationService {
     }
 
     @Test
-    public void testGetDelegationsResponderInterface() {
+    public void testGetDelegations() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         List<Delegation> delegations = delegationService.getDelegations("df");
         Assert.assertTrue(delegations.size() > 0);
@@ -112,13 +167,13 @@ public class TestDelegationService {
     }
 
     @Test
-    public void testHasDelegationResponderInterface() {
+    public void testHasDelegation() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         Assert.assertTrue(delegationService.hasDelegations("df", "dt", "role"));
     }
 
     @Test
-    public void testRemoveDelegationResponderInterface() {
+    public void testRemoveDelegation() {
         long responsedelegationKey =
                 saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         Delegation delegation = delegationService.getDelegation(responsedelegationKey);
