@@ -40,7 +40,7 @@ public class HasDelegationResponderInterfaceImpl implements HasDelegationRespond
         this.delegationService = delegationService;
     }
 
-    static private final Logger logger = LoggerFactory.getLogger(HasDelegationResponderInterfaceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HasDelegationResponderInterfaceImpl.class);
 
     @Override
     public HasDelegationResponseType hasDelegation(String logicalAddress, HasDelegationType parameters) {
@@ -57,7 +57,7 @@ public class HasDelegationResponderInterfaceImpl implements HasDelegationRespond
         } catch (Exception e) {
             hasDelegationResponseType.setResultCode(ResultCodeEnum.ERROR);
             hasDelegationResponseType.setComment(e.getMessage());
-            logger.error("Error: " + e.getStackTrace());
+            LOGGER.error("Error: " + e.getStackTrace());
         }
 
         return hasDelegationResponseType;

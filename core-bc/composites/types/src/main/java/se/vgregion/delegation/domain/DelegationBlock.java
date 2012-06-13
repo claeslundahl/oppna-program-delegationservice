@@ -35,6 +35,7 @@ public class DelegationBlock extends AbstractEntity<Long> implements
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 20000)
     private String signToken;
 
     private String delegatedBy;
@@ -124,6 +125,7 @@ public class DelegationBlock extends AbstractEntity<Long> implements
         this.id = id;
     }
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         DelegationBlock db = new DelegationBlock();
         db.setApprovedOn(new Date());
@@ -133,6 +135,7 @@ public class DelegationBlock extends AbstractEntity<Long> implements
         // Set<Delegation> delegations = db.getDelegations();
 
         BeanMap bm = new BeanMap(db);
+        @SuppressWarnings("rawtypes")
         Set keys = new HashSet();
         keys.addAll(bm.keySet());
         keys.remove("class");

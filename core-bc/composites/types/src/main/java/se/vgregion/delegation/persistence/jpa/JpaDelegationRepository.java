@@ -47,6 +47,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Delegation> getInActiveDelegations(String delegatedFor) {
         String query =
@@ -61,6 +62,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         return q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Delegation> getDelegations(String delegatedFor) {
         String query =
@@ -75,6 +77,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
         return q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
         String query =
@@ -153,11 +156,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.vgregion.delegation.persistence.DelegationRepository#findByDelegationKey(java.lang.Long)
-     */
+    @SuppressWarnings("unchecked")
     @Override
     public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey) {
 

@@ -3,9 +3,6 @@
  */
 package se.vgregion.delegation.ws;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationResponseType;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationType;
@@ -17,8 +14,6 @@ import se.vgregion.delegation.DelegationService;
  * 
  */
 public class RemoveDelegationResponderInterfaceImpl implements RemoveDelegationResponderInterface {
-    static private final Logger logger = LoggerFactory
-            .getLogger(RemoveDelegationResponderInterfaceImpl.class);
 
     DelegationService delegationService;
 

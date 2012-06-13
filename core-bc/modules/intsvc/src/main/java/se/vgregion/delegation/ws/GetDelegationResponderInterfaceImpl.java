@@ -8,9 +8,6 @@ package se.vgregion.delegation.ws;
 import javax.jws.WebService;
 import javax.persistence.NoResultException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationResponseType;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationType;
@@ -37,8 +34,6 @@ public class GetDelegationResponderInterfaceImpl implements GetDelegationRespond
         super();
         this.delegationService = delegationService;
     }
-
-    static private final Logger logger = LoggerFactory.getLogger(GetDelegationResponderInterfaceImpl.class);
 
     @Override
     public GetDelegationResponseType getDelegation(String logicalAddress, GetDelegationType parameters) {
