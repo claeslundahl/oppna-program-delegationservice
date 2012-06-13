@@ -107,6 +107,39 @@ public class TestDelegationService {
     }
 
     @Test
+    public void testUpdateDelegation2() {
+
+        long responsedelegationKey =
+                saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
+
+        Delegation delegationResult1 = delegationService.getDelegation(responsedelegationKey);
+
+        DelegationBlock delegationBlock = new DelegationBlock();
+        delegationBlock.setApprovedOn(getADateWithOfset(-18));
+        delegationBlock.setSignToken("st");
+
+        Delegation delegation = new Delegation();
+
+        delegation.setDelegationKey(0L);
+        delegation.setDelegatedFor("newdf");
+        delegation.setDelegatedForEmail("test@vgregion.se");
+        delegation.setDelegateTo("dt");
+        delegation.setRole("role");
+        delegation.setValidFrom(getADateWithOfset(-28));
+        delegation.setValidTo(getADateWithOfset(20));
+
+        delegationBlock.addDelegation(delegation);
+
+        DelegationBlock delegationBlock2 = delegationService.save(delegationBlock);
+
+        Delegation delegationResult2 = delegationService.getDelegation(responsedelegationKey);
+
+        Assert.assertTrue(delegationResult1.getId() != delegationResult2.getId());
+        Assert.assertTrue(delegationResult1.getDelegationKey().equals(delegationResult2.getDelegationKey()));
+
+    }
+
+    @Test
     public void testSaveDelegationFail() {
 
         DelegationBlock delegationBlock = new DelegationBlock();
@@ -139,6 +172,17 @@ public class TestDelegationService {
                 saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
 
         Delegation delegation = delegationService.getDelegation(responsedelegationKey);
+        Assert.assertEquals(delegation.getDelegationKey().longValue(), responsedelegationKey);
+    }
+
+    @Test
+    public void testGetDelegation2() {
+
+        // Creates a delegetion to get.
+        long responsedelegationKey =
+                saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
+
+        Delegation delegation = delegationService.findByDelegationKey(responsedelegationKey);
         Assert.assertEquals(delegation.getDelegationKey().longValue(), responsedelegationKey);
     }
 
