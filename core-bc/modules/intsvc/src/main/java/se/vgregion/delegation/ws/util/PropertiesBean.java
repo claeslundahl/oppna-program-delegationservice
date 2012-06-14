@@ -14,6 +14,8 @@ public class PropertiesBean {
     private String serverPort;
     private String mailServer;
     private String mailServerPort;
+    private String regularExpressionClientCert;
+    private boolean clientCertSecurityActive;
 
     public String getCertPass() {
         return certPass;
@@ -53,6 +55,18 @@ public class PropertiesBean {
 
     public void setMailServerPort(String mailServerPort) {
         this.mailServerPort = mailServerPort;
+    }
+
+    public boolean isClientCertSecurityActive() {
+        return clientCertSecurityActive;
+    }
+
+    public void setRegularExpressionClientCert(String regularExpressionClientCert) {
+        this.regularExpressionClientCert = regularExpressionClientCert;
+    }
+
+    public String getRegularExpressionClientCert() {
+        return regularExpressionClientCert;
     }
 
 }
