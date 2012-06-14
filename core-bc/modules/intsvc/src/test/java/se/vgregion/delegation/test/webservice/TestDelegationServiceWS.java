@@ -169,7 +169,7 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testSaveDelegationResponderInterface() {
+    public void testSaveDelegation() {
 
         long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -178,7 +178,7 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testGetActiveDelegationsResponderInterface() {
+    public void testGetActiveDelegations() {
 
         saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -194,7 +194,22 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testGetDelegationResponderInterface() {
+    public void testGetActiveDelegationsNegative() {
+
+        GetActiveDelegationsType parameters = new GetActiveDelegationsType();
+
+        parameters.setDelegationFor("dfxxx");
+
+        GetActiveDelegationsResponseType activeDelegationsResponseType =
+                activeDelegationsResponderInterface.getActiveDelegations("", parameters);
+        activeDelegationsResponseType.getDelegations().getContent().size();
+
+        Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(activeDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+    }
+
+    @Test
+    public void testGetDelegation() {
 
         // Creates a delegetion to get.
         long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
@@ -212,7 +227,20 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testGetInactiveDelegationsResponderInterface() {
+    public void testGetDelegationNegative() {
+
+        GetDelegationType parameters = new GetDelegationType();
+        parameters.setDelegationKey(String.valueOf(1873475839477878943L));
+
+        // Gets delegation
+        GetDelegationResponseType delegationResponseType =
+                getDelegationResponderInterface.getDelegation("", parameters);
+
+        Assert.assertTrue(delegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
+    }
+
+    @Test
+    public void testGetInactiveDelegations() {
 
         saveADelegation("2010/01/02", "2010/01/01", "2011/01/01");
 
@@ -228,7 +256,22 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testGetDelegationsbyUnitAndRoleResponderInterface() {
+    public void testGetInactiveDelegationsNegative() {
+
+        GetInactiveDelegationsType parameters = new GetInactiveDelegationsType();
+
+        parameters.setDelegationFor("dfxxx");
+
+        GetInactiveDelegationsResponseType inactiveDelegationsResponseType =
+                inactiveDelegationsResponderInterface.getInactiveDelegations("", parameters);
+        inactiveDelegationsResponseType.getDelegations().getContent().size();
+
+        Assert.assertTrue(inactiveDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(inactiveDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+    }
+
+    @Test
+    public void testGetDelegationsbyUnitAndRole() {
 
         saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -246,7 +289,24 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testGetDelegationsResponderInterface() {
+    public void testGetDelegationsbyUnitAndRoleNegative() {
+
+        GetDelegationsbyUnitAndRoleType parameters = new GetDelegationsbyUnitAndRoleType();
+
+        parameters.setDelegatedFor("dfxxx");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
+
+        GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRoleResponseType =
+                getDelegationsbyUnitAndRoleResponderInterface.getDelegationsbyUnitAndRole("", parameters);
+
+        Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+
+    }
+
+    @Test
+    public void testGetDelegations() {
 
         saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -262,7 +322,22 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testHasDelegationResponderInterface() {
+    public void testGetDelegationsNegative() {
+
+        GetDelegationsType parameters = new GetDelegationsType();
+
+        parameters.setDelegationFor("dfxxx");
+
+        GetDelegationsResponseType getDelegationsResponseType =
+                getDelegationsResponderInterface.getDelegations("", parameters);
+
+        Assert.assertTrue(getDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(getDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+
+    }
+
+    @Test
+    public void testHasDelegation() {
 
         saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -279,7 +354,22 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testRemoveDelegationResponderInterface() {
+    public void testHasDelegationNegative() {
+
+        HasDelegationType parameters = new HasDelegationType();
+
+        parameters.setDelegatedFor("dfxxx");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
+
+        HasDelegationResponseType hasDelegationResponseType =
+                hasDelegationResponderInterface.hasDelegation("", parameters);
+
+        Assert.assertFalse(hasDelegationResponseType.isResult());
+    }
+
+    @Test
+    public void testRemoveDelegation() {
 
         long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
@@ -302,7 +392,20 @@ public class TestDelegationServiceWS {
     }
 
     @Test
-    public void testRemoveDelegationResponderInterface2() {
+    public void testRemoveDelegationNegative() {
+
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("5784464");
+
+        RemoveDelegationResponseType removeDelegationResponseType =
+                removeDelegationResponderInterface.removeDelegation("", parameters);
+
+        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
+
+    }
+
+    @Test
+    public void testRemoveDelegation2() {
 
         long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 

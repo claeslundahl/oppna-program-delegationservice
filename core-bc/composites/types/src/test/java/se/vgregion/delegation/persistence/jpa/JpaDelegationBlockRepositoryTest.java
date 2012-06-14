@@ -99,4 +99,40 @@ public class JpaDelegationBlockRepositoryTest extends AbstractTransactionalJUnit
 
     }
 
+    @Test
+    public void testStoreTwoTimes() {
+        int sizeBefor = delegationRepository.findAll().size();
+
+        DelegationBlock delegationBlock = new DelegationBlock();
+        // delegationBlock.setId(-1L);
+        delegationBlock.setApprovedOn(new Date());
+        delegationBlock.setDelegatedBy("db");
+        delegationBlock.setSignToken("MeU8Cfja6a3dGPIswyc3vBcGLRjOVNzuecPDWYWbd6qRkkpmIhDem8TOKmUe2");
+        Delegation delegation = new Delegation();
+
+        delegation.setDelegatedFor("df");
+        delegation.setDelegateTo("dt");
+        delegation.setValidTo(new Date());
+        // delegation.setId(-4l);
+        delegation.setValidFrom(new Date());
+        delegation.setRole("role");
+        delegation.setStatus(DelegationStatus.ACTIVE);
+        delegation.setDelegationKey(-4L);
+
+        delegationBlock.addDelegation(delegation);
+
+        DelegationBlock delegationBlock2 = new DelegationBlock();
+        delegationBlock2.setApprovedOn(new Date());
+        delegationBlock2.setDelegatedBy("db");
+        delegationBlock2.setSignToken("MeU8Cfja6a3dGPIswyc3vBcGLRjOVNzuecPDWYWbd6qRkkpmIhDem8TOKmUe2");
+        delegationBlock2.addDelegation(delegation);
+
+        delegationBlockRepository.store(delegationBlock);
+        delegationBlockRepository.store(delegationBlock2);
+
+        int sizeAfter = delegationRepository.findAll().size();
+
+        assertEquals(sizeBefor + 1, sizeAfter);
+    }
+
 }

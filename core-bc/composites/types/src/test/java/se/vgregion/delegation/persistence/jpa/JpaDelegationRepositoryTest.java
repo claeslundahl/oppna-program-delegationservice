@@ -64,6 +64,12 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
+    public void getDelegationsForToRoleStar() {
+        List<Delegation> delegation = delegationRepository.getDelegationsForToRole("*", "*", "*");
+        assertEquals(2, delegation.size());
+    }
+
+    @Test
     public void testDelegation() {
         Delegation delegation = delegationRepository.getDelegation(-1L);
         assertEquals("df", delegation.getDelegatedFor());
@@ -76,13 +82,21 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
+    public void testfindByDelegationKey() {
+        Delegation delegation = delegationRepository.findByDelegationKey(-1L);
+        assertEquals("df", delegation.getDelegatedFor());
+    }
+
+    @Test
     @Transactional
     public void testFindSoonToExpireWithUnsentWarning() {
-    	delegationRepository.store(mkDelegation());
-    	delegationRepository.flush();
-        List<Delegation> result = delegationRepository.findSoonToExpireWithUnsentWarning(System.currentTimeMillis() + 2000000, 1);
+        delegationRepository.store(mkDelegation());
+        delegationRepository.flush();
+        List<Delegation> result =
+                delegationRepository.findSoonToExpireWithUnsentWarning(System.currentTimeMillis() + 2000000,
+                        1);
         System.out.println("Result Count = " + result.size());
-        
+
         System.out.println(result.get(0).getValidFrom());
         Assert.assertNotNull(result);
     }
@@ -100,5 +114,5 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
         entity.setValidTo(new Date(System.currentTimeMillis() + 1000000));
         return entity;
     }
-    
+
 }
