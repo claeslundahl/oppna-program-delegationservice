@@ -27,22 +27,33 @@ import se.vgregion.delegation.domain.DelegationBlock;
 import se.vgregion.delegation.domain.DelegationStatus;
 
 /**
+ * Test Class for testing the DelegationService.
+ * 
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
  * 
  */
 public class TestDelegationService {
-    static private final Logger logger = LoggerFactory.getLogger(TestDelegationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestDelegationService.class);
 
-    DelegationService delegationService;
-    ClassPathXmlApplicationContext context;
+    private DelegationService delegationService;
+    private ClassPathXmlApplicationContext context;
 
-    private static final long DayInMilis = 86400000;
+    private static final long DAYSINMILIS = 86400000;
 
+    /**
+     * Gives startup test info logging.
+     */
     @BeforeClass
     public static void startUpTestInfo() {
-        logger.info("Starting test for local services!");
+        LOGGER.info("Starting test for local services!");
     }
 
+    /**
+     * Sets the up environment before performing the tests.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @Before
     public void setUp() throws Exception {
 
@@ -52,6 +63,12 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Shouting down connection to database.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @After
     public void tearDown() throws Exception {
         DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
@@ -63,6 +80,9 @@ public class TestDelegationService {
         conn.close();
     }
 
+    /**
+     * Test save delegation.
+     */
     @Test
     public void testSaveDelegation() {
 
@@ -73,6 +93,9 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Test update delegation.
+     */
     @Test
     public void testUpdateDelegation() {
 
@@ -97,7 +120,7 @@ public class TestDelegationService {
 
         delegationBlock.addDelegation(delegation);
 
-        DelegationBlock delegationBlock2 = delegationService.save(delegationBlock);
+        delegationService.save(delegationBlock);
 
         Delegation delegationResult2 = delegationService.getDelegation(responsedelegationKey);
 
@@ -106,39 +129,9 @@ public class TestDelegationService {
 
     }
 
-    @Test
-    public void testUpdateDelegation2() {
-
-        long responsedelegationKey =
-                saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
-
-        Delegation delegationResult1 = delegationService.getDelegation(responsedelegationKey);
-
-        DelegationBlock delegationBlock = new DelegationBlock();
-        delegationBlock.setApprovedOn(getADateWithOfset(-18));
-        delegationBlock.setSignToken("st");
-
-        Delegation delegation = new Delegation();
-
-        delegation.setDelegationKey(0L);
-        delegation.setDelegatedFor("newdf");
-        delegation.setDelegatedForEmail("test@vgregion.se");
-        delegation.setDelegateTo("dt");
-        delegation.setRole("role");
-        delegation.setValidFrom(getADateWithOfset(-28));
-        delegation.setValidTo(getADateWithOfset(20));
-
-        delegationBlock.addDelegation(delegation);
-
-        DelegationBlock delegationBlock2 = delegationService.save(delegationBlock);
-
-        Delegation delegationResult2 = delegationService.getDelegation(responsedelegationKey);
-
-        Assert.assertTrue(delegationResult1.getId() != delegationResult2.getId());
-        Assert.assertTrue(delegationResult1.getDelegationKey().equals(delegationResult2.getDelegationKey()));
-
-    }
-
+    /**
+     * Test save delegation with SignToken set to null (negative test).
+     */
     @Test
     public void testSaveDelegationFail() {
 
@@ -157,6 +150,9 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Test get active delegations.
+     */
     @Test
     public void testGetActiveDelegations() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
@@ -164,6 +160,9 @@ public class TestDelegationService {
         Assert.assertTrue(delegations.size() > 0);
     }
 
+    /**
+     * Test get delegation.
+     */
     @Test
     public void testGetDelegation() {
 
@@ -175,6 +174,9 @@ public class TestDelegationService {
         Assert.assertEquals(delegation.getDelegationKey().longValue(), responsedelegationKey);
     }
 
+    /**
+     * Test get delegation2.
+     */
     @Test
     public void testGetDelegation2() {
 
@@ -186,6 +188,9 @@ public class TestDelegationService {
         Assert.assertEquals(delegation.getDelegationKey().longValue(), responsedelegationKey);
     }
 
+    /**
+     * Test get inactive delegations.
+     */
     @Test
     public void testGetInactiveDelegations() {
         saveADelegation(getADateWithOfset(-118), getADateWithOfset(-120), getADateWithOfset(-40));
@@ -194,6 +199,9 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Test get delegationsby unit and role.
+     */
     @Test
     public void testGetDelegationsbyUnitAndRole() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
@@ -202,6 +210,9 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Test get delegations.
+     */
     @Test
     public void testGetDelegations() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
@@ -210,12 +221,18 @@ public class TestDelegationService {
 
     }
 
+    /**
+     * Test has delegation.
+     */
     @Test
     public void testHasDelegation() {
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
         Assert.assertTrue(delegationService.hasDelegations("df", "dt", "role"));
     }
 
+    /**
+     * Test remove delegation.
+     */
     @Test
     public void testRemoveDelegation() {
         long responsedelegationKey =
@@ -227,6 +244,14 @@ public class TestDelegationService {
         Assert.assertTrue(delegation2.getStatus().compareTo(DelegationStatus.DELETED) == 0);
     }
 
+    /**
+     * Help method for saving a delegation.
+     * 
+     * @param approvedOndate
+     * @param validFromDate
+     * @param validToDate
+     * @return
+     */
     private long saveADelegation(Date approvedOndate, Date validFromDate, Date validToDate) {
 
         DelegationBlock delegationBlock = new DelegationBlock();
@@ -251,7 +276,7 @@ public class TestDelegationService {
     private Date getADateWithOfset(long ofsetDays) {
 
         Date today = new Date();
-        Date returnDate = new Date(today.getTime() + ofsetDays * DayInMilis);
+        Date returnDate = new Date(today.getTime() + ofsetDays * DAYSINMILIS);
 
         return returnDate;
 

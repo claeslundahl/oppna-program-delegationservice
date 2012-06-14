@@ -21,6 +21,9 @@ import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.persistence.DelegationRepository;
 
+/**
+ * The Class DelegationExpieryAlertJobImpl.
+ */
 @Component
 public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob {
 
@@ -30,14 +33,19 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     private long warnBeforeExpieryTimeEnd;
     private long daysBeforeStart;
     private long daysBeforeEnd;
-    private final static long oneDayMilis = 24l * 60l * 60l * 1000l;
+    private final static long oneDayMilis = 24L * 60L * 60L * 1000L;
     private int emailToSendKey;
 
     private String contextPath;
 
     @Autowired(required = false)
-    DelegationRepository delegationRepository;
+    private DelegationRepository delegationRepository;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationExpieryAlertJob#scanRepoAndSendMails()
+     */
     @Override
     @Transactional
     public void scanRepoAndSendMails() {
@@ -78,6 +86,8 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     }
 
     /**
+     * Help method that generates the text to the E-mail subject.
+     * 
      * @param velocityEngine
      * @param delegation
      * @return
@@ -87,8 +97,11 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     }
 
     /**
-     * @param validTo
-     * @return
+     * Help method for converting a date to a string on the form "yyyy-MM-dd".
+     * 
+     * @param a
+     *            date
+     * @return a date as a String
      */
     private String formateDate(Date validTo) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -98,8 +111,11 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     }
 
     /**
+     * Help method that generates the text to the E-mail content using a velocity template. For an delegation.
+     * 
      * @param velocityEngine
-     * @return
+     *            and the delegation to create the text for.
+     * @return the content text.
      */
     @Transactional
     private String generateContent(VelocityEngine velocityEngine, Delegation delegation) {
@@ -150,17 +166,10 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
         this.daysBeforeEnd = daysBeforeEnd;
     }
 
-    /**
-     * @param emailToSendKey
-     *            the emailToSendKey to set
-     */
     public void setEmailToSendKey(int emailToSendKey) {
         this.emailToSendKey = emailToSendKey;
     }
 
-    /**
-     * @return the emailToSendKey
-     */
     public int getEmailToSendKey() {
         return emailToSendKey;
     }

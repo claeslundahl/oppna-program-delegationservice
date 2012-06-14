@@ -20,6 +20,8 @@ import se.vgregion.delegation.persistence.DelegationRepository;
 import se.vgregion.delegation.util.DelegationUtil;
 
 /**
+ * the class DelegationServiceImpl. implements the DelegationService inteface.
+ * 
  * @author Simon Göransson
  * @author Claes Lundahl
  * 
@@ -37,31 +39,62 @@ public class DelegationServiceImpl implements DelegationService {
     @Autowired(required = false)
     private DelegationKeySequenceRepository delegationKeySequenceRepository;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#getActiveDelegations(java.lang.String)
+     */
     @Override
     public List<Delegation> getActiveDelegations(String delegatedFor) {
         return delegationRepository.getActiveDelegations(delegatedFor);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#getInActiveDelegations(java.lang.String)
+     */
     @Override
     public List<Delegation> getInActiveDelegations(String delegatedFor) {
         return delegationRepository.getInActiveDelegations(delegatedFor);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#getDelegations(java.lang.String)
+     */
     @Override
     public List<Delegation> getDelegations(String delegatedFor) {
         return delegationRepository.getDelegations(delegatedFor);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#getDelegationsForToRole(java.lang.String, java.lang.String,
+     * java.lang.String)
+     */
     @Override
     public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
         return delegationRepository.getDelegationsForToRole(delegatedFor, delegatedTo, role);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#getDelegation(java.lang.Long)
+     */
     @Override
     public Delegation getDelegation(Long delegationId) {
         return delegationRepository.getDelegation(delegationId);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#save(se.vgregion.delegation.domain.DelegationBlock)
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public DelegationBlock save(DelegationBlock delegationBlock) {
@@ -104,6 +137,12 @@ public class DelegationServiceImpl implements DelegationService {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#hasDelegations(java.lang.String, java.lang.String,
+     * java.lang.String)
+     */
     @Override
     public boolean hasDelegations(String delegatedFor, String delegatedTo, String role) {
         return delegationRepository.hasDelegations(delegatedFor, delegatedTo, role);
@@ -123,11 +162,21 @@ public class DelegationServiceImpl implements DelegationService {
         return false;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#findByDelegationKey(java.lang.Long)
+     */
     @Override
     public Delegation findByDelegationKey(Long delegationKey) {
         return delegationRepository.findByDelegationKey(delegationKey);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.vgregion.delegation.DelegationService#removeDelegation(java.lang.Long)
+     */
     @Override
     public boolean removeDelegation(Long delegationKey) {
         return delegationRepository.removeDelegation(delegationKey);

@@ -6,13 +6,15 @@ import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
 
 /**
+ * The DelegationService inteface.
+ * 
  * @author Simon Göransson
  * @author Claes Lundahl
  * 
  */
 public interface DelegationService {
     /**
-     * Fetch currently active delegations for delegatedFor
+     * Fetch currently active delegations for delegatedFor.
      * 
      * @param delegatedFor
      *            - Id
@@ -21,7 +23,7 @@ public interface DelegationService {
     List<Delegation> getActiveDelegations(String delegatedFor);
 
     /**
-     * Fetch currently inactive delegations for delegatedFor
+     * Fetch currently inactive delegations for delegatedFor.
      * 
      * @param delegatedFor
      *            - Id
@@ -30,7 +32,7 @@ public interface DelegationService {
     List<Delegation> getInActiveDelegations(String delegatedFor);
 
     /**
-     * Fetch delegations for delegatedFor
+     * Fetch delegations for delegatedFor.
      * 
      * @param delegatedFor
      *            - Id
@@ -66,7 +68,7 @@ public interface DelegationService {
      * 
      * @return - updated post.
      */
-    DelegationBlock save(DelegationBlock delegationBlock) throws NotValidChecksumException;
+    DelegationBlock save(DelegationBlock delegationBlock);
 
     /**
      * Check if a delegatedTo have a valid delegation for a delegationFor whit a role.

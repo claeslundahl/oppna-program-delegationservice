@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.Date;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,17 +21,25 @@ import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
 
 /**
+ * Test Class for testing the DelegationExpieryAlertJob.
+ * 
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
  * 
  */
 public class TestDelegationExpieryAlertJob {
 
-    private static final long DayInMilis = 86400000;
+    private static final long DAYSINMILIS = 86400000;
 
-    ClassPathXmlApplicationContext context;
-    DelegationService delegationService;
-    DelegationExpieryAlertJob delegationExpieryAlertJob;
+    private ClassPathXmlApplicationContext context;
+    private DelegationService delegationService;
+    private DelegationExpieryAlertJob delegationExpieryAlertJob;
 
+    /**
+     * Sets the up environment before performing the tests.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @Before
     public void setUp() throws Exception {
 
@@ -43,6 +50,12 @@ public class TestDelegationExpieryAlertJob {
 
     }
 
+    /**
+     * Shouting down connection to database.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @After
     public void tearDown() throws Exception {
         DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
@@ -54,8 +67,14 @@ public class TestDelegationExpieryAlertJob {
         conn.close();
     }
 
+    /**
+     * Test the scanRepoAndSendMails method in DelegationExpieryAlertJob class.
+     * 
+     * @throws MessagingException
+     *             the messaging exception
+     */
     @Test
-    public void test() throws AddressException, MessagingException {
+    public void test() throws MessagingException {
 
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
 
@@ -87,7 +106,7 @@ public class TestDelegationExpieryAlertJob {
     private Date getADateWithOfset(long ofsetDays) {
 
         Date today = new Date();
-        Date returnDate = new Date(today.getTime() + ofsetDays * DayInMilis);
+        Date returnDate = new Date(today.getTime() + ofsetDays * DAYSINMILIS);
 
         return returnDate;
 

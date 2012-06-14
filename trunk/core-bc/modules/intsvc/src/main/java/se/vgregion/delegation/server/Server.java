@@ -71,7 +71,7 @@ public class Server {
             hostname = InetAddress.getLocalHost().getHostName();
             LOGGER.info("Host namne = " + hostname);
         } catch (UnknownHostException e) {
-            LOGGER.error("Host namne = " + e.getStackTrace());
+            LOGGER.error("Host namne error ", e);
         }
 
         server.startServer(ctx, hostname, propertiesBean.getServerPort());
@@ -163,6 +163,7 @@ public class Server {
      * @throws GeneralSecurityException
      */
     private void setupServerEngineFactory(int port) throws IOException, GeneralSecurityException {
+
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
@@ -171,18 +172,26 @@ public class Server {
         String certFilePath = userhome + "/.delegation-service/" + propertiesBean.getCertFileName();
 
         InputStream resourceAsStream = new FileInputStream(certFilePath);
-        keyStore.load(resourceAsStream, propertiesBean.getCertPass().toCharArray());
-        keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
 
-        engineFactory = new JettyHTTPServerEngineFactory();
-        TLSServerParameters tlsParams = new TLSServerParameters();
+        try {
 
-        ClientAuthentication clientAuth = new ClientAuthentication();
-        clientAuth.setRequired(false);
-        clientAuth.setWant(false);
-        tlsParams.setClientAuthentication(clientAuth);
-        tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
-        engineFactory.setTLSServerParametersForPort(port, tlsParams);
+            keyStore.load(resourceAsStream, propertiesBean.getCertPass().toCharArray());
+            keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
+
+            engineFactory = new JettyHTTPServerEngineFactory();
+            TLSServerParameters tlsParams = new TLSServerParameters();
+
+            ClientAuthentication clientAuth = new ClientAuthentication();
+            clientAuth.setRequired(false);
+            clientAuth.setWant(false);
+            // tlsParams.setTrustManagers(trustMgrs);
+            tlsParams.setClientAuthentication(clientAuth);
+            tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
+            engineFactory.setTLSServerParametersForPort(port, tlsParams);
+
+        } finally {
+            resourceAsStream.close();
+        }
 
     }
 
