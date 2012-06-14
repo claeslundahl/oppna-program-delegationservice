@@ -47,7 +47,6 @@ public class DelegationMailSenderService {
         } catch (MailException ex) {
             // simply log it and go on...
             ex.printStackTrace();
-            System.err.println(ex.getMessage());
         }
     }
 

@@ -17,6 +17,7 @@ import javax.persistence.TemporalType;
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
 
 /**
+ * This class represents a delegation.
  * 
  * @author Simon Göransson
  * @author Claes Lundahl
@@ -69,6 +70,9 @@ public class Delegation extends AbstractEntity<Long> implements
         this.id = id;
     }
 
+    /**
+     * Clear id.
+     */
     public void clearId() {
         this.id = null;
     }
@@ -97,21 +101,21 @@ public class Delegation extends AbstractEntity<Long> implements
     }
 
     public Date getValidFrom() {
-        return validFrom;
+        return (Date) validFrom.clone();
     }
 
     public void setValidFrom(Date validFrom) {
 
-        this.validFrom = validFrom;
+        this.validFrom = (Date) validFrom.clone();
     }
 
     public Date getValidTo() {
-        return validTo;
+        return (Date) validTo.clone();
     }
 
     public void setValidTo(Date validTo) {
 
-        this.validTo = validTo;
+        this.validTo = (Date) validTo.clone();
     }
 
     public Long getDelegationKey() {
@@ -122,17 +126,10 @@ public class Delegation extends AbstractEntity<Long> implements
         this.delegationKey = delegationKey;
     }
 
-    /**
-     * @param delegationBlock
-     *            the delegationBlock to set
-     */
     public void setDelegationBlock(DelegationBlock delegationBlock) {
         this.delegationBlock = delegationBlock;
     }
 
-    /**
-     * @return the delegationBlock
-     */
     public DelegationBlock getDelegationBlock() {
         return delegationBlock;
     }
@@ -161,17 +158,10 @@ public class Delegation extends AbstractEntity<Long> implements
         this.delegatedForEmail = delegatedForEmail;
     }
 
-    /**
-     * @param expiryAlertSentCount
-     *            the expiryAlertSentCount to set
-     */
     public void setExpiryAlertSentCount(Integer expiryAlertSentCount) {
         this.expiryAlertSentCount = expiryAlertSentCount;
     }
 
-    /**
-     * @return the expiryAlertSentCount
-     */
     public Integer getExpiryAlertSentCount() {
         return expiryAlertSentCount;
     }

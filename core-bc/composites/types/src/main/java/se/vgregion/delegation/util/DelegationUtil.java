@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -90,13 +91,11 @@ public class DelegationUtil {
         @SuppressWarnings("unchecked")
         HashMap<String, Object> sourceMap = new HashMap<String, Object>(source);
         sourceMap.remove("class");
-        for (String key : sourceMap.keySet()) {
-            Object value = null;
+        for (Entry<String, Object> set : sourceMap.entrySet()) {
             try {
-                value = sourceMap.get(key);
-                target.put(key, value);
+                target.put(set.getKey(), set.getValue());
             } catch (Exception e) {
-                logger.debug("Key '" + key + "' failed value '" + value + "'.");
+                logger.debug("Key '" + set.getKey() + "' failed value '" + set.getValue() + "'.");
             }
         }
     }

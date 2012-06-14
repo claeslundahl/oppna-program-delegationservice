@@ -1,7 +1,10 @@
 package se.vgregion.delegation.domain;
 
 /**
- * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
+ * Enum for status of an delegation.
+ * 
+ * @author Simon Göransson
+ * @author Claes Lundahl
  */
 public enum DelegationStatus {
 

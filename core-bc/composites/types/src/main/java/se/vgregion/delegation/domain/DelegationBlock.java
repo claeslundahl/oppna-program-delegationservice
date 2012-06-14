@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
 
 /**
+ * This class represents a delegation block.
  * 
  * @author Simon Göransson
  * @author Claes Lundahl
@@ -85,11 +86,11 @@ public class DelegationBlock extends AbstractEntity<Long> implements
     }
 
     public Date getApprovedOn() {
-        return approvedOn;
+        return (Date) approvedOn.clone();
     }
 
     public void setApprovedOn(Date approvedOn) {
-        this.approvedOn = approvedOn;
+        this.approvedOn = (Date) approvedOn.clone();
     }
 
     public String getDelegatedBy() {

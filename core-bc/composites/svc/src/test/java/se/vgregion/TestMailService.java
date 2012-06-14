@@ -24,10 +24,21 @@ import com.dumbster.smtp.SmtpMessage;
  */
 public class TestMailService {
 
+    /** The delegation mail sender service. */
     DelegationMailSenderService delegationMailSenderService;
+
+    /** The context. */
     ClassPathXmlApplicationContext context;
+
+    /** The smtp server. */
     SimpleSmtpServer smtpServer;
 
+    /**
+     * Sets the up environment before performing the tests.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @Before
     public void setUp() throws Exception {
 
@@ -41,12 +52,26 @@ public class TestMailService {
 
     }
 
+    /**
+     * Stops the smtp server after the tests.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void tearDown() throws Exception {
         smtpServer.stop();
     }
 
+    /**
+     * Test delegation mail service.
+     * 
+     * @throws AddressException
+     *             the address exception
+     * @throws MessagingException
+     *             the messaging exception
+     */
     @Test
-    public void testDelegationMailService() throws AddressException, MessagingException {
+    public void testDelegationMailService() throws MessagingException {
 
         delegationMailSenderService.sendMail("sender@here.com", "receiver@there.com", "cepa", "depa");
 
