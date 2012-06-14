@@ -33,7 +33,10 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.xml.ws.Endpoint;
 
 import org.apache.cxf.configuration.jsse.TLSServerParameters;
+import org.apache.cxf.configuration.security.CertificateConstraintsType;
 import org.apache.cxf.configuration.security.ClientAuthentication;
+import org.apache.cxf.configuration.security.CombinatorType;
+import org.apache.cxf.configuration.security.DNConstraintsType;
 import org.apache.cxf.transport.http_jetty.JettyHTTPServerEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,7 @@ import se.vgregion.delegation.ws.util.PropertiesBean;
 
 public class Server {
 
-    private static PropertiesBean propertiesBean;
+    private PropertiesBean propertiesBean;
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     private static List<Endpoint> endpoints;
     private JettyHTTPServerEngineFactory engineFactory;
@@ -60,9 +63,14 @@ public class Server {
 
     static public void main(String[] args) throws Exception {
 
+        Server server = new Server();
+        server.start();
+
+    }
+
+    private void start() {
         String path = "classpath:/spring/conf.xml";
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(path);
-        Server server = new Server();
         propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
 
         String hostname = "localhost";
@@ -74,13 +82,12 @@ public class Server {
             LOGGER.error("Host namne error ", e);
         }
 
-        server.startServer(ctx, hostname, propertiesBean.getServerPort());
-
+        startServer(ctx, hostname, propertiesBean.getServerPort());
     }
 
     public void startServer(ClassPathXmlApplicationContext ctx, String hostname, String port) {
 
-        endpoints = new ArrayList<Endpoint>();
+        Server.setEndpoints(new ArrayList<Endpoint>());
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -138,7 +145,7 @@ public class Server {
 
     static private void startService(Object serviceImpl, String address) {
         Endpoint endpoint = Endpoint.publish(address, serviceImpl);
-        endpoints.add(endpoint);
+        Server.getEndpoints().add(endpoint);
         LOGGER.info("Service available at: " + address + "?wsdl");
     }
 
@@ -184,7 +191,15 @@ public class Server {
             ClientAuthentication clientAuth = new ClientAuthentication();
             clientAuth.setRequired(false);
             clientAuth.setWant(false);
-            // tlsParams.setTrustManagers(trustMgrs);
+            if (propertiesBean.isClientCertSecurityActive()) {
+                CertificateConstraintsType constraints = new CertificateConstraintsType();
+                DNConstraintsType constraintsType = new DNConstraintsType();
+                constraintsType.setCombinator(CombinatorType.ANY);
+                String regularExpression = propertiesBean.getRegularExpressionClientCert();
+                constraintsType.getRegularExpression().add(regularExpression);
+                constraints.setSubjectDNConstraints(constraintsType);
+                tlsParams.setCertConstraints(constraints);
+            }
             tlsParams.setClientAuthentication(clientAuth);
             tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
             engineFactory.setTLSServerParametersForPort(port, tlsParams);
@@ -193,6 +208,14 @@ public class Server {
             resourceAsStream.close();
         }
 
+    }
+
+    public static List<Endpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    public static void setEndpoints(List<Endpoint> endpoints) {
+        Server.endpoints = endpoints;
     }
 
 }

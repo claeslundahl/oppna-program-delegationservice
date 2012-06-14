@@ -57,7 +57,7 @@ public class HasDelegationResponderInterfaceImpl implements HasDelegationRespond
         } catch (Exception e) {
             hasDelegationResponseType.setResultCode(ResultCodeEnum.ERROR);
             hasDelegationResponseType.setComment(e.getMessage());
-            LOGGER.error("Error: " + e.getStackTrace());
+            LOGGER.error("Error: ", e);
         }
 
         return hasDelegationResponseType;
