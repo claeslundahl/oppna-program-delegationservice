@@ -103,6 +103,14 @@
       <version>1.4</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>se.vgregion.icc.sd.authorization</groupId>
+      <artifactId>authorization-delegation-schemas</artifactId>
+      <version>1.0.6</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
