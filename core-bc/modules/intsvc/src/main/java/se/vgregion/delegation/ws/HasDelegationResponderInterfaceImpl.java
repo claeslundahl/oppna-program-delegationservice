@@ -17,9 +17,9 @@ import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 
 /**
+ * Implementation for checking whether or not a person have a valid delegation for a certain role and unit.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Implementation for checking whether or not a person have a valid delegation for a certain role and unit.
  */
 
 @WebService(
@@ -30,7 +30,7 @@ import se.vgregion.delegation.DelegationService;
         wsdlLocation = "schemas/interactions/HasDelegationInteraction/HasDelegationInteraction_1.0_RIVTABP21.wsdl")
 public class HasDelegationResponderInterfaceImpl implements HasDelegationResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
      * Default constructor.
@@ -54,6 +54,7 @@ public class HasDelegationResponderInterfaceImpl implements HasDelegationRespond
      * Checks if a 'delegated to', person or otherwise, 'delegated for' and role have a valid delegation at this (current) point in time.
      * @param logicalAddress is not used at the moment.
      * @param parameters holds the actual values for 'delegated-to' and '-for' and 'role'.
+     * @return a wrapper object with an boolean result and the result code bundled within. 
      */
     @Override
     public HasDelegationResponseType hasDelegation(String logicalAddress, HasDelegationType parameters) {

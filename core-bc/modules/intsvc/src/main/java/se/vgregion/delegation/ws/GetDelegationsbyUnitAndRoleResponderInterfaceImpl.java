@@ -7,7 +7,6 @@ package se.vgregion.delegation.ws;
 
 import javax.jws.WebService;
 
-import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleResponseType;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleType;
@@ -16,10 +15,10 @@ import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
 /**
+ * Class implementing the {@link GetDelegationsbyUnitAndRoleResponderInterface} interface. 
  * Gives possibility to search database for delegations with some matching constraints.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Class implementing the {@link GetDelegationsbyUnitAndRoleResponderInterface} interface.
  */
 @WebService(
         serviceName = "GetDelegationsbyUnitAndRoleResponderService",
@@ -30,7 +29,7 @@ import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 public class GetDelegationsbyUnitAndRoleResponderInterfaceImpl implements
         GetDelegationsbyUnitAndRoleResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
      * Default constructor.

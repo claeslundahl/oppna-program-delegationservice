@@ -17,9 +17,9 @@ import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
 
 /**
+ * Service implementation for retreiving/searching for a collection of delegations.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Service implementation for retreiving/searching for a collection of delegations.
  */
 @WebService(
         serviceName = "GetDelegationsResponderService",
@@ -29,7 +29,7 @@ import se.vgregion.delegation.ws.util.DelegationServiceUtil;
         wsdlLocation = "schemas/interactions/GetDelegationsInteraction/GetDelegationsInteraction_1.0_RIVTABP21.wsdl")
 public class GetDelegationsResponderInterfaceImpl implements GetDelegationsResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
      * Default constructor.
@@ -40,7 +40,7 @@ public class GetDelegationsResponderInterfaceImpl implements GetDelegationsRespo
 
     /**
      * Constructor that accepts implementation of a service-instance that permits access to underlying services.
-     * @param delegationService
+     * @param delegationService service instance to use for accessing db etc.
      */
     public GetDelegationsResponderInterfaceImpl(DelegationService delegationService) {
         super();
@@ -51,6 +51,7 @@ public class GetDelegationsResponderInterfaceImpl implements GetDelegationsRespo
      * Interface for searching and returning delegations. 
      * @param logicalAddress is not used at the moment, but might be later on.
      * @param parameters contains the actual search criteria 'delegation for'.
+     * @return returns an collection of delegations inside an wrapper object together with a status code. 
      */
     @Override
     public GetDelegationsResponseType getDelegations(String logicalAddress, GetDelegationsType parameters) {

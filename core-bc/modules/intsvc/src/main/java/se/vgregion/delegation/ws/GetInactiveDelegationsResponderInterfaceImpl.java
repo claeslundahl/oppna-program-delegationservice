@@ -15,9 +15,9 @@ import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
 /**
+ * Implementation for getting inactive delegations from the server.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Implementation for getting inactive delegations from the server.
  */
 
 @WebService(
@@ -50,6 +50,7 @@ public class GetInactiveDelegationsResponderInterfaceImpl implements GetInactive
      * Uses 'delegation for' to search the db and return matching results among rows that have become inactive.
      * @param logicalAddress is not used so far.
      * @param parameters contains the 'delegation for' value to be used in the search.
+     * @return an collection of delegations inside a wrapper object togheter with an result code. 
      */
     @Override
     public GetInactiveDelegationsResponseType getInactiveDelegations(String logicalAddress,
