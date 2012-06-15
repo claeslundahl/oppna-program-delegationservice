@@ -15,10 +15,9 @@ import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
 /**
+ * Class that implements the {@link GetActiveDelegationsResponderInterface} interface.
  * @author Simon Göransson
  * @author Claes Lundahl
- * 
- * Class that implements the {@link GetActiveDelegationsResponderInterface} interface.
  */
 @WebService(
         serviceName = "GetActiveDelegationsResponderService",
@@ -28,7 +27,7 @@ import se.vgregion.delegation.ws.util.DelegationServiceUtil;
         wsdlLocation = "schemas/interactions/GetActiveDelegationsInteraction/GetActiveDelegationsInteraction_1.0_RIVTABP21.wsdl")
 public class GetActiveDelegationsResponderInterfaceImpl implements GetActiveDelegationsResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
      * Default constructor.
@@ -38,7 +37,8 @@ public class GetActiveDelegationsResponderInterfaceImpl implements GetActiveDele
     }
 
     /**
-     * Constructor that accepts an implementation for accessing resources to fulfill operations in later called functions.
+     * Constructor that accepts an implementation for accessing resources to fulfill operations in later 
+     * called functions.
      * @param delegationService to provide access to resouces supporting operations in this class.
      */
     public GetActiveDelegationsResponderInterfaceImpl(DelegationService delegationService) {

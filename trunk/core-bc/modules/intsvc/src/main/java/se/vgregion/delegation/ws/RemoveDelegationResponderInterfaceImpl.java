@@ -12,13 +12,13 @@ import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 
 /**
+ * Implementation of service that permits the removal of a delegation.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Implementation of service that permits the removal of a delegation.
  */
 public class RemoveDelegationResponderInterfaceImpl implements RemoveDelegationResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
      * Constructor that allows a service instance to be passed into this. 
@@ -31,9 +31,12 @@ public class RemoveDelegationResponderInterfaceImpl implements RemoveDelegationR
     }
 
     /**
-     * Removes a delegation - or specifically remove it from the possibility of being retrieved later by other services (actually the data is not removed).
+     * Removes a delegation - or specifically remove it from the possibility of being retrieved later by other 
+     * services (actually the data is not removed).
      * @param logicalAddress is not used by this implementation.
      * @param parameters contains the delegation key used to find and then 'remove' the delegation in question.
+     * @return a wrapper object containing onyl the status of the operation OK or ERROR, and a comment if
+     *  something is amiss.
      */ 
     @Override
     public RemoveDelegationResponseType removeDelegation(String logicalAddress,

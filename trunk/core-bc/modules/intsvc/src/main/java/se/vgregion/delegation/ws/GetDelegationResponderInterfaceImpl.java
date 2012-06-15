@@ -16,9 +16,9 @@ import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.ws.util.DelegationServiceUtil;
 
 /**
+ * Class implementing the {@link GetDelegationResponderInterface} interface.
  * @author Simon Göransson
  * @author Claes Lundahl
- * Class implementing the {@link GetDelegationResponderInterface} interface.
  */
 @WebService(
         serviceName = "GetDelegationResponderService",
@@ -28,12 +28,13 @@ import se.vgregion.delegation.ws.util.DelegationServiceUtil;
         wsdlLocation = "schemas/interactions/GetDelegationInteraction/GetDelegationInteraction_1.0_RIVTABP21.wsdl")
 public class GetDelegationResponderInterfaceImpl implements GetDelegationResponderInterface {
 
-    DelegationService delegationService;
+    private DelegationService delegationService;
 
     /**
-     * Constructor passing reference to service-object giving the instance capability to access underlying resources to fulfill
+     * Constructor passing reference to service-object giving the instance capability to access underlying
+     * resources to fulfill
      * calls to its functions.
-     * @param delegationService
+     * @param delegationService service object to provide access to various services, access to db etc.
      */
     public GetDelegationResponderInterfaceImpl(DelegationService delegationService) {
         super();
