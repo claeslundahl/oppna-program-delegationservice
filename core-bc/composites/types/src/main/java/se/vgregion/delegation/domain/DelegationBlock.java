@@ -86,7 +86,11 @@ public class DelegationBlock extends AbstractEntity<Long> implements
     }
 
     public Date getApprovedOn() {
-        return (Date) approvedOn.clone();
+        if (approvedOn != null) {
+            return (Date) approvedOn.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setApprovedOn(Date approvedOn) {

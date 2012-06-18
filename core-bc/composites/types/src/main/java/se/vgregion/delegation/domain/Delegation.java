@@ -101,7 +101,11 @@ public class Delegation extends AbstractEntity<Long> implements
     }
 
     public Date getValidFrom() {
-        return (Date) validFrom.clone();
+        if (validFrom != null) {
+            return (Date) validFrom.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setValidFrom(Date validFrom) {
@@ -110,7 +114,11 @@ public class Delegation extends AbstractEntity<Long> implements
     }
 
     public Date getValidTo() {
-        return (Date) validTo.clone();
+        if (validTo != null) {
+            return (Date) validTo.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setValidTo(Date validTo) {
