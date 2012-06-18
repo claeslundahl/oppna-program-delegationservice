@@ -61,6 +61,10 @@ public class PropertiesBean {
         return clientCertSecurityActive;
     }
 
+    public void setClientCertSecurityActive(boolean clientCertSecurityActive) {
+        this.clientCertSecurityActive = clientCertSecurityActive;
+    }
+
     public void setRegularExpressionClientCert(String regularExpressionClientCert) {
         this.regularExpressionClientCert = regularExpressionClientCert;
     }

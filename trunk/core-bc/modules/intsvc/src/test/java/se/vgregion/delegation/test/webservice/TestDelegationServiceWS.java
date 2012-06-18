@@ -3,6 +3,14 @@ package se.vgregion.delegation.test.webservice;
 /**
  * 
  */
+import java.io.IOException;
+import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -14,6 +22,9 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -22,6 +33,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.impl.StdScheduler;
 import org.slf4j.Logger;
@@ -482,6 +494,52 @@ public class TestDelegationServiceWS {
 
         Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
 
+    }
+
+    @Test
+    @Ignore
+    public void testConnectionSimple() throws UnrecoverableKeyException, KeyManagementException,
+            NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
+
+        testConnection("localhost", 24002, "delegering-test.jks", "changeit", "delegering-test.jks",
+                "changeit");
+
+    }
+
+    private void testConnection(String host, int hostPort, String trustStoreFileName,
+            String trustStorePassword, String keyStoreFileName, String keyStorePassword)
+            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
+            UnrecoverableKeyException, KeyManagementException {
+        Socket socket = null;
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSLv3");
+
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(this.getClass().getClassLoader().getResourceAsStream(trustStoreFileName),
+                    trustStorePassword.toCharArray());
+
+            TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(trustStore);
+
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(this.getClass().getClassLoader().getResourceAsStream(keyStoreFileName),
+                    keyStorePassword.toCharArray());
+
+            KeyManagerFactory keyManagerFactory =
+                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
+
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+
+            socket = sslContext.getSocketFactory().createSocket(host, hostPort);
+
+            socket.getOutputStream().write(1);
+        } finally {
+            if (socket != null) {
+                socket.close();
+            }
+        }
     }
 
     private long saveADelegation(String aO, String vF, String vT) {

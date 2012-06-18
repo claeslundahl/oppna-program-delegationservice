@@ -15,7 +15,7 @@
   
   <context:property-placeholder location="classpath:config.properties, file:${user.home}/.delegation-service/config.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
   
-  <import resource="classpath:spring/Spring-Quartz.xml"/>
+  <!-- import resource="classpath:spring/Spring-Quartz.xml"/-->
   <import resource="classpath:spring/JpaRepository-context.xml" />
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -78,6 +78,8 @@
     <property name="certPass" value="${ssl.cert.pass}" />
     <property name="certFileName" value="${cert.filename}" />
     <property name="serverPort" value="${server.port}" />
+    <property name="regularExpressionClientCert" value="${regularExpressionClientCert}" />
+    <property name="clientCertSecurityActive" value="${clientCertSecurityActive}" />
   </bean>
 
 

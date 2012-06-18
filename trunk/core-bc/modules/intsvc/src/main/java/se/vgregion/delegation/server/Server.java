@@ -30,13 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import javax.xml.ws.Endpoint;
 
 import org.apache.cxf.configuration.jsse.TLSServerParameters;
-import org.apache.cxf.configuration.security.CertificateConstraintsType;
 import org.apache.cxf.configuration.security.ClientAuthentication;
-import org.apache.cxf.configuration.security.CombinatorType;
-import org.apache.cxf.configuration.security.DNConstraintsType;
 import org.apache.cxf.transport.http_jetty.JettyHTTPServerEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,42 +169,53 @@ public class Server {
      */
     private void setupServerEngineFactory(int port) throws IOException, GeneralSecurityException {
 
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        TLSServerParameters tlsParams = new TLSServerParameters();
 
         String userhome = System.getProperty("user.home");
-
         String certFilePath = userhome + "/.delegation-service/" + propertiesBean.getCertFileName();
-
         InputStream resourceAsStream = new FileInputStream(certFilePath);
 
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+
         try {
-
             keyStore.load(resourceAsStream, propertiesBean.getCertPass().toCharArray());
-            keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
-
-            engineFactory = new JettyHTTPServerEngineFactory();
-            TLSServerParameters tlsParams = new TLSServerParameters();
-
-            ClientAuthentication clientAuth = new ClientAuthentication();
-            clientAuth.setRequired(false);
-            clientAuth.setWant(false);
-            if (propertiesBean.isClientCertSecurityActive()) {
-                CertificateConstraintsType constraints = new CertificateConstraintsType();
-                DNConstraintsType constraintsType = new DNConstraintsType();
-                constraintsType.setCombinator(CombinatorType.ANY);
-                String regularExpression = propertiesBean.getRegularExpressionClientCert();
-                constraintsType.getRegularExpression().add(regularExpression);
-                constraints.setSubjectDNConstraints(constraintsType);
-                tlsParams.setCertConstraints(constraints);
-            }
-            tlsParams.setClientAuthentication(clientAuth);
-            tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
-            engineFactory.setTLSServerParametersForPort(port, tlsParams);
-
         } finally {
             resourceAsStream.close();
         }
+
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, propertiesBean.getCertPass().toCharArray());
+        tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
+
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(keyStore);
+        // tlsParams.setTrustManagers(trustManagerFactory.getTrustManagers());
+
+        // FiltersType filter = new FiltersType();
+        // filter.getInclude().add(".*");
+        // tlsParams.setCipherSuitesFilter(filter);
+
+        ClientAuthentication clientAuth = new ClientAuthentication();
+        // clientAuth.setRequired(true);
+        // clientAuth.setWant(true);
+        clientAuth.setRequired(false);
+        clientAuth.setWant(false);
+        tlsParams.setClientAuthentication(clientAuth);
+
+        // if (propertiesBean.isClientCertSecurityActive()) {
+        // CertificateConstraintsType constraints = new CertificateConstraintsType();
+        // DNConstraintsType constraintsType = new DNConstraintsType();
+        // // constraintsType.setCombinator(CombinatorType.ANY);
+        // System.out.println("propertiesBean.getRegularExpressionClientCert() "
+        // + propertiesBean.getRegularExpressionClientCert());
+        // String regularExpression = propertiesBean.getRegularExpressionClientCert();
+        // // constraintsType.getRegularExpression().add(regularExpression);
+        // constraints.setSubjectDNConstraints(constraintsType);
+        // tlsParams.setCertConstraints(constraints);
+        // }
+
+        engineFactory = new JettyHTTPServerEngineFactory();
+        engineFactory.setTLSServerParametersForPort(port, tlsParams);
 
     }
 
