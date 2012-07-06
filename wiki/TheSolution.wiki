@@ -11,7 +11,7 @@ som startar när applikationen startas. Genom den inbyggda applikationsserver ti
 || getDelegations || String delegatedFor || Lista av delegeringar ||
 || getDelegationsByUnitAndRole || String delegatedTo, String role || Lista av delegeringar ||
 || getDelegation || Long delegationId || En delegering ||
-|| save || DelegationBlock delegationBlock || True/False beroende på resultat ||
+|| save || DelegationBlock delegationblock || True/False beroende på resultat ||
 || getDelegation || Long delegationId || En delegering ||
 || remove || Long delegationId || True/False beroende på resultat ||
 
