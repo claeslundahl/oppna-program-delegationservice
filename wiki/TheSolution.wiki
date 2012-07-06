@@ -58,11 +58,11 @@ Med bakgrund till ovan nämnda blogg kommer här en förklaring till inställnin
 || hibernate.vendor.database || ||
 || hibernate.vendor.databasePlatform || ||
 || hibernate.hbm2ddl.auto || ||
-|| ssl.cert.pass || ||
-|| cert.filename || ||
-|| server.port || ||
-|| mail.server || ||
-|| mail.port || ||
+|| ssl.cert.pass || certifikats lösenord||
+|| cert.filename || fil namn på certifikat, certifikatet skal finnas i ~/.delegation-service. katalogen||
+|| server.port || den port som tjänsten skall köras på||
+|| mail.server || mail hoast ||
+|| mail.port || port för mail hoast||
 
 
 
