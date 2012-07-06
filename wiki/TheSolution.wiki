@@ -1,4 +1,7 @@
-= Lösningsbeskrivning =
+#Lösningsbeskrivning, Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
+som startar när applikationen startas. Genom den inbyggda applikationsserver tillhandahålls 8 webtjänster.
+
+= Lösningsbeskrivning = 
 
 Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
 som startar när applikationen startas. Genom den inbyggda applikationsserver tillhandahålls 8 webtjänster. En för varje operation. 
