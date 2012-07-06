@@ -40,5 +40,5 @@ För att bygga projektet till en kör bara applikation kör *mvn clean package* 
 För att starta applikationen på server kör *nohup java -jar oppna-program-delegation-service-core-bc-module-intsvc.jar &* i terminalen.
 
 = Kvarstående utvecklingspunkter =
-* ip-filter
-* startscript på tjänsten
+  * ip-filter
+  * startscript på tjänsten
