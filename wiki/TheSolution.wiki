@@ -1,0 +1,23 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
+som startar när applikationen startas. I den inbyggda applikationsserver, finns de flera web services. En för varje operation. 
+
+
+= Details =
+
+|| *Operation* || *Parametrar* || *Resultat* ||
+|| getAvtiveDelegations || String delegatedFor || Lista av delegeringar ||
+|| getInAvtiveDelegations || String delegatedFor || Lista av delegeringar ||
+|| getDelegations || String delegatedFor || Lista av delegeringar ||
+|| getDelegationsByUnitAndRole || String delegatedTo, String role || Lista av delegeringar ||
+|| getDelegation || Long delegationId || En delegering ||
+|| save || DelegationBlock delegationBlock || True/False beroende på resultat ||
+|| getDelegation || Long delegationId || En delegering ||
+|| remove || Long delegationId || True/False beroende på resultat ||
+
+
+
+
