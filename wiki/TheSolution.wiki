@@ -30,3 +30,8 @@ https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/secutity.
 = Mail notifieringar =
 
 När en delegering håller på att gå ut skicks det två påminnelse mail, t.ex 2 och 1 vecka innan delegeringen blir ogiltig. För att det skall vara möjligt att förlänga delegeringen. Vilken email adress som påminnelsen skall skickas till anges vi skapandet av delegeringen.
+
+
+= Bygganvisningar =
+
+För att bygga projektet till en kör bara applikation kör *mvn clean package* i projektets trunk katalog. 
