@@ -1,5 +1,3 @@
-#Lösningsbeskrivning#
-
 = Lösningsbeskrivning =
 
 Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
