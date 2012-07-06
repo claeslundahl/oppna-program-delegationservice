@@ -39,6 +39,33 @@ För att bygga projektet till en kör bara applikation kör *mvn clean package* 
 
 För att starta applikationen på server kör *nohup java -jar oppna-program-delegation-service-core-bc-module-intsvc.jar &* i terminalen.
 
+= Konfiguration = 
+
+För att få en bakgrund till hur man skall konfigurera signeringstjänsten är det lämpligt att läsa  [http://blog.callistaenterprise.se/2011/11/17/configure-your-spring-web-application/ denna blog-post] som på ett bra sätt beskriver hur applikationen läser in sin konfiguration.
+
+Med bakgrund till ovan nämnda blogg kommer här en förklaring till inställningar som kan göras för delegeringstjänsten. Till att börja med måste en fil med namnet config.properties skapas och läggas in under ~/.delegation-service. Om man vill ha en mall att utgå ifrån så kan man använda sig av default-konfigurationen som ligger i projektets web-modul ($PROJECT_HOME/core-bc/modules/web/src/main/resources/config.properties). I denna fil kan följande parametrar sättas:
+
+|| *Parameter* || * Beskrivning* ||
+|| datasource.connector.jndi.jndiName || ||
+|| datasource.connector.direct.driverClassName || ||
+|| datasource.connector.direct.url || ||
+|| datasource.connector.direct.username || Användarnamn för databasen||
+|| datasource.connector.direct.password || Lösenord för databasen||
+|| hibernate.database.showsql || visa hibernate sql ||
+|| hibernate.database.schema || ||
+|| hibernate.vendor.generateDdl || ||
+|| hibernate.vendor.databaseDialect|| ||
+|| hibernate.vendor.database || ||
+|| hibernate.vendor.databasePlatform || ||
+|| hibernate.hbm2ddl.auto || ||
+|| ssl.cert.pass || ||
+|| cert.filename || ||
+|| server.port || ||
+|| mail.server || ||
+|| mail.port || ||
+
+
+
 = Kvarstående utvecklingspunkter =
   * ip-filter
   * startskript på tjänsten
