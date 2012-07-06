@@ -38,3 +38,7 @@ När en delegering håller på att gå ut skicks det två påminnelse mail, t.ex
 För att bygga projektet till en kör bara applikation kör *mvn clean package* i projektets trunk katalog. 
 
 För att starta applikationen på server kör *nohup java -jar oppna-program-delegation-service-core-bc-module-intsvc.jar &* i terminalen.
+
+= Kvarstående utvecklingspunkter =
+* ip-filter
+* startscript på tjänsten
