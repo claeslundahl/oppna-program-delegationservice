@@ -3,12 +3,7 @@
 = Lösningsbeskrivning =
 
 Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
-som startar när applikationen startas. I den inbyggda applikationsserver, finns de flera web services. En för varje operation. 
-
-Själva web tjänsterna är byggda enligt RIV-TA mer om det här http://code.google.com/p/rivta/ .
-
-
-
+som startar när applikationen startas. Genom den inbyggda applikationsserver tillhandahålls 8 webtjänster. En för varje operation. 
 
 || *Operation* || *Parametrar* || *Resultat* ||
 || getAvtiveDelegations || String delegatedFor || Lista av delegeringar ||
@@ -19,6 +14,9 @@ Själva web tjänsterna är byggda enligt RIV-TA mer om det här http://code.goo
 || save || DelegationBlock delegationBlock || True/False beroende på resultat ||
 || getDelegation || Long delegationId || En delegering ||
 || remove || Long delegationId || True/False beroende på resultat ||
+
+
+Själva webtjänsterna är byggda enligt standarden för RIV-TA, mer om det här http://code.google.com/p/rivta/
 
 
 
