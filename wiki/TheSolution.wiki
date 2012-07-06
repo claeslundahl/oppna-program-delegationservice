@@ -22,8 +22,7 @@ Själva webtjänsterna är byggda enligt standarden för RIV-TA, mer om det här
 
 = Säkerhet =
 
-För att garantera säkerheten bör all kommunikation ske över en krypterad anslutning – https. 
-Det är starkt rekommenderat att X sätter upp TLS mot tjänaten. TLS syftar till att genom utbyte av certifikat mellan delegeringstjänsten och tjänsteplattformen  kan tjänsteplattformen grantera att identiteten på delegeringstjänsten. Alltså, med tillgång till delegeringstjänsten publika nyckel kan tjänsteplattformen verifiera att det är delegeringstjänsten som svarar. 
+I VGRs lösning använd VGRs tjänstplattform.  För att garantera säkerheten bör all kommunikation ske över en krypterad anslutning – https.  Det är starkt rekommenderat att X sätter upp TLS mot tjänaten. TLS syftar till att genom utbyte av certifikat mellan delegeringstjänsten och tjänsteplattformen  kan tjänsteplattformen grantera att identiteten på delegeringstjänsten. Alltså, med tillgång till delegeringstjänsten publika nyckel kan tjänsteplattformen verifiera att det är delegeringstjänsten som svarar. 
 
 https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/secutity.png
 
