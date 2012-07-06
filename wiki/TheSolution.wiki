@@ -28,3 +28,7 @@ För att garantera säkerheten bör all kommunikation ske över en krypterad ans
 Det är starkt rekommenderat att X sätter upp TLS mot tjänaten. TLS syftar till att genom utbyte av certifikat mellan delegeringstjänsten och tjänsteplattformen  kan tjänsteplattformen grantera att identiteten på delegeringstjänsten. Alltså, med tillgång till delegeringstjänsten publika nyckel kan tjänsteplattformen verifiera att det är delegeringstjänsten som svarar. 
 
 https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/secutity.png
+
+= Mail notifieringar =
+
+När en delegering håller på att gå ut skicks det två påminnelse mail, t.ex 2 och 1 vecka innan delegeringen blir ogiltig. För att det skall vara möjligt att förlänga delegeringen. Vilken email adress som påminnelsen skall skickas till anges vi skapandet av delegeringen.
