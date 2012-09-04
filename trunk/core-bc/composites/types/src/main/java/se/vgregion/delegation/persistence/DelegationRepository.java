@@ -12,22 +12,24 @@ import se.vgregion.delegation.domain.Delegation;
  */
 public interface DelegationRepository extends Repository<Delegation, Long> {
 
-    List<Delegation> getActiveDelegations(String delegatedFor);
+	List<Delegation> getActiveDelegations(String delegatedFor);
 
-    List<Delegation> getInActiveDelegations(String delegatedFor);
+	List<Delegation> getInActiveDelegations(String delegatedFor);
 
-    List<Delegation> getDelegations(String delegatedFor);
+	List<Delegation> getDelegations(String delegatedFor);
 
-    List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role);
+	List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role);
 
-    Delegation getDelegation(Long delegationId);
+	Delegation getDelegation(Long delegationId);
 
-    boolean hasDelegations(String delegatedFor, String delegatedTo, String role);
+	boolean hasDelegations(String delegatedFor, String delegatedTo, String role);
 
-    Delegation findByDelegationKey(Long id);
+	Delegation findByDelegationKey(Long id);
 
-    boolean removeDelegation(Long delegationKey);
+	boolean removeDelegation(Long delegationKey);
 
-    List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey);
+	List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey);
+
+	List<Delegation> findAllActive();
 
 }
