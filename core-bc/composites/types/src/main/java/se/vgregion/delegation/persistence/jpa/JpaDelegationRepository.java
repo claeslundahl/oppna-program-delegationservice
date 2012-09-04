@@ -23,192 +23,196 @@ import se.vgregion.delegation.persistence.DelegationRepository;
 public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Long> implements
         DelegationRepository {
 
-    private static final String validDateInterval = "d.validTo >=:currentDate"
-            + " and d.validFrom <=:currentDate";
+	private static final String validDateInterval = "d.validTo >=:currentDate" + " and d.validFrom <=:currentDate";
 
-    private static final String delegatedStatusIsActive = "d.status =:delegatedStatus";
+	private static final String delegatedStatusIsActive = "d.status =:delegatedStatus";
 
-    // private long timeBeforeExpiryAlert = 30 * 24 * 60 * 60 * 1000;
+	// private long timeBeforeExpiryAlert = 30 * 24 * 60 * 60 * 1000;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Delegation> getActiveDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive
-                        + " and " + validDateInterval;
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> getActiveDelegations(String delegatedFor) {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive + " and "
+		        + validDateInterval;
 
-        Query q = entityManager.createQuery(query);
+		Query q = entityManager.createQuery(query);
 
-        q.setParameter("delegatedFor", delegatedFor);
-        addCurrentDateConstrintAndStatusIsActive(q);
+		q.setParameter("delegatedFor", delegatedFor);
+		addCurrentDateConstrintAndStatusIsActive(q);
 
-        return q.getResultList();
+		return q.getResultList();
 
-    }
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Delegation> getInActiveDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive
-                        + " and not (" + validDateInterval + ")";
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> getInActiveDelegations(String delegatedFor) {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive + " and not ("
+		        + validDateInterval + ")";
 
-        Query q = entityManager.createQuery(query);
+		Query q = entityManager.createQuery(query);
 
-        q.setParameter("delegatedFor", delegatedFor);
-        addCurrentDateConstrintAndStatusIsActive(q);
-        return q.getResultList();
-    }
+		q.setParameter("delegatedFor", delegatedFor);
+		addCurrentDateConstrintAndStatusIsActive(q);
+		return q.getResultList();
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Delegation> getDelegations(String delegatedFor) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive;
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> getDelegations(String delegatedFor) {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive;
 
-        Query q = entityManager.createQuery(query);
+		Query q = entityManager.createQuery(query);
 
-        q.setParameter("delegatedFor", delegatedFor);
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+		q.setParameter("delegatedFor", delegatedFor);
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
-        return q.getResultList();
-    }
+		return q.getResultList();
+	}
 
-    private boolean isWildCard(String mayBeStar) {
-        return mayBeStar != null && "*".equals(mayBeStar.trim());
-    }
+	@Override
+	public List<Delegation> findAllActive() {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d  WHERE "
+		        + delegatedStatusIsActive;
 
-    private String blankIfWildCard(String value, String condition) {
-        if (isWildCard(value)) {
-            return "";
-        } else {
-            return condition;
-        }
-    }
+		Query q = entityManager.createQuery(query);
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE "
-                        + blankIfWildCard(delegatedTo, " d.delegateTo = :delegateTo and ")
-                        + blankIfWildCard(delegatedFor, " d.delegatedFor = :delegatedFor and ")
-                        + blankIfWildCard(role, " d.role =:role and ") + delegatedStatusIsActive;
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
-        Query q = entityManager.createQuery(query);
+		return q.getResultList();
+	}
 
-        if (!isWildCard(delegatedTo)) {
-            q.setParameter("delegateTo", delegatedTo);
-        }
+	private boolean isWildCard(String mayBeStar) {
+		return mayBeStar != null && "*".equals(mayBeStar.trim());
+	}
 
-        if (!isWildCard(delegatedFor)) {
-            q.setParameter("delegatedFor", delegatedFor);
-        }
+	private String blankIfWildCard(String value, String condition) {
+		if (isWildCard(value)) {
+			return "";
+		} else {
+			return condition;
+		}
+	}
 
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> getDelegationsForToRole(String delegatedFor, String delegatedTo, String role) {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE "
+		        + blankIfWildCard(delegatedTo, " d.delegateTo = :delegateTo and ")
+		        + blankIfWildCard(delegatedFor, " d.delegatedFor = :delegatedFor and ")
+		        + blankIfWildCard(role, " d.role =:role and ") + delegatedStatusIsActive;
 
-        if (!isWildCard(role)) {
-            q.setParameter("role", role);
-        }
+		Query q = entityManager.createQuery(query);
 
-        return q.getResultList();
-    }
+		if (!isWildCard(delegatedTo)) {
+			q.setParameter("delegateTo", delegatedTo);
+		}
 
-    @Override
-    public boolean hasDelegations(String delegatedFor, String delegatedTo, String role) {
+		if (!isWildCard(delegatedFor)) {
+			q.setParameter("delegatedFor", delegatedFor);
+		}
 
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegateTo = :delegateTo and d.delegatedFor=:delegatedFor"
-                        + " and d.status =:delegatedStatus " + " and d.role =:role and " + validDateInterval
-                        + " and " + delegatedStatusIsActive;
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
-        Query q = entityManager.createQuery(query);
-        q.setParameter("delegateTo", delegatedTo);
-        q.setParameter("role", role);
-        q.setParameter("delegatedFor", delegatedFor);
+		if (!isWildCard(role)) {
+			q.setParameter("role", role);
+		}
 
-        addCurrentDateConstrintAndStatusIsActive(q);
+		return q.getResultList();
+	}
 
-        return !q.getResultList().isEmpty();
-    }
+	@Override
+	public boolean hasDelegations(String delegatedFor, String delegatedTo, String role) {
 
-    protected Date getCurrentDate() {
-        return new Date();
-    }
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.delegateTo = :delegateTo and d.delegatedFor=:delegatedFor"
+		        + " and d.status =:delegatedStatus " + " and d.role =:role and " + validDateInterval + " and "
+		        + delegatedStatusIsActive;
 
-    private void addCurrentDateConstrintAndStatusIsActive(Query q) {
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
-        q.setParameter("currentDate", getCurrentDate());
-    }
+		Query q = entityManager.createQuery(query);
+		q.setParameter("delegateTo", delegatedTo);
+		q.setParameter("role", role);
+		q.setParameter("delegatedFor", delegatedFor);
 
-    @Override
-    public Delegation findByDelegationKey(Long delegationKey) {
+		addCurrentDateConstrintAndStatusIsActive(q);
 
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
-                        + "WHERE d.delegationKey = :delegationKey" + " and d.status =:delegatedStatus ";
+		return !q.getResultList().isEmpty();
+	}
 
-        Query q = entityManager.createQuery(query);
+	protected Date getCurrentDate() {
+		return new Date();
+	}
 
-        q.setParameter("delegationKey", delegationKey);
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+	private void addCurrentDateConstrintAndStatusIsActive(Query q) {
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+		q.setParameter("currentDate", getCurrentDate());
+	}
 
-        return (Delegation) q.getSingleResult();
+	@Override
+	public Delegation findByDelegationKey(Long delegationKey) {
 
-    }
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.delegationKey = :delegationKey" + " and d.status =:delegatedStatus ";
 
-    @Override
-    public Delegation getDelegation(Long delegationId) {
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.id = :delegationId";
+		Query q = entityManager.createQuery(query);
 
-        Query q = entityManager.createQuery(query);
+		q.setParameter("delegationKey", delegationKey);
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
-        q.setParameter("delegationId", delegationId);
+		return (Delegation) q.getSingleResult();
 
-        return (Delegation) q.getSingleResult();
-    }
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey) {
+	@Override
+	public Delegation getDelegation(Long delegationId) {
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.id = :delegationId";
 
-        Date start = (new Date(System.currentTimeMillis() + timeBeforeExpiryAlert));
+		Query q = entityManager.createQuery(query);
 
-        String query =
-                "SELECT d FROM " + Delegation.class.getSimpleName() + " d " + "WHERE d.validTo < :start and "
-                        + "d.expiryAlertSentCount = :expiryAlertSentCount and " + delegatedStatusIsActive;
+		q.setParameter("delegationId", delegationId);
 
-        Query q = entityManager.createQuery(query);
+		return (Delegation) q.getSingleResult();
+	}
 
-        q.setParameter("start", start, TemporalType.DATE);
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> findSoonToExpireWithUnsentWarning(long timeBeforeExpiryAlert, int emailToSendKey) {
 
-        q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
+		Date start = (new Date(System.currentTimeMillis() + timeBeforeExpiryAlert));
 
-        q.setParameter("expiryAlertSentCount", emailToSendKey);
+		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		        + "WHERE d.validTo < :start and " + "d.expiryAlertSentCount = :expiryAlertSentCount and "
+		        + delegatedStatusIsActive;
 
-        return q.getResultList();
-    }
+		Query q = entityManager.createQuery(query);
 
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public boolean removeDelegation(Long delegationKey) {
+		q.setParameter("start", start, TemporalType.DATE);
 
-        Delegation delegation = findByDelegationKey(delegationKey);
+		q.setParameter("delegatedStatus", DelegationStatus.ACTIVE);
 
-        if (delegation == null) {
-            return false;
-        }
-        delegation.setStatus(DelegationStatus.DELETED);
-        merge(delegation);
-        flush();
+		q.setParameter("expiryAlertSentCount", emailToSendKey);
 
-        return true;
+		return q.getResultList();
+	}
 
-    }
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public boolean removeDelegation(Long delegationKey) {
+
+		Delegation delegation = findByDelegationKey(delegationKey);
+
+		if (delegation == null) {
+			return false;
+		}
+		delegation.setStatus(DelegationStatus.DELETED);
+		merge(delegation);
+		flush();
+
+		return true;
+
+	}
 
 }
