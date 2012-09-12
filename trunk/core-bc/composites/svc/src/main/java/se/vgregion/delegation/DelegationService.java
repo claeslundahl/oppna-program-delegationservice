@@ -85,6 +85,9 @@ public interface DelegationService {
 
     Delegation findByDelegationKey(Long delegationKey);
 
+
+    List<Delegation> findBySample(Delegation sample);
+
     /**
      * Removes a delegation by it´s key.
      * 
