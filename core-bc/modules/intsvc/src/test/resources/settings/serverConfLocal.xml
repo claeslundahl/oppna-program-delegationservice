@@ -41,12 +41,12 @@
   <bean name="saveDelegationsResponderInterface" class="se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl">
     <constructor-arg name="delegationService" ref="delegationService" />
   </bean>
+  <bean name="findDelegationsResponderInterface" class="se.vgregion.delegation.ws.FindDelegationsResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
   <bean name="removeDelegationResponderInterface" class="se.vgregion.delegation.ws.RemoveDelegationResponderInterfaceImpl">
     <constructor-arg name="delegationService" ref="delegationService" />
   </bean>
-
-
-
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName" value="org.hsqldb.jdbcDriver" />

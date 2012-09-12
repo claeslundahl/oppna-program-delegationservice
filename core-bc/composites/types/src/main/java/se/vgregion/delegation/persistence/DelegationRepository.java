@@ -32,4 +32,6 @@ public interface DelegationRepository extends Repository<Delegation, Long> {
 
 	List<Delegation> findAllActive();
 
+	List<Delegation> findBySample(Delegation bean);
+
 }

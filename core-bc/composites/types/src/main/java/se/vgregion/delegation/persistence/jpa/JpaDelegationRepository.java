@@ -1,11 +1,17 @@
 package se.vgregion.delegation.persistence.jpa;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.collections.BeanMap;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -213,6 +219,78 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
 		return true;
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Delegation> findBySample(Delegation bean) {
+		StringBuilder jpqlOut = new StringBuilder();
+		List<Object> valuesToSetIntoJpql = new ArrayList<Object>();
+		List<String> keysOut = new ArrayList<String>();
+		try {
+			mkJpqlAndGetValues(bean, jpqlOut, keysOut, valuesToSetIntoJpql, "expiryAlertSentCount");
+			Query q = entityManager.createQuery(jpqlOut.toString());
+			int position = 0;
+			for (Object value : valuesToSetIntoJpql) {
+				q.setParameter(keysOut.get(position++), value);
+			}
+			return q.getResultList();
+		} catch (Exception e) {
+			System.out.println("Jpql: " + jpqlOut);
+			System.out.println("Values: " + valuesToSetIntoJpql);
+			System.out.println("Keys: " + keysOut);
+			throw new RuntimeException(e);
+		}
+	}
+
+	void mkJpqlAndGetValues(final Object bean, final StringBuilder jpqlOut, final List<String> keysOut,
+	        final List<Object> valuesToSetIntoJpql, String... excludedProperties) {
+		BeanMap bm = new BeanMap(bean);
+		Set<String> keys = new HashSet<String>(bm.keySet());
+		keys.remove("class");
+		keys.removeAll(Arrays.asList(excludedProperties));
+
+		List<String> condition = new ArrayList<String>();
+
+		jpqlOut.append("select d from " + bean.getClass().getSimpleName() + " d");
+
+		for (String key : keys) {
+			Object value = bm.get(key);
+			if (value != null && key != null && !key.trim().equals("")) {
+				keysOut.add(key);
+				StringBuilder comparison = new StringBuilder("d.");
+				comparison.append(key);
+				if (value instanceof String && value.toString().contains("*")) {
+					comparison.append(" like :" + key + " ");
+					value = value.toString().replaceAll(Pattern.quote("*"), "%");
+				} else {
+					comparison.append(" = :" + key + " ");
+				}
+				condition.add(comparison.toString());
+				valuesToSetIntoJpql.add(value);
+			}
+		}
+
+		if (!valuesToSetIntoJpql.isEmpty()) {
+			jpqlOut.append(" where ");
+			jpqlOut.append(join(condition, " and "));
+		}
+
+		System.out.println(jpqlOut);
+
+	}
+
+	private String join(List<String> items, String junction) {
+		if (items.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0, j = items.size() - 1; i < j; i++) {
+			sb.append(items.get(i));
+			sb.append(junction);
+		}
+		sb.append(items.get(items.size() - 1));
+		return sb.toString();
 	}
 
 }
