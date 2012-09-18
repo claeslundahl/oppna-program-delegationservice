@@ -120,8 +120,7 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
 		bean.setStatus(DelegationStatus.ACTIVE);
 		List<Delegation> result = delegationRepository.findBySample(bean);
 		System.out.println("result.size(): " + result.size());
-		Assert.assertNotSame(2, result.size());
-		System.out.println("result.size():  " + result.size());
+		Assert.assertEquals(2, result.size());
 	}
 
 }
