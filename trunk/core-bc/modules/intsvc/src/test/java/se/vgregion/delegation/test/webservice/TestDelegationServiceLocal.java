@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import se.riv.authorization.delegation.finddelegations.v1.rivtabp21.FindDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface;
@@ -31,68 +32,65 @@ import com.dumbster.smtp.SimpleSmtpServer;
  * 
  */
 public class TestDelegationServiceLocal extends TestDelegationServiceWS {
-    static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
+	static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
 
-    @BeforeClass
-    public static void startUpTestInfo() {
-        LOGGER.info("Starting test for local services!");
-    }
+	@BeforeClass
+	public static void startUpTestInfo() {
+		LOGGER.info("Starting test for local services!");
+	}
 
-    @Override
-    protected void setUpContext() {
-        String path = "classpath:/settings/serverConfLocal.xml";
-        context = new ClassPathXmlApplicationContext(path);
-    }
+	@Override
+	protected void setUpContext() {
+		String path = "classpath:/settings/serverConfLocal.xml";
+		context = new ClassPathXmlApplicationContext(path);
+	}
 
-    @Override
-    public void setUp() throws Exception {
+	@Override
+	public void setUp() throws Exception {
 
-        setUpContext();
+		setUpContext();
 
-        delegationMailSenderService =
-                (DelegationMailSenderService) context.getBean("delegationMailSenderService");
+		delegationMailSenderService = (DelegationMailSenderService) context.getBean("delegationMailSenderService");
 
-        PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
+		PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
 
-        smtpServer = SimpleSmtpServer.start(Integer.valueOf(propertiesBean.getMailServerPort()));
+		smtpServer = SimpleSmtpServer.start(Integer.valueOf(propertiesBean.getMailServerPort()));
 
-        activeDelegationsResponderInterface =
-                (GetActiveDelegationsResponderInterface) context
-                        .getBean("activeDelegationsResponderInterface");
-        getDelegationResponderInterface =
-                (GetDelegationResponderInterface) context.getBean("getDelegationResponderInterface");
-        inactiveDelegationsResponderInterface =
-                (GetInactiveDelegationsResponderInterface) context
-                        .getBean("inactiveDelegationsResponderInterface");
-        getDelegationsbyUnitAndRoleResponderInterface =
-                (GetDelegationsbyUnitAndRoleResponderInterface) context
-                        .getBean("getDelegationsbyUnitAndRoleResponderInterface");
-        getDelegationsResponderInterface =
-                (GetDelegationsResponderInterface) context.getBean("getDelegationsResponderInterface");
-        hasDelegationResponderInterface =
-                (HasDelegationResponderInterface) context.getBean("hasDelegationResponderInterface");
-        saveDelegationsResponderInterface =
-                (SaveDelegationsResponderInterface) context.getBean("saveDelegationsResponderInterface");
-        removeDelegationResponderInterface =
-                (RemoveDelegationResponderInterface) context.getBean("removeDelegationResponderInterface");
+		activeDelegationsResponderInterface = (GetActiveDelegationsResponderInterface) context
+		        .getBean("activeDelegationsResponderInterface");
+		getDelegationResponderInterface = (GetDelegationResponderInterface) context
+		        .getBean("getDelegationResponderInterface");
+		inactiveDelegationsResponderInterface = (GetInactiveDelegationsResponderInterface) context
+		        .getBean("inactiveDelegationsResponderInterface");
+		getDelegationsbyUnitAndRoleResponderInterface = (GetDelegationsbyUnitAndRoleResponderInterface) context
+		        .getBean("getDelegationsbyUnitAndRoleResponderInterface");
+		getDelegationsResponderInterface = (GetDelegationsResponderInterface) context
+		        .getBean("getDelegationsResponderInterface");
+		hasDelegationResponderInterface = (HasDelegationResponderInterface) context
+		        .getBean("hasDelegationResponderInterface");
+		saveDelegationsResponderInterface = (SaveDelegationsResponderInterface) context
+		        .getBean("saveDelegationsResponderInterface");
+		removeDelegationResponderInterface = (RemoveDelegationResponderInterface) context
+		        .getBean("removeDelegationResponderInterface");
+		findDelegationsResponderInterface = (FindDelegationsResponderInterface) context
+		        .getBean("findDelegationsResponderInterface");
+	}
 
-    }
+	@Override
+	public void tearDown() throws Exception {
+		smtpServer.stop();
 
-    @Override
-    public void tearDown() throws Exception {
-        smtpServer.stop();
+		StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
 
-        StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
+		schedulerFactoryBean.shutdown();
 
-        schedulerFactoryBean.shutdown();
+		DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
 
-        DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
+		Connection conn = dataSource.getConnection();
 
-        Connection conn = dataSource.getConnection();
-
-        Statement st = conn.createStatement();
-        st.execute("SHUTDOWN");
-        conn.close();
-    }
+		Statement st = conn.createStatement();
+		st.execute("SHUTDOWN");
+		conn.close();
+	}
 
 }
