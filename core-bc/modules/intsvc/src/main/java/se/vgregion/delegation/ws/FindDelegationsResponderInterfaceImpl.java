@@ -80,7 +80,6 @@ public class FindDelegationsResponderInterfaceImpl implements FindDelegationsRes
 		for (Object key : bm.keySet()) {
 			Object value = bm.get(key);
 			if (value instanceof Number) {
-				System.out.println(key + " = " + value + " is a number.");
 				Number n = (Number) value;
 				if (bm.getWriteMethod(key.toString()) != null) {
 					Double d = Double.parseDouble(n.toString());
