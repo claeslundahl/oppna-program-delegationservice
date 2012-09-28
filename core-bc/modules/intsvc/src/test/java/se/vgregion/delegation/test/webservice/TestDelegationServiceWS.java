@@ -11,608 +11,373 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.quartz.impl.StdScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import se.riv.authorization.delegation.finddelegations.v1.rivtabp21.FindDelegationsResponderInterface;
 import se.riv.authorization.delegation.finddelegationsresponder.v1.FindDelegationsResponseType;
 import se.riv.authorization.delegation.finddelegationsresponder.v1.FindDelegationsType;
-import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsResponseType;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsType;
-import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationResponseType;
 import se.riv.authorization.delegation.getdelegationresponder.v1.GetDelegationType;
-import se.riv.authorization.delegation.getdelegations.v1.rivtabp21.GetDelegationsResponderInterface;
-import se.riv.authorization.delegation.getdelegationsbyunitandrole.v1.rivtabp21.GetDelegationsbyUnitAndRoleResponderInterface;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleResponseType;
 import se.riv.authorization.delegation.getdelegationsbyunitandroleresponder.v1.GetDelegationsbyUnitAndRoleType;
 import se.riv.authorization.delegation.getdelegationsresponder.v1.GetDelegationsResponseType;
 import se.riv.authorization.delegation.getdelegationsresponder.v1.GetDelegationsType;
-import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetInactiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsResponseType;
 import se.riv.authorization.delegation.getinactivedelegationsresponder.v1.GetInactiveDelegationsType;
-import se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationResponseType;
 import se.riv.authorization.delegation.hasdelegationresponder.v1.HasDelegationType;
-import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationResponseType;
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationType;
-import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
-import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsResponseType;
-import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
-import se.riv.authorization.delegation.v1.DelegationBlockType;
 import se.riv.authorization.delegation.v1.DelegationType;
 import se.riv.authorization.delegation.v1.ResultCodeEnum;
-import se.vgregion.delegation.mail.DelegationMailSenderService;
-import se.vgregion.delegation.server.Server;
-import se.vgregion.delegation.ws.util.PropertiesBean;
-
-import com.dumbster.smtp.SimpleSmtpServer;
-import com.dumbster.smtp.SmtpMessage;
+import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 
 /**
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
  * 
  */
-public class TestDelegationServiceWS {
-	static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceWS.class);
+public class TestDelegationServiceWS extends AbstractTestBase {
+    static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceWS.class);
 
-	DelegationMailSenderService delegationMailSenderService;
-	GetActiveDelegationsResponderInterface activeDelegationsResponderInterface;
-	GetDelegationResponderInterface getDelegationResponderInterface;
-	GetInactiveDelegationsResponderInterface inactiveDelegationsResponderInterface;
-	GetDelegationsbyUnitAndRoleResponderInterface getDelegationsbyUnitAndRoleResponderInterface;
-	GetDelegationsResponderInterface getDelegationsResponderInterface;
-	HasDelegationResponderInterface hasDelegationResponderInterface;
-	SaveDelegationsResponderInterface saveDelegationsResponderInterface;
-	RemoveDelegationResponderInterface removeDelegationResponderInterface;
-	FindDelegationsResponderInterface findDelegationsResponderInterface;
+    @BeforeClass
+    public static void startUpTestInfo() {
+        LOGGER.info("Starting test for web services!");
+    }
 
-	SimpleSmtpServer smtpServer;
-	Server server;
+    @Test
+    public void testSaveDelegation() {
+        long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        Assert.assertNotSame(0, responsedelegationKey);
+    }
 
-	ClassPathXmlApplicationContext context;
+    @Test
+    public void testGetActiveDelegations() {
 
-	@BeforeClass
-	public static void startUpTestInfo() {
-		LOGGER.info("Starting test for web services!");
-	}
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-	@Before
-	public void setUp() throws Exception {
+        GetActiveDelegationsType parameters = new GetActiveDelegationsType();
 
-		// Server
-		server = new Server();
+        parameters.setDelegationFor("df");
 
-		setUpContext();
+        GetActiveDelegationsResponseType activeDelegationsResponseType = activeDelegationsResponderInterface
+                .getActiveDelegations("", parameters);
+        activeDelegationsResponseType.getDelegations().getContent().size();
 
-		delegationMailSenderService = (DelegationMailSenderService) context.getBean("delegationMailSenderService");
+        Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() > 0);
+    }
 
-		PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
+    @Test
+    public void testGetActiveDelegationsNegative() {
 
-		smtpServer = SimpleSmtpServer.start(Integer.valueOf(propertiesBean.getMailServerPort()));
+        GetActiveDelegationsType parameters = new GetActiveDelegationsType();
 
-		server.startServer(context, "localhost", "24004");
+        parameters.setDelegationFor("dfxxx");
 
-		LOGGER.info("Server Ready !!!! ");
+        GetActiveDelegationsResponseType activeDelegationsResponseType = activeDelegationsResponderInterface
+                .getActiveDelegations("", parameters);
+        activeDelegationsResponseType.getDelegations().getContent().size();
 
-		boolean https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
+        Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(activeDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+    }
 
-		ClassPathXmlApplicationContext contextClient;
+    @Test
+    public void testGetDelegation() {
 
-		if (https) {
-			contextClient = new ClassPathXmlApplicationContext("classpath:settings/clientConfHttps.xml");
-		} else {
-			contextClient = new ClassPathXmlApplicationContext("classpath:settings/clientConf.xml");
-		}
+        // Creates a delegetion to get.
+        long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-		activeDelegationsResponderInterface = (GetActiveDelegationsResponderInterface) contextClient
-		        .getBean("activeDelegationsResponderInterface");
-		getDelegationResponderInterface = (GetDelegationResponderInterface) contextClient
-		        .getBean("getDelegationResponderInterface");
-		inactiveDelegationsResponderInterface = (GetInactiveDelegationsResponderInterface) contextClient
-		        .getBean("inactiveDelegationsResponderInterface");
-		getDelegationsbyUnitAndRoleResponderInterface = (GetDelegationsbyUnitAndRoleResponderInterface) contextClient
-		        .getBean("getDelegationsbyUnitAndRoleResponderInterface");
-		getDelegationsResponderInterface = (GetDelegationsResponderInterface) contextClient
-		        .getBean("getDelegationsResponderInterface");
-		hasDelegationResponderInterface = (HasDelegationResponderInterface) contextClient
-		        .getBean("hasDelegationResponderInterface");
-		saveDelegationsResponderInterface = (SaveDelegationsResponderInterface) contextClient
-		        .getBean("saveDelegationsResponderInterface");
-		removeDelegationResponderInterface = (RemoveDelegationResponderInterface) contextClient
-		        .getBean("removeDelegationResponderInterface");
-		findDelegationsResponderInterface = (FindDelegationsResponderInterface) contextClient
-		        .getBean("findDelegationsResponderInterface");
+        GetDelegationType parameters = new GetDelegationType();
+        parameters.setDelegationKey(String.valueOf(responsedelegationKey));
 
-		LOGGER.info("Client Ready !!!! ");
+        // Gets delegation
+        GetDelegationResponseType delegationResponseType = getDelegationResponderInterface.getDelegation("",
+                parameters);
 
-	}
+        delegationResponseType.getDelegation().getDelegationKey();
 
-	protected void setUpContext() {
-		String path = "classpath:/settings/serverConf.xml";
-		context = new ClassPathXmlApplicationContext(path);
-	}
+        Assert.assertEquals(delegationResponseType.getDelegation().getDelegationKey(), responsedelegationKey);
+    }
 
-	@After
-	public void tearDown() throws Exception {
-		server.stopServer("24004");
-		smtpServer.stop();
+    @Test
+    public void testGetDelegationNegative() {
 
-		StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
+        GetDelegationType parameters = new GetDelegationType();
+        parameters.setDelegationKey(String.valueOf(1873475839477878943L));
 
-		schedulerFactoryBean.shutdown();
+        // Gets delegation
+        GetDelegationResponseType delegationResponseType = getDelegationResponderInterface.getDelegation("",
+                parameters);
 
-		DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
+        Assert.assertTrue(delegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
+    }
 
-		Connection conn = dataSource.getConnection();
+    @Test
+    public void testGetInactiveDelegations() {
 
-		Statement st = conn.createStatement();
-		st.execute("SHUTDOWN");
-		conn.close();
+        saveADelegation("2010/01/02", "2010/01/01", "2011/01/01");
 
-	}
+        GetInactiveDelegationsType parameters = new GetInactiveDelegationsType();
 
-	@Test
-	public void testSaveDelegation() {
+        parameters.setDelegationFor("df");
 
-		long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        GetInactiveDelegationsResponseType inactiveDelegationsResponseType = inactiveDelegationsResponderInterface
+                .getInactiveDelegations("", parameters);
+        inactiveDelegationsResponseType.getDelegations().getContent().size();
 
-		Assert.assertTrue(responsedelegationKey == 1);
+        Assert.assertTrue(inactiveDelegationsResponseType.getDelegations().getContent().size() > 0);
+    }
 
-	}
+    @Test
+    public void testGetInactiveDelegationsNegative() {
 
-	@Test
-	public void testGetActiveDelegations() {
+        GetInactiveDelegationsType parameters = new GetInactiveDelegationsType();
 
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        parameters.setDelegationFor("dfxxx");
 
-		GetActiveDelegationsType parameters = new GetActiveDelegationsType();
+        GetInactiveDelegationsResponseType inactiveDelegationsResponseType = inactiveDelegationsResponderInterface
+                .getInactiveDelegations("", parameters);
+        inactiveDelegationsResponseType.getDelegations().getContent().size();
 
-		parameters.setDelegationFor("df");
+        Assert.assertTrue(inactiveDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(inactiveDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+    }
 
-		GetActiveDelegationsResponseType activeDelegationsResponseType = activeDelegationsResponderInterface
-		        .getActiveDelegations("", parameters);
-		activeDelegationsResponseType.getDelegations().getContent().size();
+    @Test
+    public void testGetDelegationsbyUnitAndRole() {
 
-		Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() > 0);
-	}
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-	@Test
-	public void testGetActiveDelegationsNegative() {
+        GetDelegationsbyUnitAndRoleType parameters = new GetDelegationsbyUnitAndRoleType();
 
-		GetActiveDelegationsType parameters = new GetActiveDelegationsType();
+        parameters.setDelegatedFor("df");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
 
-		parameters.setDelegationFor("dfxxx");
+        GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRoleResponseType = getDelegationsbyUnitAndRoleResponderInterface
+                .getDelegationsbyUnitAndRole("", parameters);
 
-		GetActiveDelegationsResponseType activeDelegationsResponseType = activeDelegationsResponderInterface
-		        .getActiveDelegations("", parameters);
-		activeDelegationsResponseType.getDelegations().getContent().size();
+        Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() > 0);
 
-		Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() == 0);
-		Assert.assertTrue(activeDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
-	}
+    }
 
-	@Test
-	public void testGetDelegation() {
+    @Test
+    public void testGetDelegationsbyUnitAndRoleNegative() {
 
-		// Creates a delegetion to get.
-		long responsedelegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        GetDelegationsbyUnitAndRoleType parameters = new GetDelegationsbyUnitAndRoleType();
 
-		GetDelegationType parameters = new GetDelegationType();
-		parameters.setDelegationKey(String.valueOf(responsedelegationKey));
+        parameters.setDelegatedFor("dfxxx");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
 
-		// Gets delegation
-		GetDelegationResponseType delegationResponseType = getDelegationResponderInterface.getDelegation("",
-		        parameters);
+        GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRoleResponseType = getDelegationsbyUnitAndRoleResponderInterface
+                .getDelegationsbyUnitAndRole("", parameters);
 
-		delegationResponseType.getDelegation().getDelegationKey();
+        Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getResultCode().equals(ResultCodeEnum.INFO));
 
-		Assert.assertEquals(delegationResponseType.getDelegation().getDelegationKey(), responsedelegationKey);
-	}
+    }
 
-	@Test
-	public void testGetDelegationNegative() {
+    @Test
+    public void testGetDelegations() {
 
-		GetDelegationType parameters = new GetDelegationType();
-		parameters.setDelegationKey(String.valueOf(1873475839477878943L));
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-		// Gets delegation
-		GetDelegationResponseType delegationResponseType = getDelegationResponderInterface.getDelegation("",
-		        parameters);
+        GetDelegationsType parameters = new GetDelegationsType();
 
-		Assert.assertTrue(delegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
-	}
+        parameters.setDelegationFor("df");
 
-	@Test
-	public void testGetInactiveDelegations() {
+        GetDelegationsResponseType getDelegationsResponseType = getDelegationsResponderInterface.getDelegations(
+                "", parameters);
 
-		saveADelegation("2010/01/02", "2010/01/01", "2011/01/01");
+        Assert.assertTrue(getDelegationsResponseType.getDelegations().getContent().size() > 0);
 
-		GetInactiveDelegationsType parameters = new GetInactiveDelegationsType();
+    }
 
-		parameters.setDelegationFor("df");
+    @Test
+    public void testGetDelegationsNegative() {
 
-		GetInactiveDelegationsResponseType inactiveDelegationsResponseType = inactiveDelegationsResponderInterface
-		        .getInactiveDelegations("", parameters);
-		inactiveDelegationsResponseType.getDelegations().getContent().size();
+        GetDelegationsType parameters = new GetDelegationsType();
 
-		Assert.assertTrue(inactiveDelegationsResponseType.getDelegations().getContent().size() > 0);
-	}
+        parameters.setDelegationFor("dfxxx");
 
-	@Test
-	public void testGetInactiveDelegationsNegative() {
+        GetDelegationsResponseType getDelegationsResponseType = getDelegationsResponderInterface.getDelegations(
+                "", parameters);
 
-		GetInactiveDelegationsType parameters = new GetInactiveDelegationsType();
+        Assert.assertTrue(getDelegationsResponseType.getDelegations().getContent().size() == 0);
+        Assert.assertTrue(getDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
 
-		parameters.setDelegationFor("dfxxx");
+    }
 
-		GetInactiveDelegationsResponseType inactiveDelegationsResponseType = inactiveDelegationsResponderInterface
-		        .getInactiveDelegations("", parameters);
-		inactiveDelegationsResponseType.getDelegations().getContent().size();
+    @Test
+    public void testHasDelegation() {
 
-		Assert.assertTrue(inactiveDelegationsResponseType.getDelegations().getContent().size() == 0);
-		Assert.assertTrue(inactiveDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
-	}
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-	@Test
-	public void testGetDelegationsbyUnitAndRole() {
+        HasDelegationType parameters = new HasDelegationType();
 
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        parameters.setDelegatedFor("df");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
 
-		GetDelegationsbyUnitAndRoleType parameters = new GetDelegationsbyUnitAndRoleType();
+        HasDelegationResponseType hasDelegationResponseType = hasDelegationResponderInterface.hasDelegation("",
+                parameters);
 
-		parameters.setDelegatedFor("df");
-		parameters.setDelegatedTo("dt");
-		parameters.setRole("role");
+        Assert.assertTrue(hasDelegationResponseType.isResult());
+    }
 
-		GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRoleResponseType = getDelegationsbyUnitAndRoleResponderInterface
-		        .getDelegationsbyUnitAndRole("", parameters);
+    @Test
+    public void testHasDelegationNegative() {
 
-		Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() > 0);
+        HasDelegationType parameters = new HasDelegationType();
 
-	}
+        parameters.setDelegatedFor("dfxxx");
+        parameters.setDelegatedTo("dt");
+        parameters.setRole("role");
 
-	@Test
-	public void testGetDelegationsbyUnitAndRoleNegative() {
+        HasDelegationResponseType hasDelegationResponseType = hasDelegationResponderInterface.hasDelegation("",
+                parameters);
 
-		GetDelegationsbyUnitAndRoleType parameters = new GetDelegationsbyUnitAndRoleType();
+        Assert.assertFalse(hasDelegationResponseType.isResult());
+    }
 
-		parameters.setDelegatedFor("dfxxx");
-		parameters.setDelegatedTo("dt");
-		parameters.setRole("role");
+    @Test
+    public void testRemoveDelegation() {
 
-		GetDelegationsbyUnitAndRoleResponseType getDelegationsbyUnitAndRoleResponseType = getDelegationsbyUnitAndRoleResponderInterface
-		        .getDelegationsbyUnitAndRole("", parameters);
+        long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-		Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getDelegations().getContent().size() == 0);
-		Assert.assertTrue(getDelegationsbyUnitAndRoleResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("" + delegationKey);
 
-	}
+        RemoveDelegationResponseType removeDelegationResponseType = removeDelegationResponderInterface
+                .removeDelegation("", parameters);
 
-	@Test
-	public void testGetDelegations() {
+        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.OK));
 
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        GetDelegationType getParameters = new GetDelegationType();
+        getParameters.setDelegationKey(delegationKey + "");
 
-		GetDelegationsType parameters = new GetDelegationsType();
+        GetDelegationResponseType failingResult = getDelegationResponderInterface.getDelegation("", getParameters);
 
-		parameters.setDelegationFor("df");
+        Assert.assertTrue(failingResult.getResultCode().equals(ResultCodeEnum.ERROR));
+        Assert.assertNull(failingResult.getDelegation());
+    }
 
-		GetDelegationsResponseType getDelegationsResponseType = getDelegationsResponderInterface.getDelegations(
-		        "", parameters);
+    @Test
+    public void testRemoveDelegationNegative() {
 
-		Assert.assertTrue(getDelegationsResponseType.getDelegations().getContent().size() > 0);
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("5784464");
 
-	}
+        RemoveDelegationResponseType removeDelegationResponseType = removeDelegationResponderInterface
+                .removeDelegation("", parameters);
 
-	@Test
-	public void testGetDelegationsNegative() {
+        Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
 
-		GetDelegationsType parameters = new GetDelegationsType();
+    }
 
-		parameters.setDelegationFor("dfxxx");
+    @Test
+    public void testRemoveDelegation2() {
 
-		GetDelegationsResponseType getDelegationsResponseType = getDelegationsResponderInterface.getDelegations(
-		        "", parameters);
+        long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-		Assert.assertTrue(getDelegationsResponseType.getDelegations().getContent().size() == 0);
-		Assert.assertTrue(getDelegationsResponseType.getResultCode().equals(ResultCodeEnum.INFO));
+        RemoveDelegationType parameters = new RemoveDelegationType();
+        parameters.setDelegationKey("" + delegationKey);
 
-	}
+        removeDelegationResponderInterface.removeDelegation("", parameters);
 
-	@Test
-	public void testHasDelegation() {
+        GetDelegationType parameters2 = new GetDelegationType();
 
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+        parameters2.setDelegationKey("" + delegationKey);
 
-		HasDelegationType parameters = new HasDelegationType();
+        GetDelegationResponseType getDelegationResponseType = getDelegationResponderInterface.getDelegation("",
+                parameters2);
 
-		parameters.setDelegatedFor("df");
-		parameters.setDelegatedTo("dt");
-		parameters.setRole("role");
+        Assert.assertTrue(getDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
+    }
 
-		HasDelegationResponseType hasDelegationResponseType = hasDelegationResponderInterface.hasDelegation("",
-		        parameters);
+    @Test
+    @Ignore
+    public void testConnectionSimple() throws UnrecoverableKeyException, KeyManagementException,
+            NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
 
-		Assert.assertTrue(hasDelegationResponseType.isResult());
-	}
+        testConnection("localhost", 24002, "delegering-test.jks", "changeit", "delegering-test.jks", "changeit");
 
-	@Test
-	public void testHasDelegationNegative() {
+    }
 
-		HasDelegationType parameters = new HasDelegationType();
+    private void testConnection(String host, int hostPort, String trustStoreFileName, String trustStorePassword,
+            String keyStoreFileName, String keyStorePassword) throws NoSuchAlgorithmException, KeyStoreException,
+            IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
+        Socket socket = null;
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSLv3");
 
-		parameters.setDelegatedFor("dfxxx");
-		parameters.setDelegatedTo("dt");
-		parameters.setRole("role");
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(this.getClass().getClassLoader().getResourceAsStream(trustStoreFileName),
+                    trustStorePassword.toCharArray());
 
-		HasDelegationResponseType hasDelegationResponseType = hasDelegationResponderInterface.hasDelegation("",
-		        parameters);
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory
+                    .getDefaultAlgorithm());
+            trustManagerFactory.init(trustStore);
 
-		Assert.assertFalse(hasDelegationResponseType.isResult());
-	}
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(this.getClass().getClassLoader().getResourceAsStream(keyStoreFileName),
+                    keyStorePassword.toCharArray());
 
-	@Test
-	public void testRemoveDelegation() {
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory
+                    .getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
 
-		long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
 
-		RemoveDelegationType parameters = new RemoveDelegationType();
-		parameters.setDelegationKey("" + delegationKey);
+            socket = sslContext.getSocketFactory().createSocket(host, hostPort);
 
-		RemoveDelegationResponseType removeDelegationResponseType = removeDelegationResponderInterface
-		        .removeDelegation("", parameters);
+            socket.getOutputStream().write(1);
+        } finally {
+            if (socket != null) {
+                socket.close();
+            }
+        }
+    }
 
-		Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.OK));
+    @Test
+    public void testFindDelegationsResponderInterface() {
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
 
-		GetDelegationType getParameters = new GetDelegationType();
-		getParameters.setDelegationKey(delegationKey + "");
+        FindDelegationsType parameters = new FindDelegationsType();
+        FindDelegationsResponseType result = findDelegationsResponderInterface.findDelegations("", parameters);
 
-		GetDelegationResponseType failingResult = getDelegationResponderInterface.getDelegation("", getParameters);
+        Assert.assertEquals(1, result.getDelegations().getContent().size());
 
-		Assert.assertTrue(failingResult.getResultCode().equals(ResultCodeEnum.ERROR));
-		Assert.assertNull(failingResult.getDelegation());
-	}
+        saveADelegation("2010/01/02", "2010/01/01", "2014/01/02");
+        DelegationType dm = new DelegationType();
+        dm.setValidTo(getADate(parseDate("2014/01/02")));
+        parameters.setDelegationMatch(dm);
+        result = findDelegationsResponderInterface.findDelegations("", parameters);
+        Assert.assertEquals(1, result.getDelegations().getContent().size());
 
-	@Test
-	public void testRemoveDelegationNegative() {
+        dm = new DelegationType();
+        dm.setValidFrom(getADate(parseDate("2010/01/01")));
+        dm.setDelegatedFor("d*");
+        parameters.setDelegationMatch(dm);
+        result = findDelegationsResponderInterface.findDelegations("", parameters);
+        Assert.assertEquals(2, result.getDelegations().getContent().size());
+    }
 
-		RemoveDelegationType parameters = new RemoveDelegationType();
-		parameters.setDelegationKey("5784464");
-
-		RemoveDelegationResponseType removeDelegationResponseType = removeDelegationResponderInterface
-		        .removeDelegation("", parameters);
-
-		Assert.assertTrue(removeDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
-
-	}
-
-	@Test
-	public void testRemoveDelegation2() {
-
-		long delegationKey = saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
-
-		RemoveDelegationType parameters = new RemoveDelegationType();
-		parameters.setDelegationKey("" + delegationKey);
-
-		removeDelegationResponderInterface.removeDelegation("", parameters);
-
-		GetDelegationType parameters2 = new GetDelegationType();
-
-		parameters2.setDelegationKey("" + delegationKey);
-
-		GetDelegationResponseType getDelegationResponseType = getDelegationResponderInterface.getDelegation("",
-		        parameters2);
-
-		Assert.assertTrue(getDelegationResponseType.getResultCode().equals(ResultCodeEnum.ERROR));
-	}
-
-	@Test
-	public void testDelegationMailService() throws AddressException, MessagingException {
-
-		delegationMailSenderService.sendMail("sender@here.com", "receiver@there.com", "cepa", "depa");
-
-		Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
-
-		Iterator<?> emailIter = smtpServer.getReceivedEmail();
-		SmtpMessage email = (SmtpMessage) emailIter.next();
-		Assert.assertTrue(email.getHeaderValue("Subject").equals("cepa"));
-		Assert.assertTrue(email.getBody().equals("depa"));
-
-	}
-
-	@Test
-	public void testEmailNotificationJob1() throws InterruptedException {
-
-		// ClassPathXmlApplicationContext context =
-		// new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
-
-		long dayInMilis = 86400000;
-
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
-		Date today = new Date();
-		Date ao = new Date(today.getTime() - 95 * dayInMilis);
-		Date vt = new Date(today.getTime() + 20 * dayInMilis);
-		Date vf = new Date(today.getTime() - 100 * dayInMilis);
-
-		saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
-
-		Thread.sleep(7000);
-
-		Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
-
-	}
-
-	@Test
-	public void testEmailNotificationJob2() throws InterruptedException {
-
-		// ClassPathXmlApplicationContext context =
-		// new ClassPathXmlApplicationContext("classpath:settings/Spring-Quartz-test.xml");
-
-		long dayInMilis = 86400000;
-
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
-		Date today = new Date();
-		Date ao = new Date(today.getTime() - 95 * dayInMilis);
-		Date vt = new Date(today.getTime() + 10 * dayInMilis);
-		Date vf = new Date(today.getTime() - 100 * dayInMilis);
-
-		saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt));
-
-		Thread.sleep(11000);
-
-		Assert.assertTrue(smtpServer.getReceivedEmailSize() == 1);
-
-	}
-
-	@Test
-	@Ignore
-	public void testConnectionSimple() throws UnrecoverableKeyException, KeyManagementException,
-	        NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
-
-		testConnection("localhost", 24002, "delegering-test.jks", "changeit", "delegering-test.jks", "changeit");
-
-	}
-
-	private void testConnection(String host, int hostPort, String trustStoreFileName, String trustStorePassword,
-	        String keyStoreFileName, String keyStorePassword) throws NoSuchAlgorithmException, KeyStoreException,
-	        IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
-		Socket socket = null;
-		try {
-			SSLContext sslContext = SSLContext.getInstance("SSLv3");
-
-			KeyStore trustStore = KeyStore.getInstance("JKS");
-			trustStore.load(this.getClass().getClassLoader().getResourceAsStream(trustStoreFileName),
-			        trustStorePassword.toCharArray());
-
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory
-			        .getDefaultAlgorithm());
-			trustManagerFactory.init(trustStore);
-
-			KeyStore keyStore = KeyStore.getInstance("PKCS12");
-			keyStore.load(this.getClass().getClassLoader().getResourceAsStream(keyStoreFileName),
-			        keyStorePassword.toCharArray());
-
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory
-			        .getDefaultAlgorithm());
-			keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
-
-			sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-
-			socket = sslContext.getSocketFactory().createSocket(host, hostPort);
-
-			socket.getOutputStream().write(1);
-		} finally {
-			if (socket != null) {
-				socket.close();
-			}
-		}
-	}
-
-	private long saveADelegation(String aO, String vF, String vT) {
-		SaveDelegationsType parameters = new SaveDelegationsType();
-
-		DelegationBlockType block = new DelegationBlockType();
-
-		block.setApprovedOn(getADate(parseDate(aO)));
-		block.setSignToken("dfglkjgklgfjdkgjjlkfdjklgjdfklgjdfklgjkdlfjgkldfjgklfdjgkldjgklgjhdfgjkhdfgjkhdfjkgjdfhgjkdfhgjkdfhgjkdfhgjkdfhgjkdfhgjkfhdgjkdfjkghdfjkghdfkjghkdjfhgjkdhgjkdhgjkdhgjkdjgkldjgklgjdlkdkjklgjfdk");
-
-		List<DelegationType> list = block.getDelegations();
-
-		DelegationType delegationType = new DelegationType();
-
-		delegationType.setDelegatedFor("df");
-		delegationType.setDelegatedForEmail("test@vgregion.se");
-		delegationType.setDelegateTo("dt");
-		delegationType.setRole("role");
-
-		delegationType.setValidFrom(getADate(parseDate(vF)));
-		delegationType.setValidTo(getADate(parseDate(vT)));
-
-		list.add(delegationType);
-
-		parameters.setDelegationBlockType(block);
-
-		SaveDelegationsResponseType delegationsResponseType = saveDelegationsResponderInterface.saveDelegations(
-		        "", parameters);
-
-		return delegationsResponseType.getDelegations().getContent().get(0).getDelegationKey();
-	}
-
-	private Date parseDate(String dateStr) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-		Date date = null;
-		try {
-			date = formatter.parse(dateStr);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return date;
-	}
-
-	private static XMLGregorianCalendar getADate(Date date) {
-		GregorianCalendar dateValue = new GregorianCalendar();
-		dateValue.setTime(date);
-		try {
-			XMLGregorianCalendar xmlValue = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateValue);
-			return xmlValue;
-		} catch (DatatypeConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Test
-	public void testFindDelegationsResponderInterface() {
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/01");
-
-		FindDelegationsType parameters = new FindDelegationsType();
-		FindDelegationsResponseType result = findDelegationsResponderInterface.findDelegations("", parameters);
-
-		Assert.assertEquals(1, result.getDelegations().getContent().size());
-
-		saveADelegation("2010/01/02", "2010/01/01", "2014/01/02");
-		DelegationType dm = new DelegationType();
-		dm.setValidTo(getADate(parseDate("2014/01/02")));
-		parameters.setDelegationMatch(dm);
-		result = findDelegationsResponderInterface.findDelegations("", parameters);
-		Assert.assertEquals(1, result.getDelegations().getContent().size());
-
-		dm = new DelegationType();
-		dm.setValidFrom(getADate(parseDate("2010/01/01")));
-		dm.setDelegatedFor("d*");
-		parameters.setDelegationMatch(dm);
-		result = findDelegationsResponderInterface.findDelegations("", parameters);
-		Assert.assertEquals(2, result.getDelegations().getContent().size());
-	}
+    @Test
+    public void testPing() {
+        PingForConfigurationType config = new PingForConfigurationType();
+        pingForConfigurationResponderInterface.pingForConfiguration("", config);
+    }
 }

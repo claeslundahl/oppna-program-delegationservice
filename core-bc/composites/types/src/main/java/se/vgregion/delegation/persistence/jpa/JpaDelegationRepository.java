@@ -275,9 +275,6 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 			jpqlOut.append(" where ");
 			jpqlOut.append(join(condition, " and "));
 		}
-
-		System.out.println(jpqlOut);
-
 	}
 
 	private String join(List<String> items, String junction) {

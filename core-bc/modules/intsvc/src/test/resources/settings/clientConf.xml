@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
   http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd 
   http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
-  
+
   <jaxws:client id="activeDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface"
     address="http://localhost:24004/getactivedelegations" />
@@ -24,16 +24,18 @@
   <jaxws:client id="hasDelegationResponderInterface"
     serviceClass="se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface"
     address="http://localhost:24004/hasdelegation" />
+  <jaxws:client id="hasDelegationResponderInterface"
+    serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface" address="http://localhost:24004/pingforconfiguration" />
   <jaxws:client id="saveDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface"
     address="http://localhost:24004/savedelegations" />
-  <jaxws:client id="FindDelegationsResponderInterface"
+  <jaxws:client id="findDelegationsResponderInterface"
     serviceClass="se.riv.authorization.delegation.finddelegations.v1.rivtabp21.FindDelegationsResponderInterface"
     address="http://localhost:24004/savedelegations" />
   <jaxws:client id="removeDelegationResponderInterface"
     serviceClass="se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface"
     address="http://localhost:24004/removedelegation" />
-    
+
   <http:conduit name="https://localhost:24004/.*">
     <http:tlsClientParameters disableCNCheck="true">
       <sec:trustManagers>
@@ -42,5 +44,5 @@
     </http:tlsClientParameters>
     <http:client AutoRedirect="true" Connection="Keep-Alive" />
   </http:conduit>
-  
+
 </beans>

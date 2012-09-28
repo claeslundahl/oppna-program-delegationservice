@@ -15,7 +15,7 @@
 
   <context:property-placeholder
     location="classpath:/config-test.properties, file:${user.home}/.delegation-service/config-test.properties"
-    ignore-resource-not-found="true" ignore-unresolvable="true"  local-override="true"/>
+    ignore-resource-not-found="true" ignore-unresolvable="true" local-override="true" />
 
   <import resource="classpath*:mail-spring-test.xml" />
   <import resource="classpath:settings/Spring-Quartz-test.xml" />
@@ -38,6 +38,9 @@
   <bean name="hasDelegationResponderInterface" class="se.vgregion.delegation.ws.HasDelegationResponderInterfaceImpl">
     <constructor-arg name="delegationService" ref="delegationService" />
   </bean>
+  <bean name="pingForConfigurationResponderInterface" class="se.vgregion.delegation.ws.PingForConfigurationResponderInterfaceImpl">
+    <constructor-arg name="delegationService" ref="delegationService" />
+  </bean>
   <bean name="saveDelegationsResponderInterface" class="se.vgregion.delegation.ws.SaveDelegationsResponderInterfaceImpl">
     <constructor-arg name="delegationService" ref="delegationService" />
   </bean>
@@ -49,8 +52,8 @@
   </bean>
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-    <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-    <property name="url" value="jdbc:hsqldb:mem:opt" />
+    <property name="driverClassName" value="org.h2.Driver" />
+    <property name="url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" />
     <property name="username" value="sa" />
     <property name="password" value="" />
   </bean>

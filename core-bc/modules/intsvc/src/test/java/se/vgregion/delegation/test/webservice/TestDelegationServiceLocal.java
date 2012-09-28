@@ -4,7 +4,6 @@
 package se.vgregion.delegation.test.webservice;
 
 import java.sql.Connection;
-import java.sql.Statement;
 
 import org.junit.BeforeClass;
 import org.quartz.impl.StdScheduler;
@@ -22,75 +21,72 @@ import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetIn
 import se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface;
 import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
+import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.ws.util.PropertiesBean;
-
-import com.dumbster.smtp.SimpleSmtpServer;
 
 /**
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
  * 
  */
 public class TestDelegationServiceLocal extends TestDelegationServiceWS {
-	static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);
 
-	@BeforeClass
-	public static void startUpTestInfo() {
-		LOGGER.info("Starting test for local services!");
-	}
+    @BeforeClass
+    public static void startUpTestInfo() {
+        LOGGER.info("Starting test for local services!");
+    }
 
-	@Override
-	protected void setUpContext() {
-		String path = "classpath:/settings/serverConfLocal.xml";
-		context = new ClassPathXmlApplicationContext(path);
-	}
+    @Override
+    protected void setUpContext() {
+        String path = "classpath:/settings/serverConfLocal.xml";
+        context = new ClassPathXmlApplicationContext(path);
+    }
 
-	@Override
-	public void setUp() throws Exception {
+    @Override
+    public void setUp() throws Exception {
 
-		setUpContext();
+        setUpContext();
 
-		delegationMailSenderService = (DelegationMailSenderService) context.getBean("delegationMailSenderService");
+        delegationMailSenderService = (DelegationMailSenderService) context.getBean("delegationMailSenderService");
 
-		PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
+        PropertiesBean propertiesBean = (PropertiesBean) context.getBean("propertiesBean");
 
-		smtpServer = SimpleSmtpServer.start(Integer.valueOf(propertiesBean.getMailServerPort()));
+        activeDelegationsResponderInterface = (GetActiveDelegationsResponderInterface) context
+                .getBean("activeDelegationsResponderInterface");
+        getDelegationResponderInterface = (GetDelegationResponderInterface) context
+                .getBean("getDelegationResponderInterface");
+        inactiveDelegationsResponderInterface = (GetInactiveDelegationsResponderInterface) context
+                .getBean("inactiveDelegationsResponderInterface");
+        getDelegationsbyUnitAndRoleResponderInterface = (GetDelegationsbyUnitAndRoleResponderInterface) context
+                .getBean("getDelegationsbyUnitAndRoleResponderInterface");
+        getDelegationsResponderInterface = (GetDelegationsResponderInterface) context
+                .getBean("getDelegationsResponderInterface");
+        hasDelegationResponderInterface = (HasDelegationResponderInterface) context
+                .getBean("hasDelegationResponderInterface");
+        saveDelegationsResponderInterface = (SaveDelegationsResponderInterface) context
+                .getBean("saveDelegationsResponderInterface");
+        removeDelegationResponderInterface = (RemoveDelegationResponderInterface) context
+                .getBean("removeDelegationResponderInterface");
+        findDelegationsResponderInterface = (FindDelegationsResponderInterface) context
+                .getBean("findDelegationsResponderInterface");
+        pingForConfigurationResponderInterface = (PingForConfigurationResponderInterface) context
+                .getBean("pingForConfigurationResponderInterface");
+    }
 
-		activeDelegationsResponderInterface = (GetActiveDelegationsResponderInterface) context
-		        .getBean("activeDelegationsResponderInterface");
-		getDelegationResponderInterface = (GetDelegationResponderInterface) context
-		        .getBean("getDelegationResponderInterface");
-		inactiveDelegationsResponderInterface = (GetInactiveDelegationsResponderInterface) context
-		        .getBean("inactiveDelegationsResponderInterface");
-		getDelegationsbyUnitAndRoleResponderInterface = (GetDelegationsbyUnitAndRoleResponderInterface) context
-		        .getBean("getDelegationsbyUnitAndRoleResponderInterface");
-		getDelegationsResponderInterface = (GetDelegationsResponderInterface) context
-		        .getBean("getDelegationsResponderInterface");
-		hasDelegationResponderInterface = (HasDelegationResponderInterface) context
-		        .getBean("hasDelegationResponderInterface");
-		saveDelegationsResponderInterface = (SaveDelegationsResponderInterface) context
-		        .getBean("saveDelegationsResponderInterface");
-		removeDelegationResponderInterface = (RemoveDelegationResponderInterface) context
-		        .getBean("removeDelegationResponderInterface");
-		findDelegationsResponderInterface = (FindDelegationsResponderInterface) context
-		        .getBean("findDelegationsResponderInterface");
-	}
+    @Override
+    public void tearDown() throws Exception {
+        StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
 
-	@Override
-	public void tearDown() throws Exception {
-		smtpServer.stop();
+        schedulerFactoryBean.shutdown();
 
-		StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
+        DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
 
-		schedulerFactoryBean.shutdown();
+        Connection conn = dataSource.getConnection();
 
-		DriverManagerDataSource dataSource = (DriverManagerDataSource) context.getBean("dataSource");
-
-		Connection conn = dataSource.getConnection();
-
-		Statement st = conn.createStatement();
-		st.execute("SHUTDOWN");
-		conn.close();
-	}
+        // Statement st = conn.createStatement();
+        // st.execute("SHUTDOWN");
+        // conn.close();
+    }
 
 }

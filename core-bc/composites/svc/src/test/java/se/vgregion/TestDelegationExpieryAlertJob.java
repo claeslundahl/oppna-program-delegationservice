@@ -4,7 +4,6 @@
 package se.vgregion;
 
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Date;
 
 import javax.mail.MessagingException;
@@ -19,6 +18,8 @@ import se.vgregion.delegation.DelegationExpieryAlertJob;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationBlock;
+
+import com.dumbster.smtp.SimpleSmtpServer;
 
 /**
  * Test Class for testing the DelegationExpieryAlertJob.
@@ -42,12 +43,9 @@ public class TestDelegationExpieryAlertJob {
      */
     @Before
     public void setUp() throws Exception {
-
         context = new ClassPathXmlApplicationContext("Spring-job-test.xml");
-
         delegationExpieryAlertJob = (DelegationExpieryAlertJob) context.getBean("delegationExpieryAlertJob");
         delegationService = (DelegationService) context.getBean("delegationService");
-
     }
 
     /**
@@ -62,9 +60,9 @@ public class TestDelegationExpieryAlertJob {
 
         Connection conn = dataSource.getConnection();
 
-        Statement st = conn.createStatement();
-        st.execute("SHUTDOWN");
-        conn.close();
+        // Statement st = conn.createStatement();
+        // st.execute("SHUTDOWN");
+        // conn.close();
     }
 
     /**
@@ -75,11 +73,10 @@ public class TestDelegationExpieryAlertJob {
      */
     @Test
     public void test() throws MessagingException {
-
+        SimpleSmtpServer smtpServer = SimpleSmtpServer.start(43025);
         saveADelegation(getADateWithOfset(-18), getADateWithOfset(-20), getADateWithOfset(20));
-
         delegationExpieryAlertJob.scanRepoAndSendMails();
-
+        smtpServer.stop();
     }
 
     private long saveADelegation(Date approvedOndate, Date validFromDate, Date validToDate) {
