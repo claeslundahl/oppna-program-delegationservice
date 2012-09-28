@@ -33,7 +33,15 @@
     <dependency>
       <groupId>se.vgregion.icc.sd.authorization</groupId>
       <artifactId>authorization-delegation-schemas</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.8-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>se.riv.itintegration.monitoring</groupId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <!-- <systemPath>${basedir}/../../../lib/itintegration-monitoring-schemas-1.0-SNAPSHOT.jar</systemPath> -->
+      <!-- <scope>system</scope> -->
     </dependency>
 
     <dependency>
@@ -98,17 +106,24 @@
     </dependency>
 
     <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.3.168</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
       <scope>test</scope>
     </dependency>
 
-<!--     <dependency> -->
-<!--       <groupId>se.vgregion.icc.sd.authorization</groupId> -->
-<!--       <artifactId>authorization-delegation-schemas</artifactId> -->
-<!--       <version>1.0.7</version> -->
-<!--     </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>se.vgregion.icc.sd.authorization</groupId> -->
+    <!-- <artifactId>authorization-delegation-schemas</artifactId> -->
+    <!-- <version>1.0.7</version> -->
+    <!-- </dependency> -->
 
   </dependencies>
 
