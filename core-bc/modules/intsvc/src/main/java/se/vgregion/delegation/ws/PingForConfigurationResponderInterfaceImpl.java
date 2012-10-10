@@ -33,11 +33,6 @@ targetNamespace = "urn:riv:itintegration:monitoring:PingForConfiguration:1:rivta
 wsdlLocation = "http://rivta.googlecode.com/svn-history/r860/ServiceInteractions/riv/itintegration/monitoring/trunk/schemas/interactions/PingForConfigurationInteraction/PingForConfigurationInteraction_1.0_RIVTABP21.wsdl")
 public class PingForConfigurationResponderInterfaceImpl implements PingForConfigurationResponderInterface {
 
-    // wsdlLocation =
-    // "/home/portaldev/Hämtningar/TD_MONITORING_1_0_0_R/schemas/interactions/PingForConfigurationInteraction/PingForConfigurationInteraction_1.0_RIVTABP21.wsdl")
-
-    // http://rivta.googlecode.com/svn-history/r860/ServiceInteractions/riv/itintegration/monitoring/trunk/schemas/interactions/PingForConfigurationInteraction/PingForConfigurationInteraction_1.0_RIVTABP21.wsdl
-
     private DelegationService delegationService;
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMDDhhmmss");

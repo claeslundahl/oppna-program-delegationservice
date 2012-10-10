@@ -46,11 +46,9 @@
       <sec:trustManagers>
         <sec:keyStore type="JKS" password="changeit" resource="client/delegering-test.jks" />
       </sec:trustManagers>
-      <sec:keyManagers keyPassword="Gdq7pYasDc">
-        <!-- <sec:keyStore type="PKCS12" password="Gdq7pYasDc" password="${ssl.cert.pass}" file="client/delegering_test_cert1.p12" 
-          /> -->
+      <sec:keyManagers keyPassword="${ssl.cert.pass}">
         <sec:keyStore type="PKCS12" password="${ssl.cert.pass}"
-          file="/home/portaldev/.delegation-service/delegering_test_cert1.p12" />
+          file="${user.home}/.delegation-service/delegering_test_cert1.p12" />
       </sec:keyManagers>
     </http:tlsClientParameters>
     <http:client AutoRedirect="true" Connection="Keep-Alive" />
