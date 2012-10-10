@@ -77,6 +77,8 @@
   <bean name="propertiesBean" class="se.vgregion.delegation.ws.util.PropertiesBean">
     <property name="certPass" value="${ssl.cert.pass}" />
     <property name="certFileName" value="${cert.filename}" />
+    <property name="clientAuthCertPass" value="${client.auth.cert.pass}" />
+    <property name="clientAuthCertFilename" value="${client.auth.cert.filename}" />
     <property name="serverPort" value="${server.port}" />
     <property name="regularExpressionClientCert" value="${regularExpressionClientCert}" />
     <property name="clientCertSecurityActive" value="${clientCertSecurityActive}" />
