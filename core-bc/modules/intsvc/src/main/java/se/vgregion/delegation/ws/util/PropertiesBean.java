@@ -11,6 +11,9 @@ public class PropertiesBean {
 
     private String certPass;
     private String certFileName;
+    private String clientAuthCertFilename;
+    private String clientAuthCertPass;
+
     private String serverPort;
     private String mailServer;
     private String mailServerPort;
@@ -71,6 +74,22 @@ public class PropertiesBean {
 
     public String getRegularExpressionClientCert() {
         return regularExpressionClientCert;
+    }
+
+    public String getClientAuthCertFilename() {
+        return clientAuthCertFilename;
+    }
+
+    public void setClientAuthCertFilename(String clientAuthCertFilename) {
+        this.clientAuthCertFilename = clientAuthCertFilename;
+    }
+
+    public String getClientAuthCertPass() {
+        return clientAuthCertPass;
+    }
+
+    public void setClientAuthCertPass(String clientAuthCertPass) {
+        this.clientAuthCertPass = clientAuthCertPass;
     }
 
 }

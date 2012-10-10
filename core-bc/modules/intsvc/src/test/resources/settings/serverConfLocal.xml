@@ -112,6 +112,8 @@
     <property name="serverPort" value="${server.port}" />
     <property name="mailServer" value="${mail.server}" />
     <property name="mailServerPort" value="${mail.port}" />
+    <property name="clientAuthCertPass" value="${client.auth.cert.pass}" />
+    <property name="clientAuthCertFilename" value="${client.auth.cert.filename}" />
   </bean>
 
 </beans>

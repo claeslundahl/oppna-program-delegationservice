@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.xml.ws.Endpoint;
 
@@ -179,6 +180,11 @@ public class Server {
 
         String userhome = System.getProperty("user.home");
         String certFilePath = userhome + "/.delegation-service/" + propertiesBean.getCertFileName();
+
+        // String trustStoreFilePath = userhome + "/.delegation-service/prod-truststore.jks";
+        String trustStoreFilePath = userhome + "/.delegation-service/"
+                + propertiesBean.getClientAuthCertFilename();
+
         InputStream resourceAsStream = new FileInputStream(certFilePath);
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -194,8 +200,16 @@ public class Server {
         tlsParams.setKeyManagers(keyManagerFactory.getKeyManagers());
 
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStore);
-        // tlsParams.setTrustManagers(trustManagerFactory.getTrustManagers());
+        // trustManagerFactory.init(keyStore);
+
+        InputStream is = new FileInputStream(trustStoreFilePath);
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        // trustStore.load(is, "password".toCharArray());
+        trustStore.load(is, propertiesBean.getClientAuthCertPass().toCharArray());
+        trustManagerFactory.init(trustStore);
+        TrustManager[] trustMgrs = trustManagerFactory.getTrustManagers();
+
+        tlsParams.setTrustManagers(trustMgrs);
 
         // FiltersType filter = new FiltersType();
         // filter.getInclude().add(".*");
@@ -204,7 +218,7 @@ public class Server {
         ClientAuthentication clientAuth = new ClientAuthentication();
         // clientAuth.setRequired(true);
         // clientAuth.setWant(true);
-        clientAuth.setRequired(false);
+        clientAuth.setRequired(true);
         clientAuth.setWant(false);
         tlsParams.setClientAuthentication(clientAuth);
 
