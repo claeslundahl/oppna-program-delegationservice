@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
@@ -51,17 +52,15 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
     public void scanRepoAndSendMails() {
 
         ApplicationContext context = new ClassPathXmlApplicationContext(contextPath);
-        DelegationMailSenderService service =
-                (DelegationMailSenderService) context.getBean("delegationMailSenderService");
+        DelegationMailSenderService service = (DelegationMailSenderService) context
+                .getBean("delegationMailSenderService");
 
         VelocityEngine velocityEngine = (VelocityEngine) context.getBean("velocityEngine");
 
-        List<Delegation> soonToExpier =
-                delegationRepository.findSoonToExpireWithUnsentWarning(warnBeforeExpieryTimeStart,
-                        emailToSendKey);
+        List<Delegation> soonToExpier = delegationRepository.findSoonToExpireWithUnsentWarning(
+                warnBeforeExpieryTimeStart, emailToSendKey);
 
-        logger.debug("size to email " + soonToExpier.size() + " for job with daysBeforeStart "
-                + daysBeforeStart);
+        logger.debug("size to email " + soonToExpier.size() + " for job with daysBeforeStart " + daysBeforeStart);
 
         List<Delegation> result = new ArrayList<Delegation>();
         for (Delegation delegation : soonToExpier) {
@@ -76,10 +75,14 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
             if (delegation.getValidTo().getTime() > (System.currentTimeMillis() + warnBeforeExpieryTimeEnd)) {
 
                 if (delegation.getDelegatedForEmail() != null && !delegation.getDelegatedForEmail().isEmpty()) {
-                    service.sendMail("no-replay@vgregion.se", delegation.getDelegatedForEmail(), subject,
-                            text);
-                    logger.debug("Will email " + delegation.getDelegatedForEmail() + " for delegation "
-                            + delegation.getDelegationKey());
+                    String[] emails = delegation.getDelegatedForEmail().split(Pattern.quote(","));
+                    for (String email : emails) {
+                        if (email.contains("@")) {
+                            service.sendMail("no-replay@vgregion.se", email, subject, text);
+                            logger.debug("Will email " + email + " for delegation "
+                                    + delegation.getDelegationKey());
+                        }
+                    }
                 }
             }
         }
@@ -125,9 +128,8 @@ public class DelegationExpieryAlertJobImpl implements DelegationExpieryAlertJob 
         model.put("delegatedFor", delegation.getDelegatedFor());
         model.put("delegationTo", delegation.getDelegateTo());
         model.put("delegatedBy", delegation.getDelegationBlock().getDelegatedBy());
-        String text =
-                VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                        "mailtemplates/remainder-mail-template.vm", model);
+        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                "mailtemplates/remainder-mail-template.vm", model);
 
         return text;
     }
