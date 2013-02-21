@@ -139,6 +139,10 @@ public abstract class AbstractTestBase {
     }
 
     protected long saveADelegation(String aO, String vF, String vT) {
+       return saveADelegation(aO, vF, vT, "test@vgregion.se");
+    }
+
+    protected long saveADelegation(String aO, String vF, String vT, String epost) {
         SaveDelegationsType parameters = new SaveDelegationsType();
 
         DelegationBlockType block = new DelegationBlockType();
@@ -151,7 +155,8 @@ public abstract class AbstractTestBase {
         DelegationType delegationType = new DelegationType();
 
         delegationType.setDelegatedFor("df");
-        delegationType.setDelegatedForEmail("test@vgregion.se");
+        //delegationType.setDelegatedForEmail("test@vgregion.se");
+        delegationType.setDelegatedForEmail(epost);
         delegationType.setDelegateTo("dt");
         delegationType.setRole("role");
 
