@@ -91,6 +91,30 @@ public class TestMail extends AbstractTestBase {
         schedulerFactoryBean.shutdown();
     }
 
+    @Test
+    public void testEmailNotificationJobTwoEmails() throws Exception {
+        long dayInMilis = 86400000;
+        int mailsBeforeTest = smtpServer.getReceivedEmailSize();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+        Date today = new Date();
+        Date ao = new Date(today.getTime() - 95 * dayInMilis);
+        Date vt = new Date(today.getTime() + 10 * dayInMilis);
+        Date vf = new Date(today.getTime() - 100 * dayInMilis);
+
+        saveADelegation(simpleDateFormat.format(ao), simpleDateFormat.format(vf), simpleDateFormat.format(vt), "test@vgregion.se,test@vgregion.se");
+
+        for (int i = 1; i <= 30 && 1 + mailsBeforeTest != smtpServer.getReceivedEmailSize(); i++) {
+            Thread.sleep(500);
+        }
+        Assert.assertEquals(2 + mailsBeforeTest, smtpServer.getReceivedEmailSize());
+
+        StdScheduler schedulerFactoryBean = (StdScheduler) context.getBean("schedulerFactoryBean");
+
+        schedulerFactoryBean.shutdown();
+    }
+
     @Override
     public void initStuffFromContext() throws Exception {
         super.initStuffFromContext();
