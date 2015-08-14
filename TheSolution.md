@@ -1,0 +1,71 @@
+# Lösningsbeskrivning #
+
+Delegeringstjänsten är byggd som en fristående java applikation men en inbyggd applikationsservern
+som startar när applikationen startas. Genom den inbyggda applikationsserver tillhandahålls 8 webtjänster. En för varje operation.
+
+| **Operation** | **Parametrar** | **Resultat** |
+|:--------------|:---------------|:-------------|
+| getAvtiveDelegations | String delegatedFor | Lista av delegeringar |
+| getInAvtiveDelegations | String delegatedFor | Lista av delegeringar |
+| getDelegations | String delegatedFor | Lista av delegeringar |
+| getDelegationsByUnitAndRole | String delegatedTo, String role | Lista av delegeringar |
+| getDelegation | Long delegationId | En delegering |
+| save          | DelegationBlock delegationBlock | True/False beroende på resultat |
+| getDelegation | Long delegationId | En delegering |
+| remove        | Long delegationId | True/False beroende på resultat |
+
+
+# RIV-TA #
+
+Själva webtjänsterna är byggda enligt standarden för RIV-TA, mer om det här http://code.google.com/p/rivta/
+
+
+
+# Säkerhet #
+
+I VGRs lösning använd VGRs tjänstplattform.  För att garantera säkerheten bör all kommunikation ske över en krypterad anslutning – https.  Det är starkt rekommenderat att X sätter upp TLS mot tjänaten. TLS syftar till att genom utbyte av certifikat mellan delegeringstjänsten och tjänsteplattformen  kan tjänsteplattformen grantera att identiteten på delegeringstjänsten. Alltså, med tillgång till delegeringstjänsten publika nyckel kan tjänsteplattformen verifiera att det är delegeringstjänsten som svarar.
+
+![https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/secutity.png](https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/secutity.png)
+
+# Mail notifieringar #
+
+När en delegering håller på att gå ut skicks det två påminnelse mail, t.ex 2 och 1 vecka innan delegeringen blir ogiltig. För att det skall vara möjligt att förlänga delegeringen. Vilken email adress som påminnelsen skall skickas till anges vi skapandet av delegeringen.
+
+
+# Bygganvisningar #
+
+För att bygga projektet till en kör bara applikation kör **mvn clean package** i projektets trunk katalog.
+
+För att starta applikationen på server kör **nohup java -jar oppna-program-delegation-service-core-bc-module-intsvc.jar &** i terminalen.
+
+# Konfiguration #
+
+För att få en bakgrund till hur man skall konfigurera signeringstjänsten är det lämpligt att läsa  [denna blog-post](http://blog.callistaenterprise.se/2011/11/17/configure-your-spring-web-application/) som på ett bra sätt beskriver hur applikationen läser in sin konfiguration.
+
+Med bakgrund till ovan nämnda blogg kommer här en förklaring till inställningar som kan göras för delegeringstjänsten. Till att börja med måste en fil med namnet config.properties skapas och läggas in under ~/.delegation-service. Om man vill ha en mall att utgå ifrån så kan man använda sig av default-konfigurationen som ligger i projektets web-modul ($PROJECT\_HOME/core-bc/modules/intsvc/src/main/resources/config.properties). I denna fil kan följande parametrar sättas:
+
+| **Parameter** | **Beskrivning** |
+|:--------------|:----------------|
+| datasource.connector.jndi.jndiName |                 |
+| datasource.connector.direct.driverClassName |                 |
+| datasource.connector.direct.url | databas url     |
+| datasource.connector.direct.username | Användarnamn för databasen|
+| datasource.connector.direct.password | Lösenord för databasen|
+| hibernate.database.showsql | visa hibernate sql |
+| hibernate.database.schema |                 |
+| hibernate.vendor.generateDdl |                 |
+| hibernate.vendor.databaseDialect|                 |
+| hibernate.vendor.database |                 |
+| hibernate.vendor.databasePlatform |                 |
+| hibernate.hbm2ddl.auto |                 |
+| ssl.cert.pass | certifikats lösenord|
+| cert.filename | filnamn på certifikat, certifikatet skall finnas i ~/.delegation-service. katalogen|
+| server.port   | den port som tjänsten skall köras på|
+| mail.server   | mail hoast      |
+| mail.port     | port för mail hoast|
+
+
+
+# Kvarstående utvecklingspunkter #
+  * ip-filter
+  * startskript på tjänsten
