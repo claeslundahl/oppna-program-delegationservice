@@ -1,4 +1,4 @@
-
+= Delegation service =
 <td id="wikicontent" class="psdescription">
   <p>
     Delegation need to be handled with care. 
@@ -37,16 +37,16 @@
      (swedish) 
   </p>
   <p>
-    <img src="https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/DelegationServiceOverview.png"/>
+    <img src="https://raw.githubusercontent.com/wiki/Vastra-Gotalandsregionen/oppna-program-delegationservice/images/DelegationServiceOverview.png"/>
   </p>
   <p>
     Below are sequence diagrams that describes two operations of the application. The other operations follow these examples also.  
   </p>
   <p>
-    <img src="https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/DelegationServiceSeqGetDelegation.png"/>
+    <img src="https://raw.githubusercontent.com/wiki/Vastra-Gotalandsregionen/oppna-program-delegationservice/images/DelegationServiceSeqGetDelegation.png"/>
   </p>
   <p>
-    <img src="https://oppna-program-delegationservice.googlecode.com/svn/wiki/images/DelegationServiceSeqSave.png"/>
+    <img src="https://raw.githubusercontent.com/wiki/Vastra-Gotalandsregionen/oppna-program-delegationservice/images/DelegationServiceSeqSave.png"/>
   </p>
   <p>
     <a href="https://code.google.com/p/oppna-program-delegationservice/wiki/TheSolution" rel="nofollow">
@@ -55,23 +55,20 @@
   </p>
 </td>
 
-  <p>
-    <tt>
-      oppna-program-icc
-    </tt>
-     ?r en del i V?stra G?talandsregionens satsning p? ?ppen k?llkod inom ramen f?r 
-    <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
-      ?ppna Program
-    </a>
-    . 
-  </p>
-  <p>
-    <tt>
-      oppna-program-delegationservice
-    </tt>
-     ?r en del i V?stra G?talandsregionens satsning p? ?ppen k?llkod inom ramen f?r 
-    <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
-      ?ppna Program
-    </a>
-    . 
-  </p>
+== Bygganvisningar ==
+
+För att kunna bygga projektet måste två andra componenter finnas tillgängliga i maven-biblioteket: oppna-program-icc
+och monitoring-schemas.
+
+Dessa ligger under gitrepo: https://github.com/Vastra-Gotalandsregionen/oppna-program-icc.
+Under detta, bygg:
+Bygg oppna-program-icc\service-descriptions\authorization-delegation-schemas\tags\authorization-delegation-schemas-1.0.7\pom.xml
+
+samt https://github.com/Vastra-Gotalandsregionen/monitoring-schemas
+
+== oppna-program-delegationservice ==
+ Är en del i Västra Götalandsregionens satsning på öppen källkod inom ramen för
+<a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
+  Öppna Program
+</a>
+.
