@@ -57,19 +57,18 @@
 
 <h2>Bygganvisningar</h2>
 
-För att kunna bygga projektet måste två andra componenter finnas tillgängliga i maven-biblioteket: oppna-program-icc
-och monitoring-schemas.
+To build the project, two other components must available in the maven-library: oppna-program-icc
+and monitoring-schemas.
 
-Dessa ligger under gitrepo: https://github.com/Vastra-Gotalandsregionen/oppna-program-icc.
-Under detta, bygg:
-Bygg oppna-program-icc\service-descriptions\authorization-delegation-schemas\tags\authorization-delegation-schemas-1.0.7\pom.xml
+These are under git repo: https://github.com/Vastra-Gotalandsregionen/oppna-program-icc.
+Under this path, run a maven build / install:
+Bygg oppna-program-icc\service-descriptions\authorization-delegation-schemas\tags\authorization-delegation-schemas-1.0.7\
 
-samt https://github.com/Vastra-Gotalandsregionen/monitoring-schemas
+And, also, build: https://github.com/Vastra-Gotalandsregionen/monitoring-schemas
 
- <h2>oppna-program-delegationservice</h2>
+<h2>oppna-program-delegationservice</h2>
  
- Är en del i Västra Götalandsregionens satsning på öppen källkod inom ramen för
+Is part of Västra Götaland's commitment to open source under the
 <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
   Öppna Program
-</a>
-.
+</a> project.
