@@ -100,7 +100,7 @@ public class Server {
         propertiesBean = (PropertiesBean) ctx.getBean("propertiesBean");
 
         // Make CXF use log4j (instead of JDK-logging), currently can't use slf4j.
-        System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
+//        System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Log4jLogger");
 
         https = (propertiesBean.getCertPass() != null && !propertiesBean.getCertPass().equals(""));
 

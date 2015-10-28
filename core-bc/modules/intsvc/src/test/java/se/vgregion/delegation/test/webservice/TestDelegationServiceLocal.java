@@ -1,9 +1,7 @@
 /**
- * 
+ *
  */
 package se.vgregion.delegation.test.webservice;
-
-import java.sql.Connection;
 
 import org.junit.BeforeClass;
 import org.quartz.impl.StdScheduler;
@@ -11,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
 import se.riv.authorization.delegation.finddelegations.v1.rivtabp21.FindDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
@@ -21,13 +18,14 @@ import se.riv.authorization.delegation.getinactivedelegations.v1.rivtabp21.GetIn
 import se.riv.authorization.delegation.hasdelegation.v1.rivtabp21.HasDelegationResponderInterface;
 import se.riv.authorization.delegation.removedelegation.v1.rivtabp21.RemoveDelegationResponderInterface;
 import se.riv.authorization.delegation.savedelegations.v1.rivtabp21.SaveDelegationsResponderInterface;
-import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
+import se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface;
 import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.ws.util.PropertiesBean;
 
+import java.sql.Connection;
+
 /**
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
- * 
  */
 public class TestDelegationServiceLocal extends TestDelegationServiceWS {
     static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceLocal.class);

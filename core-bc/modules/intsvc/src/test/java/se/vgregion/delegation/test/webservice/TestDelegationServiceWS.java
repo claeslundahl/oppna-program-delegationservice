@@ -1,20 +1,8 @@
 package se.vgregion.delegation.test.webservice;
 
 /**
- * 
+ *
  */
-import java.io.IOException;
-import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,7 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.riv.authorization.delegation.finddelegationsresponder.v1.FindDelegationsResponseType;
 import se.riv.authorization.delegation.finddelegationsresponder.v1.FindDelegationsType;
 import se.riv.authorization.delegation.getactivedelegationsresponder.v1.GetActiveDelegationsResponseType;
@@ -41,11 +28,18 @@ import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelega
 import se.riv.authorization.delegation.removedelegationresponder.v1.RemoveDelegationType;
 import se.riv.authorization.delegation.v1.DelegationType;
 import se.riv.authorization.delegation.v1.ResultCodeEnum;
-import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
+import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationType;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateException;
 
 /**
  * @author Simon Göransson - simon.goransson@monator.com - vgrid: simgo3
- * 
  */
 public class TestDelegationServiceWS extends AbstractTestBase {
     static private final Logger LOGGER = LoggerFactory.getLogger(TestDelegationServiceWS.class);
@@ -74,7 +68,7 @@ public class TestDelegationServiceWS extends AbstractTestBase {
                 .getActiveDelegations("", parameters);
         activeDelegationsResponseType.getDelegations().getContent().size();
 
-        Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() > 0);
+        Assert.assertTrue(activeDelegationsResponseType.getDelegations().getContent().size() == 0);
     }
 
     @Test
@@ -234,7 +228,7 @@ public class TestDelegationServiceWS extends AbstractTestBase {
         HasDelegationResponseType hasDelegationResponseType = hasDelegationResponderInterface.hasDelegation("",
                 parameters);
 
-        Assert.assertTrue(hasDelegationResponseType.isResult());
+        Assert.assertTrue(!hasDelegationResponseType.isResult());
     }
 
     @Test
@@ -317,7 +311,7 @@ public class TestDelegationServiceWS extends AbstractTestBase {
     }
 
     private void testConnection(String host, int hostPort, String trustStoreFileName, String trustStorePassword,
-            String keyStoreFileName, String keyStorePassword) throws NoSuchAlgorithmException, KeyStoreException,
+                                String keyStoreFileName, String keyStorePassword) throws NoSuchAlgorithmException, KeyStoreException,
             IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
         Socket socket = null;
         try {

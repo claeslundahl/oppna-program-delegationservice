@@ -1,11 +1,8 @@
 package se.vgregion.delegation.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -26,7 +23,7 @@ public class DelegationUtil {
     public static class MyBeanMap extends BeanMap {
 
         /**
-         * 
+         *
          */
         public MyBeanMap(Object bean) {
             super(bean);
@@ -57,6 +54,30 @@ public class DelegationUtil {
                 }
             }
             return super.put(name, value);
+        }
+
+        public boolean haveAnyAnnotation(String key, Class<? extends Annotation>... ofThese) {
+            List<Annotation> annotations = getFieldAnnotations(key);
+            //List<Annotation> ofThseAsList = Arrays.asList(ofThese);
+            for (Annotation onBeanField : annotations) {
+                for (Class<? extends Annotation> lookFor : ofThese) {
+                    if (lookFor.isAssignableFrom(onBeanField.getClass())) return true;
+                }
+            }
+            return false;
+        }
+
+        public List<Annotation> getFieldAnnotations(String key) {
+            return getFieldAnnotationsImpl(getBean().getClass(), key);
+        }
+
+        protected List<Annotation> getFieldAnnotationsImpl(Class clazz, String key) {
+            try {
+                Field field = clazz.getDeclaredField(key);
+                return Arrays.asList(field.getAnnotations());
+            } catch (NoSuchFieldException e) {
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -132,5 +153,6 @@ public class DelegationUtil {
 
         return result;
     }
+
 
 }

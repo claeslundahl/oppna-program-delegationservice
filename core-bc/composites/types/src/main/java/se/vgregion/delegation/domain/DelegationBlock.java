@@ -38,7 +38,7 @@ public class DelegationBlock extends AbstractEntity<Long> implements
 
     private String delegatedBy;
 
-    @OneToMany(mappedBy = "delegationBlock", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "delegationBlock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<Delegation> delegations = new HashSet<Delegation>();
 
     @Column(nullable = true, updatable = false)
@@ -168,4 +168,9 @@ public class DelegationBlock extends AbstractEntity<Long> implements
     // return o + "";
     // }
 
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + id;
+    }
 }

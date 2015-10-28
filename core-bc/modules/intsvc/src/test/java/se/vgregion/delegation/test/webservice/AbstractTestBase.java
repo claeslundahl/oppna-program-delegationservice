@@ -1,24 +1,11 @@
 package se.vgregion.delegation.test.webservice;
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
 import se.riv.authorization.delegation.finddelegations.v1.rivtabp21.FindDelegationsResponderInterface;
 import se.riv.authorization.delegation.getactivedelegations.v1.rivtabp21.GetActiveDelegationsResponderInterface;
 import se.riv.authorization.delegation.getdelegation.v1.rivtabp21.GetDelegationResponderInterface;
@@ -32,10 +19,21 @@ import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegatio
 import se.riv.authorization.delegation.savedelegationsresponder.v1.SaveDelegationsType;
 import se.riv.authorization.delegation.v1.DelegationBlockType;
 import se.riv.authorization.delegation.v1.DelegationType;
-import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
+import se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface;
 import se.vgregion.delegation.mail.DelegationMailSenderService;
 import se.vgregion.delegation.server.Server;
 import se.vgregion.delegation.ws.util.PropertiesBean;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public abstract class AbstractTestBase {
 
@@ -139,7 +137,7 @@ public abstract class AbstractTestBase {
     }
 
     protected long saveADelegation(String aO, String vF, String vT) {
-       return saveADelegation(aO, vF, vT, "test@vgregion.se");
+        return saveADelegation(aO, vF, vT, "test@vgregion.se");
     }
 
     protected long saveADelegation(String aO, String vF, String vT, String epost) {

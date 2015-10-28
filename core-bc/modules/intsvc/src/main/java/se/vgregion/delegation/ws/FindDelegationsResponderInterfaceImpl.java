@@ -19,6 +19,7 @@ import se.riv.authorization.delegation.v1.DelegationsType;
 import se.riv.authorization.delegation.v1.ResultCodeEnum;
 import se.vgregion.delegation.DelegationService;
 import se.vgregion.delegation.domain.Delegation;
+import se.vgregion.delegation.domain.DelegationBlock;
 import se.vgregion.delegation.util.DelegationUtil;
 
 /**
@@ -59,7 +60,6 @@ public class FindDelegationsResponderInterfaceImpl implements FindDelegationsRes
 		turnPropertyZerosIntoNull(match);
 
 		List<Delegation> searchResult = delegationService.findBySample(match);
-
 		FindDelegationsResponseType result = new FindDelegationsResponseType();
 		DelegationsType delegations = new DelegationsType();
 		delegations.getContent().addAll(DelegationUtil.convert(searchResult, DelegationType.class));

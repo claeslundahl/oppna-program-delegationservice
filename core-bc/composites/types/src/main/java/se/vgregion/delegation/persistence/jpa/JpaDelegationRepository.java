@@ -1,5 +1,6 @@
 package se.vgregion.delegation.persistence.jpa;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
@@ -19,6 +22,7 @@ import se.vgregion.dao.domain.patterns.repository.db.jpa.DefaultJpaRepository;
 import se.vgregion.delegation.domain.Delegation;
 import se.vgregion.delegation.domain.DelegationStatus;
 import se.vgregion.delegation.persistence.DelegationRepository;
+import se.vgregion.delegation.util.DelegationUtil;
 
 /**
  * 
@@ -54,7 +58,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Delegation> getInActiveDelegations(String delegatedFor) {
-		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		String query = "SELECT distinct d FROM " + Delegation.class.getSimpleName() + " d "
 		        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive + " and not ("
 		        + validDateInterval + ")";
 
@@ -68,7 +72,7 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Delegation> getDelegations(String delegatedFor) {
-		String query = "SELECT d FROM " + Delegation.class.getSimpleName() + " d "
+		String query = "SELECT distinct d FROM " + Delegation.class.getSimpleName() + " d "
 		        + "WHERE d.delegatedFor = :delegatedFor" + " and " + delegatedStatusIsActive;
 
 		Query q = entityManager.createQuery(query);
@@ -245,14 +249,20 @@ public class JpaDelegationRepository extends DefaultJpaRepository<Delegation, Lo
 
 	void mkJpqlAndGetValues(final Object bean, final StringBuilder jpqlOut, final List<String> keysOut,
 	        final List<Object> valuesToSetIntoJpql, String... excludedProperties) {
-		BeanMap bm = new BeanMap(bean);
+		DelegationUtil.MyBeanMap bm = new DelegationUtil.MyBeanMap(bean);
 		Set<String> keys = new HashSet<String>(bm.keySet());
 		keys.remove("class");
 		keys.removeAll(Arrays.asList(excludedProperties));
 
 		List<String> condition = new ArrayList<String>();
 
-		jpqlOut.append("select d from " + bean.getClass().getSimpleName() + " d");
+		jpqlOut.append("select distinct d from " + bean.getClass().getSimpleName() + " d ");
+
+		for (String key : keys) {
+			if (bm.haveAnyAnnotation(key, ManyToOne.class, OneToMany.class)) {
+				jpqlOut.append("left join fetch d." + key + " " + key + "Var ");
+			}
+		}
 
 		for (String key : keys) {
 			Object value = bm.get(key);

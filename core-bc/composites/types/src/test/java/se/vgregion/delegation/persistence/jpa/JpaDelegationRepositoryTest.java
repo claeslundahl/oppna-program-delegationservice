@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,16 +46,28 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
 		}
 	}
 
+
 	@Test
+	@Ignore // is not in the ordinary test-set. (Test to be run against a 'special' db).
 	public void testActiveDelegations() {
 		List<Delegation> delegation = delegationRepository.getActiveDelegations("df");
+		assertEquals(2, delegation.size());
+	}
+
+
+	@Test
+	@Ignore // is not in the ordinary test-set. (Test to be run against a 'special' db).
+	public void findBySample_informationField() {
+		Delegation match = new Delegation();
+		match.setInformation("SE2321000131-E000000000109");
+		List<Delegation> delegation = delegationRepository.findBySample(match);
 		assertEquals(1, delegation.size());
 	}
 
 	@Test
 	public void testInActiveDelegations() {
 		List<Delegation> delegation = delegationRepository.getInActiveDelegations("df");
-		assertEquals(1, delegation.size());
+		assertEquals(2, delegation.size());
 	}
 
 	@Test
@@ -78,7 +91,7 @@ public class JpaDelegationRepositoryTest extends AbstractTransactionalJUnit4Spri
 	@Test
 	public void testhasDelegations() {
 		boolean b = delegationRepository.hasDelegations("df", "dt", "role");
-		assertEquals(true, b);
+		assertEquals(false, b);
 	}
 
 	@Test

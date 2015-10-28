@@ -68,6 +68,13 @@
   </build>
 
   <dependencies>
+
+    <dependency>
+      <groupId>se.vgregion.icc.sd.authorization</groupId>
+      <artifactId>authorization-delegation-schemas</artifactId>
+      <version>1.0.7</version>
+    </dependency>
+
     <dependency>
       <groupId>javax.jws</groupId>
       <artifactId>jsr181-api</artifactId>
@@ -125,29 +132,36 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
     </dependency>
+
+    <!--
     <dependency>
       <groupId>se.vgregion.icc.sd.authorization</groupId>
       <artifactId>authorization-delegation-schemas</artifactId>
-      <version>1.0.8-SNAPSHOT</version>
+      <version>1.0.7</version>
     </dependency>
+
     <dependency>
       <groupId>se.riv.itintegration.monitoring</groupId>
       <artifactId>itintegration-monitoring-schemas</artifactId>
-      <version>1.0-SNAPSHOT</version>
-  <!-- <systemPath>${basedir}/../../../lib/itintegration-monitoring-schemas-1.0-SNAPSHOT.jar</systemPath> -->
-  <!-- <scope>system</scope> -->
+      <version>1.0.0</version>
+    </dependency>-->
+    <dependency>
+      <groupId>se.vgregion.icc.sd.itintegration.monitoring</groupId>
+      <artifactId>monitoring-schemas</artifactId>
+      <version>1.0.0</version>
     </dependency>
+
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
       <version>6.1.6</version>
     </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.4-702.jdbc4</version>
-      <scope>runtime</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>postgresql</groupId>-->
+      <!--<artifactId>postgresql</artifactId>-->
+      <!--<version>8.4-702.jdbc4</version>-->
+      <!--&lt;!&ndash;<scope>runtime</scope>&ndash;&gt;-->
+    <!--</dependency>-->
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
