@@ -1,4 +1,4 @@
-= Delegation service =
+<h1>Delegation service</h1>
 <td id="wikicontent" class="psdescription">
   <p>
     Delegation need to be handled with care. 
@@ -55,7 +55,7 @@
   </p>
 </td>
 
-== Bygganvisningar ==
+<h2>Bygganvisningar</h2>
 
 För att kunna bygga projektet måste två andra componenter finnas tillgängliga i maven-biblioteket: oppna-program-icc
 och monitoring-schemas.
@@ -66,7 +66,8 @@ Bygg oppna-program-icc\service-descriptions\authorization-delegation-schemas\tag
 
 samt https://github.com/Vastra-Gotalandsregionen/monitoring-schemas
 
-== oppna-program-delegationservice ==
+ <h2>oppna-program-delegationservice</h2>
+ 
  Är en del i Västra Götalandsregionens satsning på öppen källkod inom ramen för
 <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
   Öppna Program
