@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <title>Anställda ifrån BEH</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+<div id="mydiv"></div>
+
+<script type="text/babel">
+
+    const container = document.getElementById('mydiv');
+    const root = ReactDOM.createRoot(container);
+
+    const getData = () => {
+        fetch('/api/delegation'
+            , {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }
+        )
+            .then(function (response) {
+                console.log(response);
+                const promise = response.json();
+                promise.then(value => makeTableFrom(value.result));
+                return promise;
+            })
+            .then(function (myJson) {
+                console.log(myJson);
+            });
+    }
+
+    const makeTableFrom = (thatData) => {
+        if (thatData.length == 0) {
+            class Foo extends React.Component {
+                render() {
+                    return <div>Tomt!</div>
+                }
+            }
+        } else {
+            //const first = thatData[0];
+            const keys = ["delegateTo", "delegatedForEmail", "information", "validFrom", "validTo"];
+            const labels = ["Delegerar till", "Delegerar ", "Information", "Valid f.o.m", "Valid t.o.m"];
+
+            class Foo extends React.Component {
+                render() {
+                    return (
+                        <table>
+                            <thead>
+                            <tr>{labels.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                            </thead>
+                            <tbody>
+                            {thatData.map(delegation =>
+                                <tr key={delegation.id}>
+                                    {keys.map(k => <td>{gp(delegation, k)}</td>)}
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    );
+                }
+            }
+
+            root.render(<Foo/>)
+        }
+    }
+
+    function gp(obj, key) {
+        if (obj instanceof Date) {
+            format(obj, 'dd/mm/yyyy');
+        } else
+        return obj[key] + "";
+    }
+
+    getData();
+</script>
+
+</body>
+</html>
